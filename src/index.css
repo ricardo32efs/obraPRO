@@ -1,0 +1,177 @@
+@import 'tailwindcss';
+
+/* Variables de marca Obra Pro (documento formal + producto premium) */
+@theme {
+  --font-display: 'Playfair Display', ui-serif, Georgia, serif;
+  --font-sans: 'DM Sans', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+  --color-obrapro-bg: #f4f1ec;
+  --color-obrapro-surface: #ffffff;
+  --color-obrapro-surface-2: #edeae3;
+  --color-obrapro-border: #d6d0c4;
+  --color-obrapro-primary: #1a1a1a;
+  --color-obrapro-accent: #c1440e;
+  --color-obrapro-accent-2: #8b4513;
+  --color-obrapro-success: #2d6a4f;
+  --color-obrapro-warning: #d97706;
+  --color-obrapro-danger: #991b1b;
+  --color-obrapro-text: #1c1917;
+  --color-obrapro-text-2: #6b5e52;
+}
+
+:root {
+  --color-bg: #f4f1ec;
+  --color-surface: #ffffff;
+  --color-surface-2: #edeae3;
+  --color-border: #d6d0c4;
+  --color-primary: #1a1a1a;
+  --color-accent: #c1440e;
+  --color-accent-2: #8b4513;
+  --color-success: #2d6a4f;
+  --color-warning: #d97706;
+  --color-danger: #991b1b;
+  --color-text: #1c1917;
+  --color-text-2: #6b5e52;
+  --color-pro: linear-gradient(135deg, #c1440e, #8b4513);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Salto al contenido (accesible, foco visible) */
+.skip-to-content {
+  position: absolute;
+  left: -9999px;
+  top: 0.75rem;
+  z-index: 300;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  background: var(--color-accent);
+  color: #fff;
+  text-decoration: none;
+}
+.skip-to-content:focus {
+  left: 0.75rem;
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+@keyframes obrapro-route-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.route-loader {
+  height: 2rem;
+  width: 2rem;
+  border-radius: 9999px;
+  border: 2px solid var(--color-border);
+  border-top-color: var(--color-accent);
+  animation: obrapro-route-spin 0.75s linear infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .route-loader {
+    animation: none;
+    border-color: var(--color-accent);
+  }
+}
+
+body {
+  margin: 0;
+  min-height: 100svh;
+  font-family: var(--font-sans);
+  color: var(--color-text);
+  background-color: var(--color-bg);
+  position: relative;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Textura de papel/concreto con ruido SVG muy sutil */
+body::before {
+  content: '';
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E");
+}
+
+#root {
+  position: relative;
+  z-index: 1;
+  min-height: 100svh;
+}
+
+/* Scrollbar personalizada */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-accent) var(--color-surface-2);
+}
+
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  background: var(--color-surface-2);
+}
+
+*::-webkit-scrollbar-thumb {
+  background: var(--color-accent);
+  border-radius: 4px;
+}
+
+/* Focus accesible */
+:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(193, 68, 14, 0.22);
+  border-color: var(--color-accent);
+}
+
+/* Cards con sombra cálida */
+.obrapro-card {
+  box-shadow:
+    0 2px 8px rgba(28, 25, 23, 0.08),
+    0 1px 2px rgba(28, 25, 23, 0.04);
+  transition:
+    box-shadow 200ms ease,
+    transform 200ms ease;
+}
+
+.obrapro-card:hover {
+  box-shadow:
+    0 8px 24px rgba(28, 25, 23, 0.12),
+    0 2px 8px rgba(28, 25, 23, 0.06);
+  transform: translateY(-2px);
+}
+
+/* Gradiente decorativo en divisores */
+.divider-fade {
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--color-border) 15%,
+    var(--color-border) 85%,
+    transparent
+  );
+}
