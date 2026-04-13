@@ -71,6 +71,21 @@ export function Historial({
   const [deleteId, setDeleteId] = useState(null)
   const [confettiId, setConfettiId] = useState(null)
 
+  const duplicarPresupuesto = (r) => {
+    const newId = `pres-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`
+    const copia = {
+      ...r,
+      id: newId,
+      numero: `COPIA-${r.numero}`,
+      estado: 'borrador',
+      fechaEmision: new Date().toISOString().slice(0, 10),
+      updatedAt: new Date().toISOString(),
+      creadoEn: new Date().toISOString(),
+      clienteNombre: r.clienteNombre ? `(Copia) ${r.clienteNombre}` : '(Copia)',
+    }
+    setItems((prev) => [copia, ...prev])
+  }
+
   const shareWhatsApp = (r) => {
     const nombreEmpresa = r.empresa?.nombreEmpresa || empresa?.nombreEmpresa || ''
     const msg = `Hola! Te comparto el presupuesto N° ${r.numero} para *${r.tipoTrabajo}*.
@@ -316,6 +331,7 @@ ${nombreEmpresa ? `Empresa: ${nombreEmpresa}\n` : ''}Cualquier consulta, estamos
                             isPro ? onSendEmail?.(mergePayloadConEmpresa(r, empresa)) : onRequestUpgrade?.()
                           }
                         />
+                        <IconBtn label="Duplicar" onClick={() => duplicarPresupuesto(r)} />
                         <IconBtn label="WhatsApp" onClick={() => shareWhatsApp(r)} />
                         <IconBtn label="Eliminar" onClick={() => setDeleteId(r.id)} />
                       </div>
@@ -369,6 +385,13 @@ ${nombreEmpresa ? `Empresa: ${nombreEmpresa}\n` : ''}Cualquier consulta, estamos
                   }}
                 >
                   PDF
+                </button>
+                <button
+                  type="button"
+                  className="text-xs underline"
+                  onClick={() => duplicarPresupuesto(r)}
+                >
+                  Duplicar
                 </button>
                 <button
                   type="button"

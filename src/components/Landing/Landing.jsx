@@ -224,36 +224,30 @@ export function Landing({
 
       <section className="mx-auto max-w-5xl px-4 py-14">
         <h2 className="text-center font-display text-3xl font-bold text-[var(--color-text)]">
-          Lo que dicen quienes ya lo usan
+          Pensado para quienes trabajan en obra
         </h2>
-        <div className="mt-10 grid gap-6 md:grid-cols-3">
+        <p className="mx-auto mt-3 max-w-xl text-center text-sm text-[var(--color-text-2)]">
+          Desde una refacción de baño hasta una obra completa — Obra Pro se adapta a cualquier trabajo.
+        </p>
+        <div className="mt-10 flex flex-wrap justify-center gap-3">
           {[
-            {
-              nombre: 'Carlos M.',
-              rol: 'Contratista — Córdoba',
-              texto: 'Antes tardaba horas en armar un presupuesto en Excel. Ahora lo hago en 10 minutos desde el celular y el cliente lo recibe con toda la info clara. Profesionalismo total.',
-            },
-            {
-              nombre: 'Martina R.',
-              rol: 'Arquitecta independiente — Buenos Aires',
-              texto: 'Empecé con el plan gratis para probar y no lo pude dejar. Los PDFs son prolijos, mis clientes quedan impresionados. Ya pasé a PRO y vale cada peso.',
-            },
-            {
-              nombre: 'Jorge P.',
-              rol: 'Constructor — Rosario',
-              texto: 'Me ayudó a no olvidar materiales que siempre se me escapaban. El historial de presupuestos me permite ver cuánto facturé cada mes. Muy completo.',
-            },
-          ].map(({ nombre, rol, texto }) => (
-            <div
-              key={nombre}
-              className="flex flex-col rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] p-6 shadow-sm"
+            'Albañiles y constructores',
+            'Arquitectos independientes',
+            'Electricistas',
+            'Plomeros',
+            'Pintores',
+            'Herreros y carpinteros',
+            'Contratistas generales',
+            'Paisajistas',
+            'Instaladores de pisos',
+            'Techistas',
+          ].map((item) => (
+            <span
+              key={item}
+              className="rounded-full border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-2 text-sm font-medium text-[var(--color-text)]"
             >
-              <p className="flex-1 text-sm leading-relaxed text-[var(--color-text-2)]">"{texto}"</p>
-              <div className="mt-5 border-t border-[var(--color-border)] pt-4">
-                <p className="font-display text-sm font-bold text-[var(--color-text)]">{nombre}</p>
-                <p className="text-xs text-[var(--color-text-2)]">{rol}</p>
-              </div>
-            </div>
+              {item}
+            </span>
           ))}
         </div>
       </section>
@@ -309,6 +303,38 @@ export function Landing({
         <p className="mt-6 text-center text-sm text-[var(--color-text-2)]">
           Sin permanencia obligatoria. Cancelás cuando quieras.
         </p>
+      </section>
+
+      <section className="mx-auto max-w-5xl px-4 py-14">
+        <h2 className="text-center font-display text-3xl font-bold text-[var(--color-text)]">
+          Opiniones de usuarios
+        </h2>
+        <p className="mx-auto mt-3 max-w-xl text-center text-sm text-[var(--color-text-2)]">
+          Sé de los primeros en compartir tu experiencia con Obra Pro.
+        </p>
+        <div className="mt-10 grid gap-6 md:grid-cols-3">
+          {[1, 2, 3].map((i) => (
+            <div
+              key={i}
+              className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-[var(--color-border)] bg-[var(--color-surface)] p-8 text-center"
+            >
+              <div className="flex gap-0.5 text-[var(--color-accent)] opacity-40">
+                {[1,2,3,4,5].map((s) => <span key={s} className="text-xl">★</span>)}
+              </div>
+              <p className="mt-3 text-sm text-[var(--color-text-2)] opacity-60">Tu opinión puede aparecer aquí</p>
+            </div>
+          ))}
+        </div>
+        <div className="mt-8 text-center">
+          <a
+            href="https://wa.me/?text=Hola!%20Quiero%20dejar%20mi%20opini%C3%B3n%20sobre%20Obra%20Pro"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-block rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] px-6 py-3 text-sm font-semibold text-[var(--color-text)] transition hover:bg-[var(--color-surface-2)]"
+          >
+            Compartir mi experiencia por WhatsApp
+          </a>
+        </div>
       </section>
 
       <section className="mx-auto max-w-3xl px-4 py-12">

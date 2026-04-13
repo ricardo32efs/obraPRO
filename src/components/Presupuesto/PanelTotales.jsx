@@ -58,6 +58,7 @@ export function PanelTotales({
         </div>
         <div className="mt-4 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-2)] p-4">
           <label className="text-xs font-medium text-[var(--color-text-2)]">Margen objetivo (%)</label>
+          <p className="text-[10px] leading-snug text-[var(--color-text-2)] opacity-70">Tu ganancia sobre el costo total. Ej: 20% = cobrás 20% más de lo que gastás.</p>
           <div className="mt-2 flex items-center gap-3">
             <input
               type="range"
@@ -70,6 +71,7 @@ export function PanelTotales({
             <span className="w-14 text-right font-mono text-base font-bold">{margenPct}%</span>
           </div>
           <label className="mt-3 block text-xs font-medium text-[var(--color-text-2)]">Contingencia técnica (%)</label>
+          <p className="text-[10px] leading-snug text-[var(--color-text-2)] opacity-70">Reserva para imprevistos: roturas, faltantes o demoras. Recomendado: 10–15%.</p>
           <div className="mt-2 flex items-center gap-3">
             <input
               type="range"

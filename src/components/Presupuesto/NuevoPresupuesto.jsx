@@ -403,6 +403,9 @@ export function NuevoPresupuesto({
         {!isPro && (() => {
         const usados = countPresupuestosCreadosEsteMes(presupuestos)
         const restantes = Math.max(0, 5 - usados)
+        const resetDate = new Date()
+        resetDate.setMonth(resetDate.getMonth() + 1, 1)
+        const resetStr = resetDate.toLocaleDateString('es-AR', { day: 'numeric', month: 'long' })
         return (
           <div className={`mx-4 mb-2 flex items-center justify-between rounded-xl px-4 py-2.5 text-sm font-medium ${
             restantes === 0
@@ -413,13 +416,13 @@ export function NuevoPresupuesto({
           }`}>
             <span>
               {restantes === 0
-                ? 'Alcanzaste el límite del plan gratuito este mes.'
-                : `Plan gratuito: te quedan ${restantes} presupuesto${restantes === 1 ? '' : 's'} este mes.`}
+                ? `Límite del plan gratuito alcanzado. Se resetea el ${resetStr}.`
+                : `Plan gratuito: ${restantes} presupuesto${restantes === 1 ? '' : 's'} restante${restantes === 1 ? '' : 's'} · Se resetea el ${resetStr}.`}
             </span>
             <button
               type="button"
               onClick={onRequestUpgrade}
-              className="ml-3 rounded-lg bg-[var(--color-accent)] px-3 py-1 text-xs font-semibold text-white"
+              className="ml-3 shrink-0 rounded-lg bg-[var(--color-accent)] px-3 py-1 text-xs font-semibold text-white"
             >
               Ir a PRO
             </button>
