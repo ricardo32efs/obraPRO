@@ -94,7 +94,7 @@ export function NuevoPresupuesto({
     descripcion: '',
     fechaInicio: new Date().toISOString().slice(0, 10),
     fechaEntrega: addDaysISO(new Date().toISOString().slice(0, 10), 30),
-    validezDias: 15,
+    validezDias: '',
     materiales: [emptyMaterial()],
     manoObra: [],
     gastosAdicionales: [],
@@ -330,7 +330,7 @@ export function NuevoPresupuesto({
       descripcion: initialDraft.descripcion || '',
       fechaInicio: initialDraft.fechaInicio || f.fechaInicio,
       fechaEntrega: initialDraft.fechaEntrega || f.fechaEntrega,
-      validezDias: initialDraft.validezDias ?? 15,
+      validezDias: initialDraft.validezDias ?? '',
       materiales:
         initialDraft.materiales?.length > 0
           ? initialDraft.materiales.map((m) => ({ ...m, id: m.id || newId() }))
@@ -536,22 +536,22 @@ export function NuevoPresupuesto({
             />
             <p className="text-xs text-[var(--color-text-2)]">{form.descripcion.length}/500</p>
           </div>
-          <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-2)]/50 p-3 space-y-3">
-            <p className="text-xs font-semibold uppercase tracking-wide text-[var(--color-text-2)]">Fechas y validez</p>
+          <div className="rounded-xl border-2 border-[var(--color-accent)]/30 bg-[var(--color-surface)] p-4 space-y-4 shadow-sm">
+            <p className="text-sm font-bold text-[var(--color-text)] border-b border-[var(--color-border)] pb-2">Fechas y validez</p>
             <div>
-              <label className="text-xs font-medium text-[var(--color-text-2)]">📅 Inicio estimado</label>
+              <label className="block text-sm font-medium text-[var(--color-text)]">Inicio estimado</label>
               <input
                 type="date"
-                className="mt-1 w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-2 py-2 text-sm"
+                className="mt-1 w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-2)] px-3 py-2 text-sm font-medium"
                 value={form.fechaInicio}
                 onChange={(e) => setForm((f) => ({ ...f, fechaInicio: e.target.value }))}
               />
             </div>
             <div>
-              <label className="text-xs font-medium text-[var(--color-text-2)]">🏁 Entrega estimada</label>
+              <label className="block text-sm font-medium text-[var(--color-text)]">Entrega estimada</label>
               <input
                 type="date"
-                className="mt-1 w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-2 py-2 text-sm"
+                className="mt-1 w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-2)] px-3 py-2 text-sm font-medium"
                 value={form.fechaEntrega}
                 onChange={(e) => setForm((f) => ({ ...f, fechaEntrega: e.target.value }))}
               />
@@ -560,13 +560,14 @@ export function NuevoPresupuesto({
               )}
             </div>
             <div>
-              <label className="text-xs font-medium text-[var(--color-text-2)]">⏳ Validez del presupuesto (días)</label>
+              <label className="block text-sm font-medium text-[var(--color-text)]">Validez del presupuesto (días)</label>
               <input
                 type="number"
                 min={1}
-                className="mt-1 w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-2 py-2 text-sm"
-                value={String(form.validezDias)}
-                onChange={(e) => setForm((f) => ({ ...f, validezDias: Math.max(1, parseInt(e.target.value, 10) || 1) }))}
+                placeholder="Ej: 15"
+                className="mt-1 w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-2)] px-3 py-2 text-sm font-medium"
+                value={form.validezDias}
+                onChange={(e) => setForm((f) => ({ ...f, validezDias: e.target.value ? Math.max(1, parseInt(e.target.value, 10)) : '' }))}
               />
             </div>
           </div>
@@ -1302,7 +1303,7 @@ export function NuevoPresupuesto({
             descripcion: '',
             fechaInicio: new Date().toISOString().slice(0, 10),
             fechaEntrega: addDaysISO(new Date().toISOString().slice(0, 10), 30),
-            validezDias: 15,
+            validezDias: '',
             materiales: [emptyMaterial()],
             manoObra: [],
             gastosAdicionales: [],
