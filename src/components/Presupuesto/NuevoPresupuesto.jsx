@@ -536,21 +536,22 @@ export function NuevoPresupuesto({
             />
             <p className="text-xs text-[var(--color-text-2)]">{form.descripcion.length}/500</p>
           </div>
-          <div className="flex flex-col gap-2 sm:flex-row">
-            <div className="flex-1">
-              <label className="text-sm">Inicio estimado</label>
+          <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-2)]/50 p-3 space-y-3">
+            <p className="text-xs font-semibold uppercase tracking-wide text-[var(--color-text-2)]">Fechas y validez</p>
+            <div>
+              <label className="text-xs font-medium text-[var(--color-text-2)]">📅 Inicio estimado</label>
               <input
                 type="date"
-                className="mt-1 w-full rounded-lg border border-[var(--color-border)] px-2 py-2 text-sm"
+                className="mt-1 w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-2 py-2 text-sm"
                 value={form.fechaInicio}
                 onChange={(e) => setForm((f) => ({ ...f, fechaInicio: e.target.value }))}
               />
             </div>
-            <div className="flex-1">
-              <label className="text-sm">Entrega estimada</label>
+            <div>
+              <label className="text-xs font-medium text-[var(--color-text-2)]">🏁 Entrega estimada</label>
               <input
                 type="date"
-                className="mt-1 w-full rounded-lg border border-[var(--color-border)] px-2 py-2 text-sm"
+                className="mt-1 w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-2 py-2 text-sm"
                 value={form.fechaEntrega}
                 onChange={(e) => setForm((f) => ({ ...f, fechaEntrega: e.target.value }))}
               />
@@ -558,13 +559,17 @@ export function NuevoPresupuesto({
                 <p className="mt-1 text-xs text-[var(--color-danger)]">{fieldErrors.fechaEntrega}</p>
               )}
             </div>
+            <div>
+              <label className="text-xs font-medium text-[var(--color-text-2)]">⏳ Validez del presupuesto (días)</label>
+              <input
+                type="number"
+                min={1}
+                className="mt-1 w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-2 py-2 text-sm"
+                value={String(form.validezDias)}
+                onChange={(e) => setForm((f) => ({ ...f, validezDias: Math.max(1, parseInt(e.target.value, 10) || 1) }))}
+              />
+            </div>
           </div>
-          <Field
-            label="Validez del presupuesto (días)"
-            type="number"
-            value={String(form.validezDias)}
-            onChange={(v) => setForm((f) => ({ ...f, validezDias: Math.max(1, parseInt(v, 10) || 1) }))}
-          />
 
           {fieldErrors.items && (
             <p className="text-xs text-[var(--color-danger)]">{fieldErrors.items}</p>
