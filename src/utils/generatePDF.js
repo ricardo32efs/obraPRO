@@ -39,12 +39,9 @@ export function buildPresupuestoPdfDoc(data, opts = { isPro: false }) {
   let y = marginT
 
   const addFooter = (pageNumber, pageCount) => {
-    const footer =
-      data.empresa?.pdfFooter ||
-      `Presupuesto generado con Obra Pro — Válido por ${data.validezDias ?? 15} días desde la emisión.`
     doc.setFontSize(8)
     doc.setTextColor(107, 94, 82)
-    doc.text(footer, pageW / 2, doc.internal.pageSize.getHeight() - 10, { align: 'center' })
+    doc.text(`Emisión: ${formatDateDDMMYYYY(data.fechaEmision)}`, marginL, doc.internal.pageSize.getHeight() - 10)
     doc.text(`Pág. ${pageNumber} / ${pageCount}`, pageW - marginR, doc.internal.pageSize.getHeight() - 10, {
       align: 'right',
     })
@@ -60,7 +57,7 @@ export function buildPresupuestoPdfDoc(data, opts = { isPro: false }) {
     }
   }
 
-  doc.setFont('helvetica', 'bold')
+  doc.setFont('times', 'bold')
   doc.setFontSize(16)
   doc.setTextColor(dark.r, dark.g, dark.b)
   doc.text(data.empresa?.nombreEmpresa || 'Obra Pro', isPro && data.empresa?.logoBase64 ? marginL + 26 : marginL, y + 8)
@@ -80,7 +77,7 @@ export function buildPresupuestoPdfDoc(data, opts = { isPro: false }) {
     subY += 4
   })
 
-  doc.setFont('helvetica', 'bold')
+  doc.setFont('times', 'bold')
   doc.setFontSize(14)
   doc.setTextColor(dark.r, dark.g, dark.b)
   doc.text('PRESUPUESTO DE OBRA', pageW - marginR, y + 6, { align: 'right' })
@@ -106,7 +103,7 @@ export function buildPresupuestoPdfDoc(data, opts = { isPro: false }) {
 
   doc.setFillColor(244, 241, 236)
   doc.roundedRect(marginL, y, pageW - marginL - marginR, 32, 2, 2, 'F')
-  doc.setFont('helvetica', 'bold')
+  doc.setFont('times', 'bold')
   doc.setFontSize(9)
   doc.setTextColor(dark.r, dark.g, dark.b)
   const col1X = marginL + 4
@@ -139,15 +136,27 @@ export function buildPresupuestoPdfDoc(data, opts = { isPro: false }) {
     formatCurrency(r.cantidad * r.precioUnitario),
   ])
 
+  doc.setFont('times', 'bold')
+  doc.setFontSize(11)
+  doc.setTextColor(dark.r, dark.g, dark.b)
+  doc.text('MATERIALES', pageW / 2, y, { align: 'center' })
+  y += 3
   autoTable(doc, {
     startY: y,
     head: [['Material', 'Unidad', 'Cantidad', 'P. Unitario', 'Subtotal']],
     body: tableBodyMat,
     theme: 'striped',
     headStyles: { fillColor: [dark.r, dark.g, dark.b], textColor: 255 },
-    styles: { fontSize: 8, cellPadding: 2 },
-    columnStyles: { 2: { halign: 'right' }, 3: { halign: 'right' }, 4: { halign: 'right' } },
-    margin: { left: marginL, right: marginR },
+    styles: { fontSize: 8.4, cellPadding: 2.2, font: 'helvetica' },
+    columnStyles: {
+      0: { cellWidth: 68 },
+      1: { cellWidth: 22, halign: 'center' },
+      2: { cellWidth: 24, halign: 'right' },
+      3: { cellWidth: 30, halign: 'right' },
+      4: { cellWidth: 30, halign: 'right' },
+    },
+    tableWidth: 174,
+    margin: { left: (pageW - 174) / 2, right: (pageW - 174) / 2 },
   })
   y = doc.lastAutoTable.finalY + 6
 
@@ -160,15 +169,28 @@ export function buildPresupuestoPdfDoc(data, opts = { isPro: false }) {
     formatCurrency(r.cantidad * r.precioUnitario),
   ])
 
+  doc.setFont('times', 'bold')
+  doc.setFontSize(11)
+  doc.setTextColor(dark.r, dark.g, dark.b)
+  doc.text('MANO DE OBRA', pageW / 2, y, { align: 'center' })
+  y += 3
   autoTable(doc, {
     startY: y,
     head: [['Descripción', 'Categoría', 'Cant.', 'Unidad', 'P. Unit.', 'Subtotal']],
     body: tableBodyMo,
     theme: 'striped',
     headStyles: { fillColor: [brown.r, brown.g, brown.b], textColor: 255 },
-    styles: { fontSize: 8, cellPadding: 2 },
-    columnStyles: { 2: { halign: 'right' }, 4: { halign: 'right' }, 5: { halign: 'right' } },
-    margin: { left: marginL, right: marginR },
+    styles: { fontSize: 8.4, cellPadding: 2.2, font: 'helvetica' },
+    columnStyles: {
+      0: { cellWidth: 52 },
+      1: { cellWidth: 28 },
+      2: { cellWidth: 20, halign: 'right' },
+      3: { cellWidth: 20, halign: 'center' },
+      4: { cellWidth: 27, halign: 'right' },
+      5: { cellWidth: 27, halign: 'right' },
+    },
+    tableWidth: 174,
+    margin: { left: (pageW - 174) / 2, right: (pageW - 174) / 2 },
   })
   y = doc.lastAutoTable.finalY + 6
 
@@ -197,13 +219,14 @@ export function buildPresupuestoPdfDoc(data, opts = { isPro: false }) {
     lines.push(['IVA 21%', formatCurrency(data.ivaMonto)])
   }
   lines.push(['TOTAL FINAL', formatCurrency(data.totalFinal)])
-  if (data.totalConContingencia != null) {
+  const differsFromTotal = (value) => value != null && Math.abs(Number(value) - Number(data.totalFinal || 0)) > 0.009
+  if (differsFromTotal(data.totalConContingencia)) {
     lines.push([`Total + contingencia (${data.contingenciaPct ?? 0}%)`, formatCurrency(data.totalConContingencia)])
   }
-  if (data.precioSugeridoMargen != null) {
+  if (differsFromTotal(data.precioSugeridoMargen)) {
     lines.push([`Sugerido con margen (${data.margenPct ?? 0}%)`, formatCurrency(data.precioSugeridoMargen)])
   }
-  if (data.precioSugeridoMargenContingencia != null) {
+  if (differsFromTotal(data.precioSugeridoMargenContingencia)) {
     lines.push(['Sugerido margen + contingencia', formatCurrency(data.precioSugeridoMargenContingencia)])
   }
 
@@ -243,8 +266,8 @@ export function buildPresupuestoPdfDoc(data, opts = { isPro: false }) {
     ly += condLines.length * 4 + 8
   }
 
-  if (data.checklistCierre?.length) {
-    doc.setFont('helvetica', 'bold')
+  if (data.includeChecklistCierrePdf && data.checklistCierre?.length) {
+    doc.setFont('times', 'bold')
     doc.setFontSize(9)
     doc.setTextColor(dark.r, dark.g, dark.b)
     doc.text('Checklist de cierre de obra', marginL, ly)

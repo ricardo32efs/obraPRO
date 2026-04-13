@@ -42,14 +42,16 @@ export function DocumentoPresupuesto({ payload, empresa, isPro }) {
     precioSugeridoMargen,
     precioSugeridoMargenContingencia,
     checklistCierre,
+    includeChecklistCierrePdf,
     condiciones,
     validezDias,
   } = payload
 
   const tipo = tipoTrabajo === 'Otro' && tipoTrabajoOtro ? tipoTrabajoOtro : tipoTrabajo
+  const differsFromTotal = (value) => value != null && Math.abs(Number(value) - Number(totalFinal || 0)) > 0.009
 
   return (
-    <div className="mx-auto min-h-[1100px] max-w-[210mm] bg-white p-8 shadow-[0_10px_40px_rgba(0,0,0,0.15)] print:shadow-none">
+    <div className="mx-auto min-h-[1100px] max-w-[210mm] bg-[var(--color-surface)] p-8 shadow-[0_10px_40px_rgba(0,0,0,0.15)] print:shadow-none">
       <header className="flex flex-col gap-4 border-b-4 border-[var(--color-accent)] pb-4 md:flex-row md:justify-between">
         <div className="flex gap-3">
           {isPro && empresa?.logoBase64 && (
@@ -167,13 +169,19 @@ export function DocumentoPresupuesto({ payload, empresa, isPro }) {
       <section className="mt-4 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-2)]/60 p-3">
         <h4 className="font-display text-base font-bold text-[var(--color-text)]">Escenarios comerciales</h4>
         <div className="mt-2 grid gap-1 text-sm md:grid-cols-2">
-          <TotalRow label={`Contingencia (${contingenciaPct ?? 0}%)`} value={formatCurrency(totalConContingencia || 0)} />
-          <TotalRow label={`Margen objetivo (${margenPct ?? 0}%)`} value={formatCurrency(precioSugeridoMargen || 0)} />
-          <TotalRow
-            label="Sugerido margen + contingencia"
-            value={formatCurrency(precioSugeridoMargenContingencia || 0)}
-            bold
-          />
+          {differsFromTotal(totalConContingencia) && (
+            <TotalRow label={`Contingencia (${contingenciaPct ?? 0}%)`} value={formatCurrency(totalConContingencia || 0)} />
+          )}
+          {differsFromTotal(precioSugeridoMargen) && (
+            <TotalRow label={`Margen objetivo (${margenPct ?? 0}%)`} value={formatCurrency(precioSugeridoMargen || 0)} />
+          )}
+          {differsFromTotal(precioSugeridoMargenContingencia) && (
+            <TotalRow
+              label="Sugerido margen + contingencia"
+              value={formatCurrency(precioSugeridoMargenContingencia || 0)}
+              bold
+            />
+          )}
         </div>
       </section>
 
@@ -184,7 +192,7 @@ export function DocumentoPresupuesto({ payload, empresa, isPro }) {
         </div>
       )}
 
-      {(checklistCierre || []).length > 0 && (
+      {includeChecklistCierrePdf && (checklistCierre || []).length > 0 && (
         <section className="mt-4 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-4">
           <h4 className="font-display text-base font-bold text-[var(--color-text)]">Checklist de cierre de obra</h4>
           <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-[var(--color-text)]">
@@ -232,9 +240,9 @@ function TableSection({ title, headClass, columns, rows, foot }) {
         </thead>
         <tbody>
           {rows.map((r, i) => (
-            <tr key={i} className={i % 2 ? 'bg-[var(--color-surface-2)]/60' : 'bg-white'}>
+            <tr key={i} className={i % 2 ? 'bg-[var(--color-surface-2)]/60' : 'bg-[var(--color-surface)]'}>
               {r.map((cell, j) => (
-                <td key={j} className={`px-2 py-2 font-mono ${j > 1 ? 'text-right' : 'text-left'}`}>
+                <td key={j} className={`px-2 py-2 font-sans ${j > 1 ? 'text-right' : 'text-left'}`}>
                   {cell}
                 </td>
               ))}
@@ -245,7 +253,7 @@ function TableSection({ title, headClass, columns, rows, foot }) {
           <tfoot>
             <tr className="bg-[var(--color-surface-2)] font-bold">
               {foot.map((c, i) => (
-                <td key={i} className={`px-2 py-2 font-mono ${i > 0 ? 'text-right' : ''}`}>
+                <td key={i} className={`px-2 py-2 font-sans ${i > 0 ? 'text-right' : ''}`}>
                   {c}
                 </td>
               ))}

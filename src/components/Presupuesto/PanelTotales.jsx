@@ -17,7 +17,7 @@ export function PanelTotales({
   const precioSugeridoConContingencia = totalConContingencia * (1 + Number(margenPct || 0) / 100)
 
   return (
-    <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] p-4 shadow-sm lg:sticky lg:top-4">
+    <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] p-5 shadow-sm lg:sticky lg:top-4">
       <h3 className="font-display text-lg font-bold text-[var(--color-text)]">Resumen</h3>
       <dl className="mt-3 space-y-1 text-sm">
         <Row label="Subtotal materiales" value={formatCurrency(totals.subtotalMateriales)} />
@@ -39,7 +39,7 @@ export function PanelTotales({
             {formatCurrency(totals.totalFinal)}
           </dd>
         </div>
-        <div className="mt-4 rounded-xl bg-[var(--color-surface-2)] p-3">
+        <div className="mt-4 rounded-xl bg-[var(--color-surface-2)] p-4">
           <label className="text-xs font-medium text-[var(--color-text-2)]">Anticipo requerido</label>
           <div className="mt-2 flex items-center gap-3">
             <input
@@ -50,13 +50,13 @@ export function PanelTotales({
               onChange={(e) => onAnticipoChange(Number(e.target.value))}
               className="h-2 flex-1 accent-[var(--color-accent)]"
             />
-            <span className="font-mono text-sm font-semibold w-12 text-right">{anticipoPct}%</span>
+            <span className="font-mono text-base font-bold w-14 text-right">{anticipoPct}%</span>
           </div>
-          <p className="mt-2 text-right font-mono text-sm text-[var(--color-text)]">
+          <p className="mt-2 text-right font-mono text-base font-semibold text-[var(--color-text)]">
             Monto: {formatCurrency(totals.anticipoMonto)}
           </p>
         </div>
-        <div className="mt-4 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-2)] p-3">
+        <div className="mt-4 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-2)] p-4">
           <label className="text-xs font-medium text-[var(--color-text-2)]">Margen objetivo (%)</label>
           <div className="mt-2 flex items-center gap-3">
             <input
@@ -67,7 +67,7 @@ export function PanelTotales({
               onChange={(e) => onMargenChange(Number(e.target.value))}
               className="h-2 flex-1 accent-[var(--color-accent)]"
             />
-            <span className="w-12 text-right font-mono text-sm font-semibold">{margenPct}%</span>
+            <span className="w-14 text-right font-mono text-base font-bold">{margenPct}%</span>
           </div>
           <label className="mt-3 block text-xs font-medium text-[var(--color-text-2)]">Contingencia técnica (%)</label>
           <div className="mt-2 flex items-center gap-3">
@@ -79,7 +79,7 @@ export function PanelTotales({
               onChange={(e) => onContingenciaChange(Number(e.target.value))}
               className="h-2 flex-1 accent-[var(--color-warning)]"
             />
-            <span className="w-12 text-right font-mono text-sm font-semibold">{contingenciaPct}%</span>
+            <span className="w-14 text-right font-mono text-base font-bold">{contingenciaPct}%</span>
           </div>
           <div className="mt-3 space-y-1 text-xs">
             <Row label="Costo base (total actual)" value={formatCurrency(totals.totalFinal)} />

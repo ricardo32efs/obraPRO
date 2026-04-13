@@ -107,6 +107,7 @@ export function NuevoPresupuesto({
     anticipoPct: 30,
     margenPct: 20,
     contingenciaPct: 10,
+    includeChecklistCierrePdf: false,
     checklistPersonalizado: '',
     condiciones: empresa?.condicionesDefault || '',
     estado: 'borrador',
@@ -142,6 +143,12 @@ export function NuevoPresupuesto({
     [form.tipoTrabajo, form.materiales],
   )
   const auditoria = useMemo(() => runAuditoriaExtrema(form, totals), [form, totals])
+  const shouldShowAuditoria = useMemo(() => {
+    const hasCliente = Boolean(form.clienteNombre.trim() && form.direccionObra.trim())
+    const hasMaterial = form.materiales.some((m) => String(m.nombre || '').trim() && Number(m.cantidad) > 0)
+    const hasManoObra = form.manoObra.some((m) => String(m.descripcion || '').trim() && Number(m.cantidad) > 0)
+    return hasCliente && (hasMaterial || hasManoObra)
+  }, [form.clienteNombre, form.direccionObra, form.materiales, form.manoObra])
   const checklistCierre = useMemo(() => {
     const base = getChecklistCierrePorTipo(form.tipoTrabajo)
     const extra = String(form.checklistPersonalizado || '')
@@ -187,6 +194,7 @@ export function NuevoPresupuesto({
       anticipoMonto: totals.anticipoMonto,
       margenPct: form.margenPct,
       contingenciaPct: form.contingenciaPct,
+      includeChecklistCierrePdf: form.includeChecklistCierrePdf,
       totalConContingencia,
       precioSugeridoMargen,
       precioSugeridoMargenContingencia,
@@ -333,6 +341,7 @@ export function NuevoPresupuesto({
       anticipoPct: initialDraft.anticipoPct ?? 30,
       margenPct: initialDraft.margenPct ?? 20,
       contingenciaPct: initialDraft.contingenciaPct ?? 10,
+      includeChecklistCierrePdf: initialDraft.includeChecklistCierrePdf ?? false,
       checklistPersonalizado: '',
       condiciones: initialDraft.condiciones || empresa?.condicionesDefault || '',
       estado: initialDraft.estado || 'borrador',
@@ -508,7 +517,7 @@ export function NuevoPresupuesto({
         </div>
       </div>
 
-      <div className="grid gap-6 px-4 lg:grid-cols-[minmax(0,30%)_1fr_minmax(240px,22%)]">
+      <div className="grid gap-6 px-4 lg:grid-cols-[minmax(0,26%)_minmax(0,1.4fr)_minmax(280px,24%)]">
         {/* Panel izquierdo: cliente */}
         <motion.div
           layout
@@ -650,37 +659,6 @@ export function NuevoPresupuesto({
         {/* Centro: tablas */}
         <div className="min-w-0 space-y-6">
           <AsistenteIAResultado data={iaResult} onDismiss={() => setIaResult(null)} />
-          {(auditoria.criticas.length > 0 || auditoria.advertencias.length > 0 || auditoria.recomendaciones.length > 0) && (
-            <section className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] p-4 shadow-sm">
-              <h2 className="font-display text-lg font-bold">Auditoría extrema</h2>
-              {auditoria.criticas.length > 0 && (
-                <div className="mt-3 space-y-2">
-                  {auditoria.criticas.map((t, i) => (
-                    <div key={`c-${i}`} className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-900">
-                      Crítico: {t}
-                    </div>
-                  ))}
-                </div>
-              )}
-              {auditoria.advertencias.length > 0 && (
-                <div className="mt-3 space-y-2">
-                  {auditoria.advertencias.map((t, i) => (
-                    <div key={`a-${i}`} className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-950">
-                      Advertencia: {t}
-                    </div>
-                  ))}
-                </div>
-              )}
-              {auditoria.recomendaciones.length > 0 && (
-                <ul className="mt-3 list-disc space-y-1 pl-5 text-sm text-[var(--color-text-2)]">
-                  {auditoria.recomendaciones.map((t, i) => (
-                    <li key={`r-${i}`}>{t}</li>
-                  ))}
-                </ul>
-              )}
-            </section>
-          )}
-
           <section className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] p-4 shadow-sm">
             <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
               <h2 className="font-display text-lg font-bold">Materiales</h2>
@@ -1169,6 +1147,38 @@ export function NuevoPresupuesto({
             )}
           </section>
 
+          {shouldShowAuditoria &&
+            (auditoria.criticas.length > 0 || auditoria.advertencias.length > 0 || auditoria.recomendaciones.length > 0) && (
+              <section className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] p-4 shadow-sm">
+                <h2 className="font-display text-lg font-bold">Auditoría extrema</h2>
+                {auditoria.criticas.length > 0 && (
+                  <div className="mt-3 space-y-2">
+                    {auditoria.criticas.map((t, i) => (
+                      <div key={`c-${i}`} className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-900">
+                        Crítico: {t}
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {auditoria.advertencias.length > 0 && (
+                  <div className="mt-3 space-y-2">
+                    {auditoria.advertencias.map((t, i) => (
+                      <div key={`a-${i}`} className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-950">
+                        Advertencia: {t}
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {auditoria.recomendaciones.length > 0 && (
+                  <ul className="mt-3 list-disc space-y-1 pl-5 text-sm text-[var(--color-text-2)]">
+                    {auditoria.recomendaciones.map((t, i) => (
+                      <li key={`r-${i}`}>{t}</li>
+                    ))}
+                  </ul>
+                )}
+              </section>
+            )}
+
           <section className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] p-4 shadow-sm">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <label className="text-sm font-medium">Condiciones del presupuesto</label>
@@ -1192,6 +1202,14 @@ export function NuevoPresupuesto({
             />
             <label className="mt-4 block text-sm font-medium">
               Checklist de cierre (personalizado, una línea por ítem)
+            </label>
+            <label className="mt-2 flex items-center gap-2 text-sm text-[var(--color-text)]">
+              <input
+                type="checkbox"
+                checked={form.includeChecklistCierrePdf}
+                onChange={(e) => setForm((f) => ({ ...f, includeChecklistCierrePdf: e.target.checked }))}
+              />
+              Incluir checklist de cierre en el PDF
             </label>
             <textarea
               className="mt-2 min-h-[84px] w-full rounded-lg border border-[var(--color-border)] p-2 text-sm"
@@ -1238,14 +1256,14 @@ export function NuevoPresupuesto({
           <button
             type="button"
             onClick={handleSaveDraft}
-            className="flex-1 rounded-xl border border-[var(--color-success)] px-3 py-3 text-sm font-semibold text-[var(--color-success)] min-w-[140px]"
+            className="flex-1 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-3 text-sm font-semibold text-[var(--color-text)] min-w-[140px]"
           >
             Guardar borrador
           </button>
           <button
             type="button"
             onClick={() => setConfirmDiscard(true)}
-            className="flex-1 rounded-xl border border-[var(--color-danger)] px-3 py-3 text-sm font-semibold text-[var(--color-danger)] min-w-[120px]"
+            className="flex-1 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-3 text-sm font-semibold text-[var(--color-text)] min-w-[120px]"
           >
             Descartar
           </button>
@@ -1350,6 +1368,7 @@ export function NuevoPresupuesto({
             anticipoPct: 30,
             margenPct: 20,
             contingenciaPct: 10,
+            includeChecklistCierrePdf: false,
             checklistPersonalizado: '',
             condiciones: empresa?.condicionesDefault || '',
             estado: 'borrador',

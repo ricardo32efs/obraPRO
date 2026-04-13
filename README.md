@@ -23,6 +23,8 @@ Ver **`ESTRATEGIA_RECOMENDADA.md`**: se recomienda **GitHub + Vercel o Netlify**
 
 **Guía paso a paso (imposible saltearse orden):** abrí **`PASOS_DESPLIEGUE_INTERNET.md`** en esta misma carpeta.
 
+**Para revisar el producto con otro asistente (ej. Claude):** abrí **`AVANCE_Y_CONTEXTO_PARA_REVISION.md`**, completá la URL de Vercel arriba del archivo y adjuntalo al chat junto con el link en vivo.
+
 ## Backup del codigo en un archivo
 
 Doble clic en **`EXPORTAR_CODIGO_ZIP.bat`**: crea en el **Escritorio** un `.zip` con todo el proyecto **sin** `node_modules` ni `dist` (se regeneran con `npm install` y `npm run build`).

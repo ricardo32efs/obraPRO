@@ -25,7 +25,7 @@ function StepCard({ n, title, desc }) {
       transition={{ duration: 0.35, delay: n * 0.15 }}
       className="obrapro-card rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] p-6"
     >
-      <div className="font-display text-4xl font-black text-[var(--color-accent)]/30">{n + 1}</div>
+      <div className="font-display text-4xl font-black text-[var(--color-accent)]/70">{n + 1}</div>
       <h3 className="mt-3 font-display text-lg font-bold text-[var(--color-text)]">{title}</h3>
       <p className="mt-2 text-sm leading-relaxed text-[var(--color-text-2)]">{desc}</p>
     </motion.div>
@@ -54,7 +54,7 @@ function FaqItem({ q, a }) {
 function PdfMockup() {
   return (
     <div
-      className="relative mx-auto w-[min(100%,320px)] -rotate-3 rounded-sm bg-white p-5 shadow-[0_20px_50px_rgba(0,0,0,0.18)] ring-1 ring-black/5"
+      className="relative mx-auto w-[min(100%,420px)] -rotate-2 rounded-sm bg-[var(--color-surface)] p-6 shadow-[0_28px_70px_rgba(0,0,0,0.28)] ring-1 ring-black/10"
       aria-hidden
     >
       <div className="h-2 w-16 rounded bg-[var(--color-primary)]" />
@@ -124,17 +124,13 @@ export function Landing({
             <button
               type="button"
               onClick={onVerEjemploPdf}
-              className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] px-6 py-3 text-sm font-semibold text-[var(--color-text)] transition hover:bg-[var(--color-surface-2)]"
+              className="rounded-xl border-2 border-[var(--color-accent)]/70 bg-[var(--color-surface)] px-6 py-3 text-sm font-semibold text-[var(--color-text)] transition hover:bg-[var(--color-surface-2)]"
             >
               Ver ejemplo de presupuesto
             </button>
           </div>
-          <p className="mt-6 text-xs text-[var(--color-text-2)]">
-            Gratis para empezar · Sin tarjeta para el plan gratis · Listo en minutos
-          </p>
-          <p className="mt-2 text-xs font-medium text-[var(--color-text-2)]">
-            Sin permanencia · Cancelás cuando quieras · El pago lo procesa Mercado Pago u otro checkout seguro (cuando
-            actives el enlace)
+          <p className="mt-6 text-xs font-medium text-[var(--color-text-2)]">
+            Gratis para empezar · Sin tarjeta · Sin permanencia · Pagos procesados por Mercado Pago
           </p>
           {!hasEmpresaConfigured && (
             <p className="mt-2 text-xs font-medium text-[var(--color-warning)]">
@@ -176,18 +172,24 @@ export function Landing({
         </h2>
         <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {[
-            ['Biblioteca de materiales', 'Más de 80 ítems con autocompletado y unidades habituales.'],
-            ['Asistente IA', 'Sugerencias realistas de materiales, cantidades y mano de obra.'],
-            ['PDF profesional', 'Encabezado con tu empresa, tablas y bloque de firmas.'],
-            ['Dashboard de negocio', 'Métricas de facturación y tasa de aprobación (PRO).'],
-            ['Envío por email', 'Contacto directo con plantilla editable (PRO + EmailJS).'],
-            ['Estados y seguimiento', 'Borrador, enviado, aprobado, rechazado o vencido.'],
-          ].map(([t, d]) => (
+            ['Biblioteca de materiales', 'Más de 80 ítems con autocompletado y unidades habituales.', 'MAT'],
+            ['Asistente IA', 'Sugerencias realistas de materiales, cantidades y mano de obra.', 'IA'],
+            ['PDF profesional', 'Encabezado con tu empresa, tablas y bloque de firmas.', 'PDF'],
+            ['Dashboard de negocio', 'Métricas de facturación y tasa de aprobación (PRO).', 'KPI'],
+            ['Envío por email', 'Contacto directo con plantilla editable (PRO + EmailJS).', 'MAIL'],
+            ['Estados y seguimiento', 'Borrador, enviado, aprobado, rechazado o vencido.', 'OK'],
+          ].map(([t, d, icon]) => (
             <div
               key={t}
               className="obrapro-card rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] p-5"
             >
-              <h3 className="mt-1 font-display text-lg font-bold text-[var(--color-text)]">{t}</h3>
+              <div
+                className="inline-flex w-fit rounded-md border border-[var(--color-border)] bg-[var(--color-surface-2)] px-2 py-1 font-mono text-[11px] font-semibold text-[var(--color-text-2)]"
+                aria-hidden
+              >
+                {icon}
+              </div>
+              <h3 className="mt-2 font-display text-lg font-bold text-[var(--color-text)]">{t}</h3>
               <p className="mt-2 text-sm text-[var(--color-text-2)]">{d}</p>
             </div>
           ))}
@@ -261,22 +263,11 @@ export function Landing({
             <button
               type="button"
               onClick={onCrearPresupuesto}
-              className="mt-6 w-full rounded-xl bg-[var(--color-accent)] py-3 text-sm font-semibold text-white"
+              className="mt-6 mx-auto block w-[80%] rounded-xl bg-[var(--color-accent)] py-3 text-sm font-semibold text-white"
             >
               Entrar a la app y elegir PRO
             </button>
           </div>
-        </div>
-        <div className="mx-auto mt-8 max-w-2xl rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface-2)] p-5 text-sm text-[var(--color-text-2)]">
-          <p className="font-display text-base font-bold text-[var(--color-text)]">¿Qué modelo conviene?</p>
-          <p className="mt-2">
-            <strong className="text-[var(--color-text)]">Mensual o anual</strong> encajan bien con una herramienta que
-            usás seguido: el costo se compara con un solo presupuesto ganado.{' '}
-            <strong className="text-[var(--color-text)]">Semanal</strong> suele generar desconfianza (muchas cobranzas) y
-            más trabajo administrativo; no lo recomendamos. Un{' '}
-            <strong className="text-[var(--color-text)]">pago único “de por vida”</strong> puede servir como oferta de
-            lanzamiento acotada; para mantener mejoras y soporte, lo recurrente es más sostenible.
-          </p>
         </div>
         <p className="mt-6 text-center text-sm text-[var(--color-text-2)]">
           Sin permanencia obligatoria. Cancelás cuando quieras.
