@@ -1326,18 +1326,6 @@ export function NuevoPresupuesto({
         onPick={applyTemplate}
       />
 
-      {iaLoading && (
-        <div className="fixed inset-0 z-[170] flex items-center justify-center bg-black/40 backdrop-blur-sm">
-          <div className="rounded-2xl bg-[var(--color-surface)] px-8 py-6 text-center shadow-xl">
-            <div className="mx-auto h-10 w-10 animate-spin rounded-full border-2 border-[var(--color-accent)] border-t-transparent" />
-            <p className="mt-4 font-medium text-[var(--color-text)]">
-              {['Analizando la obra...', 'Calculando materiales...', 'Estimando mano de obra...', 'Revisando los cálculos...'][
-                iaOverlayText
-              ]}
-            </p>
-          </div>
-        </div>
-      )}
     </div>
   )
 }

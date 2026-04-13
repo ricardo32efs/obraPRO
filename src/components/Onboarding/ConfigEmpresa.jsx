@@ -155,16 +155,6 @@ export function ConfigEmpresa({ initial, embedded, onSave, onCancel }) {
           />
         </div>
 
-        <div className="rounded-xl border border-dashed border-[var(--color-accent)]/40 bg-[var(--color-surface-2)]/50 p-4">
-          <p className="text-sm font-semibold text-[var(--color-text)]">EmailJS — envío de presupuestos por correo</p>
-          <p className="mt-1 text-xs leading-relaxed text-[var(--color-text-2)]">
-            Creá el archivo <code className="rounded bg-[var(--color-surface)] px-1">.env</code> en la raíz del proyecto
-            (copiá desde <code className="rounded bg-[var(--color-surface)] px-1">.env.example</code>) y completá las
-            variables <strong>VITE_EMAILJS_PUBLIC_KEY</strong>, <strong>VITE_EMAILJS_SERVICE_ID</strong> y{' '}
-            <strong>VITE_EMAILJS_TEMPLATE_ID</strong>. Reiniciá el servidor de desarrollo después de guardar.
-          </p>
-        </div>
-
         <div className="flex flex-wrap gap-2">
           <button
             type="submit"
