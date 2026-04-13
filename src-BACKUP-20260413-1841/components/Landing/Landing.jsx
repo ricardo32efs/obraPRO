@@ -103,8 +103,7 @@ export function Landing({
 
       <section className="mx-auto grid max-w-6xl gap-10 px-4 pb-16 pt-6 lg:grid-cols-2 lg:items-center lg:gap-16">
         <div>
-          <div className="inline-flex items-center gap-2 rounded-full border border-[var(--color-accent)]/30 bg-[var(--color-accent)]/10 px-3 py-1.5 text-xs font-semibold text-[var(--color-accent)]">
-            <span className="inline-block h-2 w-2 rounded-full bg-[var(--color-success)] animate-pulse"></span>
+          <div className="inline-flex items-center gap-2 rounded-full border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-1 text-xs font-medium text-[var(--color-text-2)]">
             Diseñado para obras, refacciones y contratistas en Argentina
           </div>
           <h1 className="mt-5 font-display text-[2.6rem] font-black leading-[1.05] text-[var(--color-text)] lg:text-[4.25rem]">
@@ -112,7 +111,7 @@ export function Landing({
           </h1>
           <p className="mt-5 max-w-xl text-lg text-[var(--color-text-2)]">
             Calculá materiales, mano de obra y costos en minutos. Enviá un presupuesto PDF profesional desde tu
-            celular o computadora. Con plantillas inteligentes por tipo de obra para no olvidar nada.
+            celular o computadora. Con sugerencias opcionales para no olvidar nada.
           </p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <button
@@ -174,7 +173,7 @@ export function Landing({
         <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {[
             ['Biblioteca de materiales', 'Más de 80 ítems con autocompletado y unidades habituales.', 'MAT'],
-            ['Plantillas inteligentes', 'Carga rápida de materiales y mano de obra según el tipo de obra.', 'PLT'],
+            ['Asistente opcional', 'Sugerencias de materiales y mano de obra cuando activás IA.', 'IA'],
             ['PDF profesional', 'Encabezado con tu empresa, tablas y bloque de firmas.', 'PDF'],
             ['Dashboard de negocio', 'Métricas de facturación y tasa de aprobación (PRO).', 'KPI'],
             ['Envío por email', 'Contacto directo con plantilla editable (PRO + EmailJS).', 'MAIL'],
@@ -285,6 +284,10 @@ export function Landing({
           <FaqItem
             q="¿Puedo usar la app en la obra con el celular?"
             a="Sí. El diseño es mobile-first: tablas con scroll o vista de cards según el tamaño de pantalla."
+          />
+          <FaqItem
+            q="¿Cómo funciona el asistente con IA?"
+            a="Es opcional. Si configurás API de Anthropic, sugiere materiales, cantidades y precios orientativos. Siempre podés editar todo o trabajar sin IA."
           />
           <FaqItem
             q="¿Puedo poner el logo en el PDF?"

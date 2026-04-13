@@ -22,12 +22,15 @@ import {
   getChecklistCierrePorTipo,
   runAuditoriaExtrema,
 } from '../../utils/auditoriaExtrema'
+import { useAnthropicAPI } from '../../hooks/useAnthropicAPI'
 import { AutocompleteMaterial } from './AutocompleteMaterial'
 import { PanelTotales } from './PanelTotales'
+import { AsistenteIAResultado } from './AsistenteIA'
 import { PreviewModal } from '../Preview/PreviewModal'
 import { generatePresupuestoPDF } from '../../utils/generatePDF'
 import { exportPresupuestoExcel } from '../../utils/exportExcel'
 import { loadNumeroCounter, formatNumeroObra, saveNumeroCounter } from '../../hooks/useNumeroCorrelativo'
+import { incrementIaUses } from '../../utils/usage'
 import { ConfirmDialog } from '../UI/ConfirmDialog'
 import { EmailSendModal } from '../UI/EmailSendModal'
 import { ModalPlantillas } from '../Plantillas/ModalPlantillas'
@@ -82,6 +85,7 @@ export function NuevoPresupuesto({
   onClearInitial,
 }) {
   const { push: toast } = useToast()
+  const { runCompletion, loading: iaLoading, error: iaErr, setError: setIaErr } = useAnthropicAPI()
 
   const [numeroManual, setNumeroManual] = useState('')
   const [form, setForm] = useState(() => ({
@@ -117,6 +121,8 @@ export function NuevoPresupuesto({
   const [emailSendOpen, setEmailSendOpen] = useState(false)
   const [emailModalInstance, setEmailModalInstance] = useState(0)
   const [confirmDiscard, setConfirmDiscard] = useState(false)
+  const [iaResult, setIaResult] = useState(null)
+  const [iaOverlayText, setIaOverlayText] = useState(0)
   const [plantillasOpen, setPlantillasOpen] = useState(false)
   const [dragMatIdx, setDragMatIdx] = useState(null)
 
@@ -353,6 +359,86 @@ export function NuevoPresupuesto({
     // eslint-disable-next-line react-hooks/exhaustive-deps -- entradas enlazadas a initialDraft.id únicamente
   }, [initialDraft?.id])
 
+  const runIA = async (fromButton) => {
+    if (!form.descripcion?.trim()) {
+      toast('Escribí una descripción de la obra', 'warning')
+      return
+    }
+    if (!isPro && fromButton === 'full') {
+      onRequestUpgrade?.()
+      return
+    }
+    const apiKey = empresa?.anthropicApiKey
+    const demo = empresa?.iaDemoMode || !apiKey
+    if (!isPro && fromButton === 'suggest') {
+      onRequestUpgrade?.()
+      return
+    }
+    const texts = ['Analizando la obra...', 'Calculando materiales...', 'Estimando mano de obra...', 'Revisando los cálculos...']
+    let step = 0
+    const tick = setInterval(() => {
+      step = (step + 1) % texts.length
+      setIaOverlayText(step)
+    }, 1400)
+    setIaErr(null)
+    try {
+      const json = await runCompletion({
+        apiKey,
+        descripcionObra: form.descripcion,
+        tipoTrabajo: form.tipoTrabajo,
+        ciudad: empresa?.ciudad,
+        demoMode: demo,
+      })
+      setIaResult(json)
+      if (json.tipo_trabajo) {
+        if (TIPOS_TRABAJO.includes(json.tipo_trabajo)) {
+          setForm((f) => ({ ...f, tipoTrabajo: json.tipo_trabajo }))
+        } else {
+          setForm((f) => ({
+            ...f,
+            tipoTrabajo: 'Otro',
+            tipoTrabajoOtro: json.tipo_trabajo,
+          }))
+        }
+      }
+      const mats = (json.materiales || []).map((m) => ({
+        id: newId(),
+        nombre: m.nombre,
+        unidad: UNIDADES_MATERIAL.includes(m.unidad) ? m.unidad : 'unidad',
+        cantidad: Math.max(0.01, Number(m.cantidad) || 0),
+        precioUnitario: Math.max(0, Number(m.precio_unitario_estimado) || 0),
+      }))
+      const mos = (json.mano_de_obra || []).map((m) => ({
+        id: newId(),
+        descripcion: m.descripcion,
+        categoria: CATEGORIAS_MANO.includes(m.categoria) ? m.categoria : 'Oficial',
+        cantidad: Math.max(0.01, Number(m.cantidad) || 0),
+        unidad: UNIDADES_MANO.includes(m.unidad) ? m.unidad : 'día',
+        precioUnitario: Math.max(0, Number(m.precio_unitario_estimado) || 0),
+      }))
+      const gas = (json.gastos_adicionales || []).map((g) => ({
+        id: newId(),
+        concepto: g.concepto,
+        monto: Math.max(0, Number(g.monto_estimado) || 0),
+        esPorcentaje: false,
+        porcentaje: 0,
+      }))
+      setForm((f) => ({
+        ...f,
+        materiales: mats.length ? mats : f.materiales,
+        manoObra: mos,
+        gastosAdicionales: gas.length ? gas : f.gastosAdicionales,
+        gastosOpen: gas.length > 0,
+      }))
+      incrementIaUses()
+      toast(json._demo ? 'Cargado ejemplo de IA' : 'Presupuesto sugerido por IA', 'success')
+    } catch {
+      toast(iaErr || 'No se pudo usar la IA. Probá modo demo en configuración.', 'error')
+    } finally {
+      clearInterval(tick)
+    }
+  }
+
   const reorderMateriales = (from, to) => {
     if (from == null || to == null || from === to) return
     setForm((f) => {
@@ -566,6 +652,14 @@ export function NuevoPresupuesto({
             onChange={(v) => setForm((f) => ({ ...f, validezDias: Math.max(1, parseInt(v, 10) || 1) }))}
           />
 
+          <button
+            type="button"
+            disabled={!form.descripcion.trim() || iaLoading}
+            onClick={() => runIA('full')}
+            className="w-full rounded-xl bg-[var(--color-accent)] py-2.5 text-sm font-semibold text-white disabled:opacity-50"
+          >
+            Completar con IA
+          </button>
           {fieldErrors.items && (
             <p className="text-xs text-[var(--color-danger)]">{fieldErrors.items}</p>
           )}
@@ -573,6 +667,7 @@ export function NuevoPresupuesto({
 
         {/* Centro: tablas */}
         <div className="min-w-0 space-y-6">
+          <AsistenteIAResultado data={iaResult} onDismiss={() => setIaResult(null)} />
           <section className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] p-4 shadow-sm">
             <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
               <h2 className="font-display text-lg font-bold">Materiales</h2>
@@ -583,6 +678,14 @@ export function NuevoPresupuesto({
                   className="rounded-lg bg-[var(--color-primary)] px-3 py-1.5 text-xs font-semibold text-white"
                 >
                   + Agregar material
+                </button>
+                <button
+                  type="button"
+                  onClick={() => runIA('suggest')}
+                  disabled={!form.descripcion.trim() || iaLoading}
+                  className="rounded-lg border border-[var(--color-border)] px-3 py-1.5 text-xs font-semibold disabled:opacity-50"
+                >
+                  Sugerir con IA
                 </button>
               </div>
             </div>

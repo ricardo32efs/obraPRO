@@ -3,10 +3,10 @@
  * Montos orientativos: en producción configurás el cobro real en Mercado Pago / Stripe.
  */
 export const PRICING_COPY = {
-  monthlyLine: '$8 USD/mes',
-  annualLine: '$69 USD/año',
-  annualSavings: 'Ahorrás $27 USD frente a 12 meses al precio mensual',
-  shortDisclaimer: 'Precios en dólares estadounidenses. Pagos procesados internacionalmente con tarjeta de crédito/débito.',
+  monthlyLine: '$8/mes',
+  annualLine: '$69/año',
+  annualSavings: 'Ahorrás $27 frente a 12 meses al precio mensual',
+  shortDisclaimer: 'Montos orientativos; en Argentina suele cobrarse en pesos vía Mercado Pago u otro checkout.',
   /** Texto del botón principal cuando hay URL de checkout */
   checkoutCta: 'Ir al pago seguro (suscripción PRO)',
 }

@@ -17,6 +17,8 @@ const defaultEmpresa = () => ({
   pdfFooter: '',
   condicionesDefault:
     'El presente presupuesto tiene validez desde la fecha de emisión. No incluye imprevistos ni trabajos no detallados. Los precios pueden variar según el mercado de materiales.',
+  anthropicApiKey: '',
+  iaDemoMode: true,
 })
 
 /**
@@ -24,6 +26,7 @@ const defaultEmpresa = () => ({
  */
 export function ConfigEmpresa({ initial, embedded, onSave, onCancel }) {
   const [form, setForm] = useState(() => ({ ...defaultEmpresa(), ...initial }))
+  const [showKey, setShowKey] = useState(false)
   const [errors, setErrors] = useState({})
 
   const title = embedded ? 'Configuración de la empresa' : 'Bienvenido a Obra Pro'
@@ -93,7 +96,7 @@ export function ConfigEmpresa({ initial, embedded, onSave, onCancel }) {
             onChange={(v) => setForm((f) => ({ ...f, direccion: v }))}
           />
           <Field
-            label="Ciudad/Localidad"
+            label="Ciudad"
             value={form.ciudad}
             onChange={(v) => setForm((f) => ({ ...f, ciudad: v }))}
           />
@@ -153,6 +156,55 @@ export function ConfigEmpresa({ initial, embedded, onSave, onCancel }) {
             value={form.condicionesDefault}
             onChange={(e) => setForm((f) => ({ ...f, condicionesDefault: e.target.value }))}
           />
+        </div>
+
+        <div className="rounded-xl border border-[var(--color-border)] p-4">
+          <p className="text-sm font-semibold text-[var(--color-text)]">Inteligencia artificial</p>
+          <p className="mt-1 text-xs leading-relaxed text-[var(--color-text-2)]">
+            Tu clave se guarda solo en este dispositivo. Con{' '}
+            <code className="rounded bg-[var(--color-surface)] px-1">npm run dev</code> Obra Pro usa un proxy local
+            (Vite) hacia Anthropic para evitar CORS — la clave sale de tu navegador hacia Anthropic sin pasar por
+            nuestro código en servidor. Para <code className="rounded bg-[var(--color-surface)] px-1">npm run preview</code>,
+            agregá <code className="rounded bg-[var(--color-surface)] px-1">VITE_ANTHROPIC_USE_PROXY=true</code> en{' '}
+            <code className="rounded bg-[var(--color-surface)] px-1">.env</code>. En un hosting estático sin proxy, usá
+            modo demo o definí <code className="rounded bg-[var(--color-surface)] px-1">VITE_ANTHROPIC_BASE_URL</code>{' '}
+            apuntando a tu backend.
+          </p>
+          <a
+            href="https://console.anthropic.com/"
+            target="_blank"
+            rel="noreferrer"
+            className="mt-2 inline-block text-xs font-semibold text-[var(--color-accent)] underline"
+          >
+            Obtener API Key
+          </a>
+          <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:items-center">
+            <div className="relative flex-1">
+              <input
+                type={showKey ? 'text' : 'password'}
+                className="w-full rounded-lg border border-[var(--color-border)] px-3 py-2 pr-24 text-sm"
+                placeholder="sk-ant-..."
+                value={form.anthropicApiKey}
+                onChange={(e) => setForm((f) => ({ ...f, anthropicApiKey: e.target.value }))}
+                autoComplete="off"
+              />
+              <button
+                type="button"
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-[var(--color-accent)]"
+                onClick={() => setShowKey((s) => !s)}
+              >
+                {showKey ? 'Ocultar' : 'Mostrar'}
+              </button>
+            </div>
+            <label className="flex items-center gap-2 text-sm">
+              <input
+                type="checkbox"
+                checked={form.iaDemoMode}
+                onChange={(e) => setForm((f) => ({ ...f, iaDemoMode: e.target.checked }))}
+              />
+              Modo demo (sin API key)
+            </label>
+          </div>
         </div>
 
         <div className="rounded-xl border border-dashed border-[var(--color-accent)]/40 bg-[var(--color-surface-2)]/50 p-4">
