@@ -10,7 +10,7 @@ function formatDate(iso) {
 /**
  * Vista tipo documento A4 para preview en pantalla
  */
-export function DocumentoPresupuesto({ payload, empresa, isPro }) {
+export function DocumentoPresupuesto({ payload, empresa }) {
   const {
     numero,
     fechaEmision,
@@ -41,6 +41,8 @@ export function DocumentoPresupuesto({ payload, empresa, isPro }) {
     totalConContingencia,
     precioSugeridoMargen,
     precioSugeridoMargenContingencia,
+    includeEscenariosPdf,
+    includeAnticipoPdf,
     checklistCierre,
     includeChecklistCierrePdf,
     condiciones,
@@ -54,18 +56,18 @@ export function DocumentoPresupuesto({ payload, empresa, isPro }) {
     <div className="mx-auto min-h-[1100px] max-w-[210mm] bg-[var(--color-surface)] p-8 shadow-[0_10px_40px_rgba(0,0,0,0.15)] print:shadow-none">
       <header className="flex flex-col gap-4 border-b-4 border-[var(--color-accent)] pb-4 md:flex-row md:justify-between">
         <div className="flex gap-3">
-          {isPro && empresa?.logoBase64 && (
+          {empresa?.logoBase64 && (
             <img src={empresa.logoBase64} alt="" className="h-14 w-14 rounded-full object-cover" />
           )}
           <div>
             <div className="font-display text-2xl font-bold text-[var(--color-text)]">
               {empresa?.nombreEmpresa || 'Obra Pro'}
             </div>
-            <div className="mt-1 text-xs text-[var(--color-text-2)]">
-              {empresa?.cuit && <div>CUIT: {empresa.cuit}</div>}
-              {empresa?.telefono && <div>Tel: {empresa.telefono}</div>}
-              {empresa?.email && <div>{empresa.email}</div>}
-              {empresa?.direccion && <div>{empresa.direccion}</div>}
+          <div className="mt-1 text-xs text-[var(--color-text-2)]">
+              {empresa?.cuit ? <div>CUIT: {empresa.cuit}</div> : null}
+              {empresa?.telefono ? <div>Tel: {empresa.telefono}</div> : null}
+              {empresa?.email ? <div>{empresa.email}</div> : null}
+              {empresa?.direccion ? <div>{empresa.direccion}</div> : null}
             </div>
           </div>
         </div>
@@ -84,8 +86,8 @@ export function DocumentoPresupuesto({ payload, empresa, isPro }) {
           <div>
             <strong>CLIENTE:</strong> {clienteNombre}
           </div>
-          <div>Tel: {clienteTelefono || '—'}</div>
-          <div>Email: {clienteEmail || '—'}</div>
+          {clienteTelefono ? <div>Tel: {clienteTelefono}</div> : null}
+          {clienteEmail ? <div>Email: {clienteEmail}</div> : null}
         </div>
         <div className="space-y-1 text-sm">
           <div>
@@ -160,13 +162,16 @@ export function DocumentoPresupuesto({ payload, empresa, isPro }) {
               <span className="font-mono">{formatCurrency(totalFinal)}</span>
             </div>
           </div>
-          <div className="mt-3 rounded-lg border-2 border-[var(--color-accent)]/40 bg-[var(--color-surface-2)] p-2 text-center text-sm">
-            Anticipo requerido ({anticipoPct}%): <strong className="font-mono">{formatCurrency(anticipoMonto)}</strong>
-          </div>
+          {includeAnticipoPdf && (
+            <div className="mt-3 rounded-lg border-2 border-[var(--color-accent)]/40 bg-[var(--color-surface-2)] p-2 text-center text-sm">
+              Anticipo requerido ({anticipoPct}%): <strong className="font-mono">{formatCurrency(anticipoMonto)}</strong>
+            </div>
+          )}
         </div>
       </section>
 
-      <section className="mt-4 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-2)]/60 p-3">
+      {includeEscenariosPdf && (
+        <section className="mt-4 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-2)]/60 p-3">
         <h4 className="font-display text-base font-bold text-[var(--color-text)]">Escenarios comerciales</h4>
         <div className="mt-2 grid gap-1 text-sm md:grid-cols-2">
           {differsFromTotal(totalConContingencia) && (
@@ -183,7 +188,8 @@ export function DocumentoPresupuesto({ payload, empresa, isPro }) {
             />
           )}
         </div>
-      </section>
+        </section>
+      )}
 
       {condiciones && (
         <div className="mt-6 border-l-4 border-[var(--color-accent)] bg-[var(--color-surface-2)]/50 p-4 text-sm text-[var(--color-text)]">
@@ -242,7 +248,7 @@ function TableSection({ title, headClass, columns, rows, foot }) {
           {rows.map((r, i) => (
             <tr key={i} className={i % 2 ? 'bg-[var(--color-surface-2)]/60' : 'bg-[var(--color-surface)]'}>
               {r.map((cell, j) => (
-                <td key={j} className={`px-2 py-2 font-sans ${j > 1 ? 'text-right' : 'text-left'}`}>
+                <td key={j} className={`px-2 py-2 font-sans ${j > 1 ? 'text-center' : 'text-left'}`}>
                   {cell}
                 </td>
               ))}
@@ -253,7 +259,7 @@ function TableSection({ title, headClass, columns, rows, foot }) {
           <tfoot>
             <tr className="bg-[var(--color-surface-2)] font-bold">
               {foot.map((c, i) => (
-                <td key={i} className={`px-2 py-2 font-sans ${i > 0 ? 'text-right' : ''}`}>
+                <td key={i} className={`px-2 py-2 font-sans ${i > 0 ? 'text-center' : ''}`}>
                   {c}
                 </td>
               ))}

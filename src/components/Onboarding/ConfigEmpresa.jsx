@@ -77,7 +77,6 @@ export function ConfigEmpresa({ initial, embedded, onSave, onCancel }) {
             value={form.cuit}
             onChange={(v) => setForm((f) => ({ ...f, cuit: v }))}
             error={errors.cuit}
-            required
           />
           <Field
             label="Teléfono"

@@ -111,7 +111,7 @@ export function Landing({
           </h1>
           <p className="mt-5 max-w-xl text-lg text-[var(--color-text-2)]">
             Calculá materiales, mano de obra y costos en minutos. Enviá un presupuesto PDF profesional desde tu
-            celular o computadora. Con inteligencia artificial que te ayuda a no olvidar nada.
+            celular o computadora. Con sugerencias opcionales para no olvidar nada.
           </p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <button
@@ -173,7 +173,7 @@ export function Landing({
         <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {[
             ['Biblioteca de materiales', 'Más de 80 ítems con autocompletado y unidades habituales.', 'MAT'],
-            ['Asistente IA', 'Sugerencias realistas de materiales, cantidades y mano de obra.', 'IA'],
+            ['Asistente opcional', 'Sugerencias de materiales y mano de obra cuando activás IA.', 'IA'],
             ['PDF profesional', 'Encabezado con tu empresa, tablas y bloque de firmas.', 'PDF'],
             ['Dashboard de negocio', 'Métricas de facturación y tasa de aprobación (PRO).', 'KPI'],
             ['Envío por email', 'Contacto directo con plantilla editable (PRO + EmailJS).', 'MAIL'],

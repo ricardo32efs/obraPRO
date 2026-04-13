@@ -87,7 +87,7 @@ export function validateEmpresaConfig(e) {
   const errors = {}
   if (!String(e?.nombreEmpresa || '').trim()) errors.nombreEmpresa = 'Obligatorio.'
   if (!String(e?.nombreResponsable || '').trim()) errors.nombreResponsable = 'Obligatorio.'
-  if (!isValidCuitFormat(e?.cuit || '')) errors.cuit = 'Formato: XX-XXXXXXXX-X'
+  if (String(e?.cuit || '').trim() && !isValidCuitFormat(e?.cuit || '')) errors.cuit = 'Formato: XX-XXXXXXXX-X'
   if (e?.email && !isValidEmail(e.email)) errors.email = 'Email inválido.'
   return { ok: Object.keys(errors).length === 0, errors }
 }

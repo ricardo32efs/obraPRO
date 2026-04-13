@@ -55,7 +55,7 @@ function AppInner() {
   }, [toast])
 
   const hasEmpresa = useMemo(
-    () => Boolean(empresa?.nombreEmpresa && empresa?.nombreResponsable && empresa?.cuit),
+    () => Boolean(empresa?.nombreEmpresa && empresa?.nombreResponsable),
     [empresa],
   )
 

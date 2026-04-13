@@ -107,6 +107,8 @@ export function NuevoPresupuesto({
     anticipoPct: 30,
     margenPct: 20,
     contingenciaPct: 10,
+    includeEscenariosPdf: false,
+    includeAnticipoPdf: false,
     includeChecklistCierrePdf: false,
     checklistPersonalizado: '',
     condiciones: empresa?.condicionesDefault || '',
@@ -194,6 +196,8 @@ export function NuevoPresupuesto({
       anticipoMonto: totals.anticipoMonto,
       margenPct: form.margenPct,
       contingenciaPct: form.contingenciaPct,
+      includeEscenariosPdf: form.includeEscenariosPdf,
+      includeAnticipoPdf: form.includeAnticipoPdf,
       includeChecklistCierrePdf: form.includeChecklistCierrePdf,
       totalConContingencia,
       precioSugeridoMargen,
@@ -341,6 +345,8 @@ export function NuevoPresupuesto({
       anticipoPct: initialDraft.anticipoPct ?? 30,
       margenPct: initialDraft.margenPct ?? 20,
       contingenciaPct: initialDraft.contingenciaPct ?? 10,
+      includeEscenariosPdf: initialDraft.includeEscenariosPdf ?? false,
+      includeAnticipoPdf: initialDraft.includeAnticipoPdf ?? false,
       includeChecklistCierrePdf: initialDraft.includeChecklistCierrePdf ?? false,
       checklistPersonalizado: '',
       condiciones: initialDraft.condiciones || empresa?.condicionesDefault || '',
@@ -1203,6 +1209,24 @@ export function NuevoPresupuesto({
             <label className="mt-4 block text-sm font-medium">
               Checklist de cierre (personalizado, una línea por ítem)
             </label>
+            <div className="mt-2 grid gap-2 md:grid-cols-2">
+              <label className="flex items-center gap-2 text-sm text-[var(--color-text)]">
+                <input
+                  type="checkbox"
+                  checked={form.includeEscenariosPdf}
+                  onChange={(e) => setForm((f) => ({ ...f, includeEscenariosPdf: e.target.checked }))}
+                />
+                Incluir escenarios comerciales en PDF
+              </label>
+              <label className="flex items-center gap-2 text-sm text-[var(--color-text)]">
+                <input
+                  type="checkbox"
+                  checked={form.includeAnticipoPdf}
+                  onChange={(e) => setForm((f) => ({ ...f, includeAnticipoPdf: e.target.checked }))}
+                />
+                Incluir anticipo en PDF
+              </label>
+            </div>
             <label className="mt-2 flex items-center gap-2 text-sm text-[var(--color-text)]">
               <input
                 type="checkbox"
@@ -1368,6 +1392,8 @@ export function NuevoPresupuesto({
             anticipoPct: 30,
             margenPct: 20,
             contingenciaPct: 10,
+            includeEscenariosPdf: false,
+            includeAnticipoPdf: false,
             includeChecklistCierrePdf: false,
             checklistPersonalizado: '',
             condiciones: empresa?.condicionesDefault || '',

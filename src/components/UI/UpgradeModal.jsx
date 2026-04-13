@@ -37,7 +37,7 @@ export function UpgradeModal({ open, onClose, onActivateDemo }) {
           {[
             'Presupuestos ilimitados (el plan gratis corta a 5 nuevos por mes)',
             'PDF con tu logo y colores',
-            'Asistente IA para no olvidar ítems ni cantidades',
+            'Sugerencias opcionales con IA para no olvidar ítems ni cantidades',
             'Historial completo con búsqueda y estados',
             'Dashboard de métricas',
             'Plantillas, Excel y envío por email',

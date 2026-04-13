@@ -48,10 +48,9 @@ export function buildPresupuestoPdfDoc(data, opts = { isPro: false }) {
   }
 
   // Logo (PRO + imagen)
-  if (isPro && data.empresa?.logoBase64) {
+  if (data.empresa?.logoBase64) {
     try {
-      const fmt = data.empresa.logoBase64.includes('png') ? 'PNG' : 'JPEG'
-      doc.addImage(data.empresa.logoBase64, fmt, marginL, y, 22, 22)
+      doc.addImage(data.empresa.logoBase64, marginL, y, 22, 22)
     } catch {
       /* ignore */
     }
@@ -60,7 +59,7 @@ export function buildPresupuestoPdfDoc(data, opts = { isPro: false }) {
   doc.setFont('times', 'bold')
   doc.setFontSize(16)
   doc.setTextColor(dark.r, dark.g, dark.b)
-  doc.text(data.empresa?.nombreEmpresa || 'Obra Pro', isPro && data.empresa?.logoBase64 ? marginL + 26 : marginL, y + 8)
+  doc.text(data.empresa?.nombreEmpresa || 'Obra Pro', data.empresa?.logoBase64 ? marginL + 26 : marginL, y + 8)
 
   doc.setFont('helvetica', 'normal')
   doc.setFontSize(9)
@@ -73,7 +72,7 @@ export function buildPresupuestoPdfDoc(data, opts = { isPro: false }) {
     data.empresa?.direccion ? data.empresa.direccion : '',
   ].filter(Boolean)
   contactLines.forEach((line) => {
-    doc.text(line, isPro && data.empresa?.logoBase64 ? marginL + 26 : marginL, subY)
+    doc.text(line, data.empresa?.logoBase64 ? marginL + 26 : marginL, subY)
     subY += 4
   })
 
@@ -110,8 +109,8 @@ export function buildPresupuestoPdfDoc(data, opts = { isPro: false }) {
   const col2X = marginL + (pageW - marginL - marginR) / 2
   let yy = y + 6
   doc.text(`Cliente: ${data.clienteNombre}`, col1X, yy)
-  doc.text(`Tel: ${data.clienteTelefono || '—'}`, col1X, yy + 5)
-  doc.text(`Email: ${data.clienteEmail || '—'}`, col1X, yy + 10)
+  if (data.clienteTelefono) doc.text(`Tel: ${data.clienteTelefono}`, col1X, yy + 5)
+  if (data.clienteEmail) doc.text(`Email: ${data.clienteEmail}`, col1X, yy + 10)
   doc.text(`Obra: ${data.direccionObra}`, col2X, yy)
   doc.text(`Tipo: ${tipo}`, col2X, yy + 5)
   doc.text(`Inicio: ${formatDateDDMMYYYY(data.fechaInicio)}`, col2X, yy + 10)
@@ -151,9 +150,9 @@ export function buildPresupuestoPdfDoc(data, opts = { isPro: false }) {
     columnStyles: {
       0: { cellWidth: 68 },
       1: { cellWidth: 22, halign: 'center' },
-      2: { cellWidth: 24, halign: 'right' },
-      3: { cellWidth: 30, halign: 'right' },
-      4: { cellWidth: 30, halign: 'right' },
+      2: { cellWidth: 24, halign: 'center' },
+      3: { cellWidth: 30, halign: 'center' },
+      4: { cellWidth: 30, halign: 'center' },
     },
     tableWidth: 174,
     margin: { left: (pageW - 174) / 2, right: (pageW - 174) / 2 },
@@ -184,10 +183,10 @@ export function buildPresupuestoPdfDoc(data, opts = { isPro: false }) {
     columnStyles: {
       0: { cellWidth: 52 },
       1: { cellWidth: 28 },
-      2: { cellWidth: 20, halign: 'right' },
+      2: { cellWidth: 20, halign: 'center' },
       3: { cellWidth: 20, halign: 'center' },
-      4: { cellWidth: 27, halign: 'right' },
-      5: { cellWidth: 27, halign: 'right' },
+      4: { cellWidth: 27, halign: 'center' },
+      5: { cellWidth: 27, halign: 'center' },
     },
     tableWidth: 174,
     margin: { left: (pageW - 174) / 2, right: (pageW - 174) / 2 },
@@ -220,13 +219,13 @@ export function buildPresupuestoPdfDoc(data, opts = { isPro: false }) {
   }
   lines.push(['TOTAL FINAL', formatCurrency(data.totalFinal)])
   const differsFromTotal = (value) => value != null && Math.abs(Number(value) - Number(data.totalFinal || 0)) > 0.009
-  if (differsFromTotal(data.totalConContingencia)) {
+  if (data.includeEscenariosPdf && differsFromTotal(data.totalConContingencia)) {
     lines.push([`Total + contingencia (${data.contingenciaPct ?? 0}%)`, formatCurrency(data.totalConContingencia)])
   }
-  if (differsFromTotal(data.precioSugeridoMargen)) {
+  if (data.includeEscenariosPdf && differsFromTotal(data.precioSugeridoMargen)) {
     lines.push([`Sugerido con margen (${data.margenPct ?? 0}%)`, formatCurrency(data.precioSugeridoMargen)])
   }
-  if (differsFromTotal(data.precioSugeridoMargenContingencia)) {
+  if (data.includeEscenariosPdf && differsFromTotal(data.precioSugeridoMargenContingencia)) {
     lines.push(['Sugerido margen + contingencia', formatCurrency(data.precioSugeridoMargenContingencia)])
   }
 
@@ -251,19 +250,9 @@ export function buildPresupuestoPdfDoc(data, opts = { isPro: false }) {
   doc.setFont('helvetica', 'bold')
   doc.setFontSize(9)
   doc.setTextColor(dark.r, dark.g, dark.b)
-  doc.text(`Anticipo (${data.anticipoPct}%): ${formatCurrency(data.anticipoMonto)}`, rightX, ly, { align: 'right' })
-  ly += 10
-
-  if (data.condiciones) {
-    doc.setDrawColor(accentRgb.r, accentRgb.g, accentRgb.b)
-    doc.setLineWidth(1)
-    doc.line(marginL, ly - 2, marginL, ly + 18)
-    doc.setFont('helvetica', 'normal')
-    doc.setFontSize(8)
-    doc.setTextColor(60, 60, 60)
-    const condLines = doc.splitTextToSize(data.condiciones, pageW - marginL - marginR - 6)
-    doc.text(condLines, marginL + 4, ly)
-    ly += condLines.length * 4 + 8
+  if (data.includeAnticipoPdf) {
+    doc.text(`Anticipo (${data.anticipoPct}%): ${formatCurrency(data.anticipoMonto)}`, rightX, ly, { align: 'right' })
+    ly += 10
   }
 
   if (data.includeChecklistCierrePdf && data.checklistCierre?.length) {
@@ -293,6 +282,18 @@ export function buildPresupuestoPdfDoc(data, opts = { isPro: false }) {
   doc.setFontSize(8)
   doc.text('Aclaración: _______________', marginL, ly)
   doc.text('Fecha: _______________', marginL + 95, ly)
+
+  if (data.condiciones) {
+    ly += 8
+    doc.setDrawColor(accentRgb.r, accentRgb.g, accentRgb.b)
+    doc.setLineWidth(1)
+    doc.line(marginL, ly - 2, marginL, ly + 18)
+    doc.setFont('helvetica', 'normal')
+    doc.setFontSize(8)
+    doc.setTextColor(60, 60, 60)
+    const condLines = doc.splitTextToSize(data.condiciones, pageW - marginL - marginR - 6)
+    doc.text(condLines, marginL + 4, ly)
+  }
 
   const pageCount = doc.internal.getNumberOfPages()
   for (let i = 1; i <= pageCount; i++) {
