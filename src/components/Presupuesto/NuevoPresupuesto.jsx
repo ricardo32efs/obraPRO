@@ -8,7 +8,7 @@ import {
   UNIDADES_MANO,
   UNIDADES_MATERIAL,
 } from '../../utils/constants'
-import { puedeCrearPresupuestoGratis } from '../../utils/presupuestoHelpers'
+import { puedeCrearPresupuestoGratis, countPresupuestosCreadosEsteMes } from '../../utils/presupuestoHelpers'
 import { computePresupuestoTotals } from '../../utils/computeTotals'
 import { formatCurrency, parseCurrencyInput } from '../../utils/formatCurrency'
 import { validatePresupuestoForm } from '../../utils/validateForm'
@@ -400,7 +400,33 @@ export function NuevoPresupuesto({
             aria-label="Número de presupuesto editable"
           />
         </div>
-        <div className="flex flex-wrap gap-2">
+        {!isPro && (() => {
+        const usados = countPresupuestosCreadosEsteMes(presupuestos)
+        const restantes = Math.max(0, 5 - usados)
+        return (
+          <div className={`mx-4 mb-2 flex items-center justify-between rounded-xl px-4 py-2.5 text-sm font-medium ${
+            restantes === 0
+              ? 'bg-red-50 border border-red-200 text-red-700'
+              : restantes <= 2
+              ? 'bg-amber-50 border border-amber-200 text-amber-700'
+              : 'bg-[var(--color-surface-2)] border border-[var(--color-border)] text-[var(--color-text-2)]'
+          }`}>
+            <span>
+              {restantes === 0
+                ? 'Alcanzaste el límite del plan gratuito este mes.'
+                : `Plan gratuito: te quedan ${restantes} presupuesto${restantes === 1 ? '' : 's'} este mes.`}
+            </span>
+            <button
+              type="button"
+              onClick={onRequestUpgrade}
+              className="ml-3 rounded-lg bg-[var(--color-accent)] px-3 py-1 text-xs font-semibold text-white"
+            >
+              Ir a PRO
+            </button>
+          </div>
+        )
+      })()}
+      <div className="flex flex-wrap gap-2">
           <button
             type="button"
             onClick={() => {

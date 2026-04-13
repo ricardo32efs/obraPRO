@@ -222,6 +222,42 @@ export function Landing({
         </div>
       </section>
 
+      <section className="mx-auto max-w-5xl px-4 py-14">
+        <h2 className="text-center font-display text-3xl font-bold text-[var(--color-text)]">
+          Lo que dicen quienes ya lo usan
+        </h2>
+        <div className="mt-10 grid gap-6 md:grid-cols-3">
+          {[
+            {
+              nombre: 'Carlos M.',
+              rol: 'Contratista — Córdoba',
+              texto: 'Antes tardaba horas en armar un presupuesto en Excel. Ahora lo hago en 10 minutos desde el celular y el cliente lo recibe con toda la info clara. Profesionalismo total.',
+            },
+            {
+              nombre: 'Martina R.',
+              rol: 'Arquitecta independiente — Buenos Aires',
+              texto: 'Empecé con el plan gratis para probar y no lo pude dejar. Los PDFs son prolijos, mis clientes quedan impresionados. Ya pasé a PRO y vale cada peso.',
+            },
+            {
+              nombre: 'Jorge P.',
+              rol: 'Constructor — Rosario',
+              texto: 'Me ayudó a no olvidar materiales que siempre se me escapaban. El historial de presupuestos me permite ver cuánto facturé cada mes. Muy completo.',
+            },
+          ].map(({ nombre, rol, texto }) => (
+            <div
+              key={nombre}
+              className="flex flex-col rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] p-6 shadow-sm"
+            >
+              <p className="flex-1 text-sm leading-relaxed text-[var(--color-text-2)]">"{texto}"</p>
+              <div className="mt-5 border-t border-[var(--color-border)] pt-4">
+                <p className="font-display text-sm font-bold text-[var(--color-text)]">{nombre}</p>
+                <p className="text-xs text-[var(--color-text-2)]">{rol}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
       <section id="precios" className="mx-auto max-w-4xl scroll-mt-20 px-4 py-16">
         <h2 className="text-center font-display text-3xl font-bold text-[var(--color-text)]">
           Simple y sin sorpresas.

@@ -71,6 +71,33 @@ export function Historial({
   const [deleteId, setDeleteId] = useState(null)
   const [confettiId, setConfettiId] = useState(null)
 
+  const shareWhatsApp = (r) => {
+    const nombreEmpresa = r.empresa?.nombreEmpresa || empresa?.nombreEmpresa || ''
+    const msg = `Hola! Te comparto el presupuesto N° ${r.numero} para *${r.tipoTrabajo}*.
+
+*Total: ${formatCurrency(r.totalFinal)}*
+Cliente: ${r.clienteNombre}
+${nombreEmpresa ? `Empresa: ${nombreEmpresa}\n` : ''}Cualquier consulta, estamos a disposición.`
+    window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank')
+  }
+
+  const alertas = useMemo(() => {
+    const now = new Date()
+    return (items || []).reduce((acc, r) => {
+      const base = r.estado || 'borrador'
+      if (base === 'aprobado' || base === 'rechazado') return acc
+      const val = Number(r.validezDias) || 15
+      const em = r.fechaEmision || r.updatedAt?.slice(0, 10)
+      if (!em) return acc
+      const vence = new Date(em)
+      vence.setDate(vence.getDate() + val)
+      const diffDias = Math.ceil((vence - now) / (1000 * 60 * 60 * 24))
+      if (diffDias < 0 && base === 'enviado') acc.vencidos.push(r)
+      else if (diffDias >= 0 && diffDias <= 3 && base === 'enviado') acc.porVencer.push({ ...r, diffDias })
+      return acc
+    }, { vencidos: [], porVencer: [] })
+  }, [items])
+
   const { rows: filtered, referenceNowMs } = useMemo(() => {
     let rows = [...(items || [])]
     const referenceNow = new Date()
@@ -135,6 +162,29 @@ export function Historial({
   return (
     <div className="px-4 py-6 pb-28 lg:pb-8">
       <h1 className="font-display text-2xl font-bold text-[var(--color-text)]">Historial</h1>
+
+      {(alertas.vencidos.length > 0 || alertas.porVencer.length > 0) && (
+        <div className="mt-3 space-y-2">
+          {alertas.vencidos.length > 0 && (
+            <div className="flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm">
+              <span className="mt-0.5 text-red-500 font-bold text-base">!</span>
+              <div>
+                <p className="font-semibold text-red-700">{alertas.vencidos.length} presupuesto{alertas.vencidos.length > 1 ? 's' : ''} vencido{alertas.vencidos.length > 1 ? 's' : ''} sin respuesta</p>
+                <p className="text-red-600 text-xs mt-0.5">{alertas.vencidos.map(r => `N° ${r.numero} (${r.clienteNombre})`).join(' · ')}</p>
+              </div>
+            </div>
+          )}
+          {alertas.porVencer.length > 0 && (
+            <div className="flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm">
+              <span className="mt-0.5 text-amber-500 font-bold text-base">!</span>
+              <div>
+                <p className="font-semibold text-amber-700">{alertas.porVencer.length} presupuesto{alertas.porVencer.length > 1 ? 's' : ''} por vencer pronto</p>
+                <p className="text-amber-600 text-xs mt-0.5">{alertas.porVencer.map(r => `N° ${r.numero} — vence en ${r.diffDias === 0 ? 'hoy' : `${r.diffDias} día${r.diffDias > 1 ? 's' : ''}`}`).join(' · ')}</p>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
       <div className="mt-4 flex flex-wrap gap-2">
         <input
           className="min-w-[200px] flex-1 rounded-lg border border-[var(--color-border)] px-3 py-2 text-sm"
@@ -266,6 +316,7 @@ export function Historial({
                             isPro ? onSendEmail?.(mergePayloadConEmpresa(r, empresa)) : onRequestUpgrade?.()
                           }
                         />
+                        <IconBtn label="WhatsApp" onClick={() => shareWhatsApp(r)} />
                         <IconBtn label="Eliminar" onClick={() => setDeleteId(r.id)} />
                       </div>
                     </td>
@@ -318,6 +369,13 @@ export function Historial({
                   }}
                 >
                   PDF
+                </button>
+                <button
+                  type="button"
+                  className="text-xs underline text-green-700"
+                  onClick={() => shareWhatsApp(r)}
+                >
+                  WhatsApp
                 </button>
               </div>
             </motion.div>
