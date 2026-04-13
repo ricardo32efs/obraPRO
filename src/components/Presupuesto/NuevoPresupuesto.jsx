@@ -686,6 +686,9 @@ export function NuevoPresupuesto({
                 </button>
               </div>
             </div>
+            <p className="mb-3 text-xs text-[var(--color-text-2)]">
+              Unidad de medida = cómo se compra/cotiza el ítem (ej: m², bolsa, kg, unidad).
+            </p>
 
             {fieldErrors.items && <p className="mb-2 text-xs text-[var(--color-danger)]">{fieldErrors.items}</p>}
 
@@ -696,7 +699,7 @@ export function NuevoPresupuesto({
                   <tr className="bg-[var(--color-surface-2)] text-left text-xs uppercase text-[var(--color-text-2)]">
                     <th className="p-2 w-8" aria-hidden />
                     <th className="p-2">Material</th>
-                    <th className="p-2">Unidad</th>
+                    <th className="p-2">Unidad de medida</th>
                     <th className="p-2">Cantidad</th>
                     <th className="p-2">P. Unit.</th>
                     <th className="p-2">Subtotal</th>
@@ -925,6 +928,9 @@ export function NuevoPresupuesto({
                 + Agregar ítem
               </button>
             </div>
+            <p className="mb-3 text-xs text-[var(--color-text-2)]">
+              Unidad de medida = cómo cobrás el trabajo (ej: hora, día, m² o por trabajo completo).
+            </p>
             <div className="overflow-x-auto">
               <table className="w-full min-w-[680px] border-collapse text-sm">
                 <thead>
@@ -932,7 +938,7 @@ export function NuevoPresupuesto({
                     <th className="p-2">Descripción</th>
                     <th className="p-2">Categoría</th>
                     <th className="p-2">Cantidad</th>
-                    <th className="p-2">Unidad</th>
+                    <th className="p-2">Unidad de medida</th>
                     <th className="p-2">P. Unit.</th>
                     <th className="p-2">Subtotal</th>
                     <th className="p-2" />

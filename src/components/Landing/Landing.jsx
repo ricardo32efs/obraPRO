@@ -156,7 +156,7 @@ export function Landing({
           <StepCard
             n={1}
             title="Materiales y mano de obra"
-            desc="Tablas inteligentes con biblioteca de materiales y sugerencias de la IA."
+            desc="Tablas inteligentes con biblioteca de materiales y sugerencias opcionales."
           />
           <StepCard
             n={2}
@@ -257,7 +257,7 @@ export function Landing({
               o {PRICING_COPY.annualLine} ({PRICING_COPY.annualSavings})
             </p>
             <ul className="mt-4 space-y-2 text-sm opacity-95">
-              <li>Ilimitado + IA + marca en PDF</li>
+              <li>Ilimitado + sugerencias opcionales + marca en PDF</li>
               <li>Dashboard, plantillas, Excel, email</li>
             </ul>
             <button
@@ -287,7 +287,7 @@ export function Landing({
           />
           <FaqItem
             q="¿Cómo funciona el asistente con IA?"
-            a="Analiza tu descripción y sugiere materiales, cantidades y precios orientativos. Siempre podés editar todo. Requiere API key de Anthropic o modo demo."
+            a="Es opcional. Si configurás API de Anthropic, sugiere materiales, cantidades y precios orientativos. Siempre podés editar todo o trabajar sin IA."
           />
           <FaqItem
             q="¿Puedo poner el logo en el PDF?"

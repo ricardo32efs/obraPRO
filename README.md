@@ -25,6 +25,10 @@ Ver **`ESTRATEGIA_RECOMENDADA.md`**: se recomienda **GitHub + Vercel o Netlify**
 
 **Para revisar el producto con otro asistente (ej. Claude):** abrí **`AVANCE_Y_CONTEXTO_PARA_REVISION.md`**, completá la URL de Vercel arriba del archivo y adjuntalo al chat junto con el link en vivo.
 
+**Checklist de calidad antes de publicar cambios:** `CHECKLIST_QA_PREPUBLICACION.md`.
+
+**Plan de IA real (MVP):** `PLAN_IA_REAL_MVP.md`.
+
 ## Backup del codigo en un archivo
 
 Doble clic en **`EXPORTAR_CODIGO_ZIP.bat`**: crea en el **Escritorio** un `.zip` con todo el proyecto **sin** `node_modules` ni `dist` (se regeneran con `npm install` y `npm run build`).
