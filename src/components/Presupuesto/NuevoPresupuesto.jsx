@@ -110,6 +110,7 @@ export function NuevoPresupuesto({
     includeEscenariosPdf: false,
     includeAnticipoPdf: false,
     includeChecklistCierrePdf: false,
+    includeFirmasPdf: true,
     checklistPersonalizado: '',
     condiciones: empresa?.condicionesDefault || '',
     estado: 'borrador',
@@ -199,6 +200,7 @@ export function NuevoPresupuesto({
       includeEscenariosPdf: form.includeEscenariosPdf,
       includeAnticipoPdf: form.includeAnticipoPdf,
       includeChecklistCierrePdf: form.includeChecklistCierrePdf,
+      includeFirmasPdf: form.includeFirmasPdf,
       totalConContingencia,
       precioSugeridoMargen,
       precioSugeridoMargenContingencia,
@@ -348,6 +350,7 @@ export function NuevoPresupuesto({
       includeEscenariosPdf: initialDraft.includeEscenariosPdf ?? false,
       includeAnticipoPdf: initialDraft.includeAnticipoPdf ?? false,
       includeChecklistCierrePdf: initialDraft.includeChecklistCierrePdf ?? false,
+      includeFirmasPdf: initialDraft.includeFirmasPdf ?? true,
       checklistPersonalizado: '',
       condiciones: initialDraft.condiciones || empresa?.condicionesDefault || '',
       estado: initialDraft.estado || 'borrador',
@@ -1232,6 +1235,14 @@ export function NuevoPresupuesto({
                 />
                 Incluir anticipo en PDF
               </label>
+              <label className="flex items-center gap-2 text-sm text-[var(--color-text)]">
+                <input
+                  type="checkbox"
+                  checked={form.includeFirmasPdf}
+                  onChange={(e) => setForm((f) => ({ ...f, includeFirmasPdf: e.target.checked }))}
+                />
+                Incluir bloque de firmas en PDF
+              </label>
             </div>
             <label className="mt-2 flex items-center gap-2 text-sm text-[var(--color-text)]">
               <input
@@ -1401,6 +1412,7 @@ export function NuevoPresupuesto({
             includeEscenariosPdf: false,
             includeAnticipoPdf: false,
             includeChecklistCierrePdf: false,
+            includeFirmasPdf: true,
             checklistPersonalizado: '',
             condiciones: empresa?.condicionesDefault || '',
             estado: 'borrador',

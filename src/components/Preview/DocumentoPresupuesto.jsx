@@ -45,6 +45,7 @@ export function DocumentoPresupuesto({ payload, empresa }) {
     includeAnticipoPdf,
     checklistCierre,
     includeChecklistCierrePdf,
+    includeFirmasPdf,
     condiciones,
     validezDias,
   } = payload
@@ -209,18 +210,20 @@ export function DocumentoPresupuesto({ payload, empresa }) {
         </section>
       )}
 
-      <section className="mt-10 grid gap-8 md:grid-cols-2">
-        <div>
-          <p className="text-sm font-semibold">Firma del profesional</p>
-          <div className="mt-8 border-b border-dashed border-[var(--color-text)]" />
-          <p className="mt-2 text-xs text-[var(--color-text-2)]">Aclaración: _______________</p>
-        </div>
-        <div>
-          <p className="text-sm font-semibold">Firma y aclaración del cliente</p>
-          <div className="mt-8 border-b border-dashed border-[var(--color-text)]" />
-          <p className="mt-2 text-xs text-[var(--color-text-2)]">Fecha: _______________</p>
-        </div>
-      </section>
+      {includeFirmasPdf && (
+        <section className="mt-10 grid gap-8 md:grid-cols-2">
+          <div>
+            <p className="text-sm font-semibold">Firma del profesional</p>
+            <div className="mt-8 border-b border-dashed border-[var(--color-text)]" />
+            <p className="mt-2 text-xs text-[var(--color-text-2)]">Aclaración: _______________</p>
+          </div>
+          <div>
+            <p className="text-sm font-semibold">Firma y aclaración del cliente</p>
+            <div className="mt-8 border-b border-dashed border-[var(--color-text)]" />
+            <p className="mt-2 text-xs text-[var(--color-text-2)]">Fecha: _______________</p>
+          </div>
+        </section>
+      )}
 
       <footer className="mt-10 text-center text-xs text-[var(--color-text-2)]">
         Presupuesto generado con Obra Pro — Este documento es válido por {validezDias ?? 15} días desde la fecha de

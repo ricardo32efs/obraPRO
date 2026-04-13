@@ -272,16 +272,18 @@ export function buildPresupuestoPdfDoc(data, opts = { isPro: false }) {
     ly += 4
   }
 
-  ly += 4
-  doc.setFont('helvetica', 'normal')
-  doc.setFontSize(9)
-  doc.setTextColor(dark.r, dark.g, dark.b)
-  doc.text('Firma del profesional: ___________________________', marginL, ly)
-  doc.text('Firma y aclaración del cliente: ___________________', marginL + 95, ly)
-  ly += 8
-  doc.setFontSize(8)
-  doc.text('Aclaración: _______________', marginL, ly)
-  doc.text('Fecha: _______________', marginL + 95, ly)
+  if (data.includeFirmasPdf) {
+    ly += 4
+    doc.setFont('helvetica', 'normal')
+    doc.setFontSize(9)
+    doc.setTextColor(dark.r, dark.g, dark.b)
+    doc.text('Firma del profesional: ___________________________', marginL, ly)
+    doc.text('Firma y aclaración del cliente: ___________________', marginL + 95, ly)
+    ly += 8
+    doc.setFontSize(8)
+    doc.text('Aclaración: _______________', marginL, ly)
+    doc.text('Fecha: _______________', marginL + 95, ly)
+  }
 
   if (data.condiciones) {
     ly += 8
