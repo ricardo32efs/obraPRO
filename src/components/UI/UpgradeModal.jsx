@@ -2,7 +2,9 @@ import { motion } from 'framer-motion'
 import { useFocusTrap } from '../../hooks/useFocusTrap'
 import { PRICING_COPY } from '../../utils/pricingCopy'
 
-const PRO_CHECKOUT_URL = import.meta.env.VITE_PRO_CHECKOUT_URL
+const MONTHLY_URL = import.meta.env.VITE_PRO_CHECKOUT_MONTHLY_URL || import.meta.env.VITE_PRO_CHECKOUT_URL
+const ANNUAL_URL = import.meta.env.VITE_PRO_CHECKOUT_ANNUAL_URL || import.meta.env.VITE_PRO_CHECKOUT_URL
+const hasCheckout = !!(MONTHLY_URL || ANNUAL_URL)
 
 /**
  * Modal de upgrade a PRO — fricción en features premium
@@ -48,36 +50,53 @@ export function UpgradeModal({ open, onClose, onActivateDemo }) {
             </li>
           ))}
         </ul>
-        <div className="mt-6 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-2)] px-4 py-3">
-          <p className="text-xs font-semibold uppercase tracking-wide text-[var(--color-text-2)]">Precio referencia</p>
-          <div className="mt-1 flex flex-col gap-0.5">
-            <span className="font-mono text-3xl font-semibold text-[var(--color-text)]">{PRICING_COPY.monthlyLine}</span>
-            <span className="text-sm text-[var(--color-text-2)]">
-              o {PRICING_COPY.annualLine} — {PRICING_COPY.annualSavings}
-            </span>
+        <div className="mt-6 grid grid-cols-2 gap-3">
+          <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-2)] px-4 py-3">
+            <p className="text-xs font-semibold uppercase tracking-wide text-[var(--color-text-2)]">Mensual</p>
+            <p className="mt-1 font-mono text-2xl font-bold text-[var(--color-text)]">{PRICING_COPY.monthlyLine}</p>
+            {MONTHLY_URL ? (
+              <a
+                href={MONTHLY_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-3 flex w-full items-center justify-center rounded-lg border-2 border-[var(--color-accent)] py-2 text-xs font-semibold text-[var(--color-accent)] transition hover:bg-[var(--color-surface)]"
+              >
+                Suscribirse mensual
+              </a>
+            ) : (
+              <p className="mt-3 text-[10px] text-[var(--color-text-2)] opacity-60">Pago próximamente</p>
+            )}
+          </div>
+          <div className="rounded-xl border-2 border-[var(--color-accent)]/40 bg-[var(--color-accent)]/5 px-4 py-3 relative">
+            <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 rounded-full bg-[var(--color-accent)] px-2 py-0.5 text-[10px] font-bold text-white">MEJOR PRECIO</span>
+            <p className="text-xs font-semibold uppercase tracking-wide text-[var(--color-text-2)]">Anual</p>
+            <p className="mt-1 font-mono text-2xl font-bold text-[var(--color-text)]">{PRICING_COPY.annualLine}</p>
+            {ANNUAL_URL ? (
+              <a
+                href={ANNUAL_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-3 flex w-full items-center justify-center rounded-lg bg-[var(--color-accent)] py-2 text-xs font-semibold text-white transition hover:brightness-105"
+              >
+                Suscribirse anual
+              </a>
+            ) : (
+              <p className="mt-3 text-[10px] text-[var(--color-text-2)] opacity-60">Pago próximamente</p>
+            )}
           </div>
         </div>
-        {PRO_CHECKOUT_URL ? (
-          <a
-            href={PRO_CHECKOUT_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-6 flex w-full items-center justify-center rounded-xl border-2 border-[var(--color-accent)] bg-[var(--color-surface)] py-3 text-center text-sm font-semibold text-[var(--color-accent)] transition hover:bg-[var(--color-surface-2)]"
-          >
-            {PRICING_COPY.checkoutCta}
-          </a>
-        ) : null}
+        <p className="mt-2 text-center text-xs text-[var(--color-text-2)]">{PRICING_COPY.annualSavings}</p>
         <button
           type="button"
           onClick={onActivateDemo}
-          className={`w-full rounded-xl bg-gradient-to-r from-[#c1440e] to-[#8b4513] py-3 text-center text-sm font-semibold text-white shadow-md transition hover:brightness-105 ${PRO_CHECKOUT_URL ? 'mt-3' : 'mt-6'}`}
+          className="mt-5 w-full rounded-xl bg-gradient-to-r from-[#c1440e] to-[#8b4513] py-3 text-center text-sm font-semibold text-white shadow-md transition hover:brightness-105"
         >
-          Activar PRO de prueba (solo este dispositivo)
+          {hasCheckout ? 'Probar PRO gratis en este dispositivo' : 'Activar PRO de prueba (solo este dispositivo)'}
         </button>
-        <p className="mt-3 text-center text-xs text-[var(--color-text-2)]">
-          {PRO_CHECKOUT_URL
-            ? 'El cobro lo hace el enlace (Mercado Pago, Stripe, etc.). Hasta activar cuentas en la app, podés usar PRO de prueba acá después de pagar si lo coordinás vos.'
-            : 'PRO de prueba se guarda en este navegador. Cuando el sitio tenga enlace de pago configurado, vas a ver el botón de checkout acá.'}
+        <p className="mt-2 text-center text-xs text-[var(--color-text-2)]">
+          {hasCheckout
+            ? 'Pagá por el enlace de arriba para acceso permanente. La prueba es solo en este navegador.'
+            : 'PRO de prueba se guarda en este navegador. El pago real estará disponible pronto.'}
         </p>
         <button
           type="button"
