@@ -257,9 +257,8 @@ export function Landing({
           Simple y sin sorpresas.
         </h2>
         <p className="mx-auto mt-3 max-w-2xl text-center text-sm text-[var(--color-text-2)]">
-          {PRICING_COPY.shortDisclaimer} Recomendamos <strong className="text-[var(--color-text)]">mensual</strong> para
-          entrar fácil y <strong className="text-[var(--color-text)]">anual</strong> si ya usás la herramienta todos los
-          meses (mejor precio por mes).
+          {PRICING_COPY.shortDisclaimer} Recomendamos <strong className="text-[var(--color-text)]">anual</strong> si
+          ya usás la herramienta seguido — es el mejor precio por mes.
         </p>
         <div className="mt-10 grid gap-6 md:grid-cols-2">
           <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] p-6">
@@ -283,13 +282,17 @@ export function Landing({
               Más elegido
             </span>
             <h3 className="font-display text-xl font-bold">PRO</h3>
-            <p className="mt-4 font-mono text-3xl">{PRICING_COPY.monthlyLine}</p>
-            <p className="text-sm opacity-80">
-              o {PRICING_COPY.annualLine} ({PRICING_COPY.annualSavings})
+            <div className="mt-4 flex items-end gap-2">
+              <p className="font-mono text-3xl">{PRICING_COPY.monthlyLine}</p>
+            </div>
+            <p className="mt-1 text-sm opacity-80">
+              o {PRICING_COPY.annualLine} — {PRICING_COPY.annualSavings}
             </p>
             <ul className="mt-4 space-y-2 text-sm opacity-95">
-              <li>Ilimitado + sugerencias opcionales + marca en PDF</li>
-              <li>Dashboard, plantillas, Excel, email</li>
+              <li>✓ Presupuestos ilimitados</li>
+              <li>✓ PDF con tu logo y colores</li>
+              <li>✓ Dashboard, plantillas, Excel y email</li>
+              <li>✓ Sin permanencia. Cancelás cuando quieras.</li>
             </ul>
             <button
               type="button"
