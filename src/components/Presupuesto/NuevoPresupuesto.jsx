@@ -388,48 +388,20 @@ export function NuevoPresupuesto({
 
   return (
     <div className="pb-24 pt-4 lg:pb-8">
-      <div className="mb-4 flex flex-wrap items-center justify-between gap-2 px-4">
-        <div>
-          <p className="text-xs font-medium uppercase tracking-wide text-[var(--color-text-2)]">
-            Presupuesto N°
-          </p>
-          <input
-            className="font-mono text-lg font-bold text-[var(--color-accent)] bg-transparent border-b border-transparent hover:border-[var(--color-border)] focus:border-[var(--color-accent)] outline-none"
-            value={numeroManual || numero}
-            onChange={(e) => setNumeroManual(e.target.value)}
-            aria-label="Número de presupuesto editable"
-          />
-        </div>
-        {!isPro && (() => {
-        const usados = countPresupuestosCreadosEsteMes(presupuestos)
-        const restantes = Math.max(0, 5 - usados)
-        const resetDate = new Date()
-        resetDate.setMonth(resetDate.getMonth() + 1, 1)
-        const resetStr = resetDate.toLocaleDateString('es-AR', { day: 'numeric', month: 'long' })
-        return (
-          <div className={`mx-4 mb-2 flex items-center justify-between rounded-xl px-4 py-2.5 text-sm font-medium ${
-            restantes === 0
-              ? 'bg-red-50 border border-red-200 text-red-700'
-              : restantes <= 2
-              ? 'bg-amber-50 border border-amber-200 text-amber-700'
-              : 'bg-[var(--color-surface-2)] border border-[var(--color-border)] text-[var(--color-text-2)]'
-          }`}>
-            <span>
-              {restantes === 0
-                ? `Límite del plan gratuito alcanzado. Se resetea el ${resetStr}.`
-                : `Plan gratuito: ${restantes} presupuesto${restantes === 1 ? '' : 's'} restante${restantes === 1 ? '' : 's'} · Se resetea el ${resetStr}.`}
-            </span>
-            <button
-              type="button"
-              onClick={onRequestUpgrade}
-              className="ml-3 shrink-0 rounded-lg bg-[var(--color-accent)] px-3 py-1 text-xs font-semibold text-white"
-            >
-              Ir a PRO
-            </button>
+      <div className="mb-4 px-4">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <p className="text-xs font-medium uppercase tracking-wide text-[var(--color-text-2)]">
+              Presupuesto N°
+            </p>
+            <input
+              className="font-mono text-lg font-bold text-[var(--color-accent)] bg-transparent border-b border-transparent hover:border-[var(--color-border)] focus:border-[var(--color-accent)] outline-none"
+              value={numeroManual || numero}
+              onChange={(e) => setNumeroManual(e.target.value)}
+              aria-label="Número de presupuesto editable"
+            />
           </div>
-        )
-      })()}
-      <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-2">
           <button
             type="button"
             onClick={() => {
@@ -467,6 +439,36 @@ export function NuevoPresupuesto({
             Guardar como plantilla
           </button>
         </div>
+        </div>
+        {!isPro && (() => {
+          const usados = countPresupuestosCreadosEsteMes(presupuestos)
+          const restantes = Math.max(0, 5 - usados)
+          const resetDate = new Date()
+          resetDate.setMonth(resetDate.getMonth() + 1, 1)
+          const resetStr = resetDate.toLocaleDateString('es-AR', { day: 'numeric', month: 'long' })
+          return (
+            <div className={`mt-2 flex items-center justify-between rounded-xl px-4 py-2.5 text-sm font-medium ${
+              restantes === 0
+                ? 'bg-red-50 border border-red-200 text-red-700'
+                : restantes <= 2
+                ? 'bg-amber-50 border border-amber-200 text-amber-700'
+                : 'bg-[var(--color-surface-2)] border border-[var(--color-border)] text-[var(--color-text-2)]'
+            }`}>
+              <span>
+                {restantes === 0
+                  ? `Límite del plan gratuito alcanzado. Se resetea el ${resetStr}.`
+                  : `Plan gratuito: ${restantes} presupuesto${restantes === 1 ? '' : 's'} restante${restantes === 1 ? '' : 's'} · Se resetea el ${resetStr}.`}
+              </span>
+              <button
+                type="button"
+                onClick={onRequestUpgrade}
+                className="ml-3 shrink-0 rounded-lg bg-[var(--color-accent)] px-3 py-1 text-xs font-semibold text-white"
+              >
+                Ir a PRO
+              </button>
+            </div>
+          )
+        })()}
       </div>
 
       <div className="grid gap-6 px-4 lg:grid-cols-[minmax(0,26%)_minmax(0,1.4fr)_minmax(280px,24%)]">
@@ -1378,7 +1380,7 @@ function Field({ label, value, onChange, error, type = 'text', required }) {
         onChange={(e) => onChange(e.target.value)}
         className="mt-1 w-full rounded-lg border border-[var(--color-border)] px-3 py-2 text-sm"
       />
-      {error && <p className="mt-1 text-xs text-[var(--color-danger)]">Error: {error}</p>}
+      {error && <p className="mt-1 text-xs text-[var(--color-danger)]">{error}</p>}
     </div>
   )
 }
