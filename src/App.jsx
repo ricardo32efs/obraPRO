@@ -13,6 +13,7 @@ import { generatePresupuestoPDF } from './utils/generatePDF'
 import { exportPresupuestoExcel } from './utils/exportExcel'
 import { mergePayloadConEmpresa } from './utils/presupuestoHelpers'
 import { RouteFallback } from './components/UI/RouteFallback'
+import { saveLicense } from './utils/licenseUtils'
 
 const Landing = lazy(() => import('./components/Landing/Landing').then((m) => ({ default: m.Landing })))
 const ConfigEmpresa = lazy(() =>
@@ -45,6 +46,41 @@ function AppInner() {
   const [emailModalInstance, setEmailModalInstance] = useState(0)
 
   const { push: toast } = useToast()
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const paymentId = params.get('payment_id') || params.get('collection_id')
+    const preapprovalId = params.get('preapproval_id')
+    const status = params.get('status') || params.get('collection_status')
+
+    if (!paymentId && !preapprovalId) return
+
+    window.history.replaceState({}, '', window.location.pathname)
+
+    if (status && status !== 'approved' && status !== 'authorized') {
+      toast('El pago no fue completado. Podés intentarlo nuevamente.', 'error')
+      return
+    }
+
+    const qs = paymentId ? `payment_id=${paymentId}` : `preapproval_id=${preapprovalId}`
+    toast('Verificando tu pago…', 'success')
+
+    fetch(`/api/verify-payment?${qs}`)
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.ok) {
+          saveLicense(data)
+          setPlan('pro')
+          toast('¡PRO activado! Bienvenido a Obra Pro PRO 🎉', 'success')
+        } else {
+          toast(`No pudimos verificar el pago: ${data.error}. Contactános por WhatsApp.`, 'error')
+        }
+      })
+      .catch(() => {
+        toast('Error de conexión al verificar el pago. Contactános por WhatsApp.', 'error')
+      })
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   useEffect(() => {
     const onFull = () => {
