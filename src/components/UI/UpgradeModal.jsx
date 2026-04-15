@@ -4,7 +4,9 @@ import { PRICING_COPY } from '../../utils/pricingCopy'
 
 const MONTHLY_URL = import.meta.env.VITE_PRO_CHECKOUT_MONTHLY_URL || import.meta.env.VITE_PRO_CHECKOUT_URL
 const ANNUAL_URL = import.meta.env.VITE_PRO_CHECKOUT_ANNUAL_URL || import.meta.env.VITE_PRO_CHECKOUT_URL
-const hasCheckout = !!(MONTHLY_URL || ANNUAL_URL)
+const MONTHLY_STRIPE = import.meta.env.VITE_PRO_CHECKOUT_MONTHLY_URL_STRIPE
+const ANNUAL_STRIPE = import.meta.env.VITE_PRO_CHECKOUT_ANNUAL_URL_STRIPE
+const hasCheckout = !!(MONTHLY_URL || ANNUAL_URL || MONTHLY_STRIPE || ANNUAL_STRIPE)
 
 /**
  * Modal de upgrade a PRO — fricción en features premium
@@ -54,35 +56,45 @@ export function UpgradeModal({ open, onClose, onActivateDemo }) {
           <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-2)] px-4 py-3">
             <p className="text-xs font-semibold uppercase tracking-wide text-[var(--color-text-2)]">Mensual</p>
             <p className="mt-1 font-mono text-2xl font-bold text-[var(--color-text)]">{PRICING_COPY.monthlyLine}</p>
-            {MONTHLY_URL ? (
-              <a
-                href={MONTHLY_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mt-3 flex w-full items-center justify-center rounded-lg border-2 border-[var(--color-accent)] py-2 text-xs font-semibold text-[var(--color-accent)] transition hover:bg-[var(--color-surface)]"
-              >
-                Suscribirse mensual
-              </a>
-            ) : (
-              <p className="mt-3 text-[10px] text-[var(--color-text-2)] opacity-60">Pago próximamente</p>
-            )}
+            <div className="mt-3 flex flex-col gap-1.5">
+              {MONTHLY_URL ? (
+                <a href={MONTHLY_URL} target="_blank" rel="noopener noreferrer"
+                  className="flex w-full items-center justify-center rounded-lg border-2 border-[var(--color-accent)] py-2 text-xs font-semibold text-[var(--color-accent)] transition hover:bg-[var(--color-surface)]">
+                  Mercado Pago
+                </a>
+              ) : null}
+              {MONTHLY_STRIPE ? (
+                <a href={MONTHLY_STRIPE} target="_blank" rel="noopener noreferrer"
+                  className="flex w-full items-center justify-center rounded-lg border-2 border-[#635BFF] py-2 text-xs font-semibold text-[#635BFF] transition hover:bg-[#635BFF]/5">
+                  Stripe
+                </a>
+              ) : null}
+              {!MONTHLY_URL && !MONTHLY_STRIPE && (
+                <p className="text-[10px] text-[var(--color-text-2)] opacity-60">Pago próximamente</p>
+              )}
+            </div>
           </div>
           <div className="rounded-xl border-2 border-[var(--color-accent)]/40 bg-[var(--color-accent)]/5 px-4 py-3 relative">
             <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 rounded-full bg-[var(--color-accent)] px-2 py-0.5 text-[10px] font-bold text-white">MEJOR PRECIO</span>
             <p className="text-xs font-semibold uppercase tracking-wide text-[var(--color-text-2)]">Anual</p>
             <p className="mt-1 font-mono text-2xl font-bold text-[var(--color-text)]">{PRICING_COPY.annualLine}</p>
-            {ANNUAL_URL ? (
-              <a
-                href={ANNUAL_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mt-3 flex w-full items-center justify-center rounded-lg bg-[var(--color-accent)] py-2 text-xs font-semibold text-white transition hover:brightness-105"
-              >
-                Suscribirse anual
-              </a>
-            ) : (
-              <p className="mt-3 text-[10px] text-[var(--color-text-2)] opacity-60">Pago próximamente</p>
-            )}
+            <div className="mt-3 flex flex-col gap-1.5">
+              {ANNUAL_URL ? (
+                <a href={ANNUAL_URL} target="_blank" rel="noopener noreferrer"
+                  className="flex w-full items-center justify-center rounded-lg bg-[var(--color-accent)] py-2 text-xs font-semibold text-white transition hover:brightness-105">
+                  Mercado Pago
+                </a>
+              ) : null}
+              {ANNUAL_STRIPE ? (
+                <a href={ANNUAL_STRIPE} target="_blank" rel="noopener noreferrer"
+                  className="flex w-full items-center justify-center rounded-lg bg-[#635BFF] py-2 text-xs font-semibold text-white transition hover:brightness-105">
+                  Stripe
+                </a>
+              ) : null}
+              {!ANNUAL_URL && !ANNUAL_STRIPE && (
+                <p className="text-[10px] text-[var(--color-text-2)] opacity-60">Pago próximamente</p>
+              )}
+            </div>
           </div>
         </div>
         <p className="mt-2 text-center text-xs text-[var(--color-text-2)]">{PRICING_COPY.annualSavings}</p>
