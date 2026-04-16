@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { useFocusTrap } from '../../hooks/useFocusTrap'
 import { PRICING_COPY } from '../../utils/pricingCopy'
@@ -8,13 +9,40 @@ const MONTHLY_URL = import.meta.env.VITE_PRO_CHECKOUT_MONTHLY_URL || import.meta
 const ANNUAL_URL = import.meta.env.VITE_PRO_CHECKOUT_ANNUAL_URL || import.meta.env.VITE_PRO_CHECKOUT_URL || MP_ANNUAL_FALLBACK
 const MONTHLY_STRIPE = import.meta.env.VITE_PRO_CHECKOUT_MONTHLY_URL_STRIPE
 const ANNUAL_STRIPE = import.meta.env.VITE_PRO_CHECKOUT_ANNUAL_URL_STRIPE
-const hasCheckout = !!(MONTHLY_URL || ANNUAL_URL || MONTHLY_STRIPE || ANNUAL_STRIPE)
 
 /**
  * Modal de upgrade a PRO — fricción en features premium
+ * onActivatePro(data) se llama cuando la verificación del pago es exitosa
  */
-export function UpgradeModal({ open, onClose, onActivateDemo }) {
+export function UpgradeModal({ open, onClose, onActivatePro }) {
   const trapRef = useFocusTrap(open)
+  const [recoverId, setRecoverId] = useState('')
+  const [recoverStatus, setRecoverStatus] = useState(null) // null | 'loading' | 'ok' | 'error'
+  const [recoverMsg, setRecoverMsg] = useState('')
+
+  const handleRecover = async () => {
+    const id = recoverId.trim()
+    if (!id || recoverStatus === 'loading') return
+    setRecoverStatus('loading')
+    setRecoverMsg('')
+    try {
+      const isNumeric = /^\d+$/.test(id)
+      const qs = isNumeric ? `payment_id=${encodeURIComponent(id)}` : `preapproval_id=${encodeURIComponent(id)}`
+      const r = await fetch(`/api/verify-payment?${qs}`)
+      const data = await r.json()
+      if (data.ok) {
+        setRecoverStatus('ok')
+        onActivatePro?.(data)
+      } else {
+        setRecoverStatus('error')
+        setRecoverMsg(data.error || 'No se pudo verificar el pago. Revisá el ID e intentá nuevamente.')
+      }
+    } catch {
+      setRecoverStatus('error')
+      setRecoverMsg('Error de conexión. Verificá tu internet e intentá de nuevo.')
+    }
+  }
+
   if (!open) return null
 
   return (
@@ -54,6 +82,7 @@ export function UpgradeModal({ open, onClose, onActivateDemo }) {
             </li>
           ))}
         </ul>
+
         <div className="mt-6 grid grid-cols-2 gap-3">
           <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-2)] px-4 py-3">
             <p className="text-xs font-semibold uppercase tracking-wide text-[var(--color-text-2)]">Mensual</p>
@@ -71,9 +100,6 @@ export function UpgradeModal({ open, onClose, onActivateDemo }) {
                   Stripe
                 </a>
               ) : null}
-              {!MONTHLY_URL && !MONTHLY_STRIPE && (
-                <p className="text-[10px] text-[var(--color-text-2)] opacity-60">Pago próximamente</p>
-              )}
             </div>
           </div>
           <div className="rounded-xl border-2 border-[var(--color-accent)]/40 bg-[var(--color-accent)]/5 px-4 py-3 relative">
@@ -93,29 +119,46 @@ export function UpgradeModal({ open, onClose, onActivateDemo }) {
                   Stripe
                 </a>
               ) : null}
-              {!ANNUAL_URL && !ANNUAL_STRIPE && (
-                <p className="text-[10px] text-[var(--color-text-2)] opacity-60">Pago próximamente</p>
-              )}
             </div>
           </div>
         </div>
         <p className="mt-2 text-center text-xs text-[var(--color-text-2)]">{PRICING_COPY.annualSavings}</p>
-        <button
-          type="button"
-          onClick={onActivateDemo}
-          className="mt-5 w-full rounded-xl bg-gradient-to-r from-[#c1440e] to-[#8b4513] py-3 text-center text-sm font-semibold text-white shadow-md transition hover:brightness-105"
-        >
-          {hasCheckout ? 'Probar PRO gratis en este dispositivo' : 'Activar PRO de prueba (solo este dispositivo)'}
-        </button>
-        <p className="mt-2 text-center text-xs text-[var(--color-text-2)]">
-          {hasCheckout
-            ? 'Pagá por el enlace de arriba para acceso permanente. La prueba es solo en este navegador.'
-            : 'PRO de prueba se guarda en este navegador. El pago real estará disponible pronto.'}
-        </p>
+
+        <div className="mt-5 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-2)] p-4">
+          <p className="text-sm font-semibold text-[var(--color-text)]">¿Ya pagaste? Recuperá tu acceso PRO</p>
+          <p className="mt-1 text-xs text-[var(--color-text-2)]">
+            Ingresá el ID de tu suscripción de Mercado Pago. Lo encontrás en el email de confirmación o en mercadopago.com.ar → Suscripciones.
+          </p>
+          <div className="mt-3 flex gap-2">
+            <input
+              type="text"
+              value={recoverId}
+              onChange={(e) => { setRecoverId(e.target.value); setRecoverStatus(null) }}
+              onKeyDown={(e) => e.key === 'Enter' && handleRecover()}
+              placeholder="ID de suscripción o pago"
+              className="min-w-0 flex-1 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-sm outline-none focus:border-[var(--color-accent)]"
+            />
+            <button
+              type="button"
+              onClick={handleRecover}
+              disabled={recoverStatus === 'loading' || !recoverId.trim()}
+              className="rounded-lg bg-[var(--color-primary)] px-4 py-2 text-sm font-semibold text-white transition hover:brightness-105 disabled:opacity-50"
+            >
+              {recoverStatus === 'loading' ? 'Verificando…' : 'Verificar'}
+            </button>
+          </div>
+          {recoverStatus === 'error' && (
+            <p className="mt-2 text-xs text-red-600">{recoverMsg}</p>
+          )}
+          {recoverStatus === 'ok' && (
+            <p className="mt-2 text-xs font-semibold text-emerald-600">¡PRO activado con éxito en este dispositivo!</p>
+          )}
+        </div>
+
         <button
           type="button"
           onClick={onClose}
-          className="mt-4 w-full text-center text-sm text-[var(--color-text-2)] underline"
+          className="mt-5 w-full text-center text-sm text-[var(--color-text-2)] underline"
         >
           Seguir con plan gratuito
         </button>

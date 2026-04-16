@@ -30,7 +30,7 @@ const Dashboard = lazy(() => import('./components/Dashboard/Dashboard').then((m)
  */
 function AppInner() {
   const [plan, setPlan] = useLocalStorage(LS_KEYS.plan, 'free')
-  const { isPro, activateProDemo } = usePlan(plan, setPlan)
+  const { isPro } = usePlan(plan, setPlan)
   const [empresa, setEmpresa] = useLocalStorage(LS_KEYS.empresa, null)
   const [presupuestos, setPresupuestos] = useLocalStorage(LS_KEYS.presupuestos, [])
   const [plantillas, setPlantillas] = useLocalStorage(LS_KEYS.plantillas, [])
@@ -46,6 +46,49 @@ function AppInner() {
   const [emailModalInstance, setEmailModalInstance] = useState(0)
 
   const { push: toast } = useToast()
+
+  const activatePro = useCallback((data) => {
+    saveLicense(data)
+    setPlan('pro')
+    setUpgradeOpen(false)
+    toast('\u00a1PRO activado! Bienvenido a Obra Pro PRO \uD83C\uDF89', 'success')
+  }, [setPlan, toast])
+
+  const exportBackup = useCallback(() => {
+    try {
+      const payload = JSON.stringify({ version: 1, exportedAt: new Date().toISOString(), empresa, presupuestos, plantillas }, null, 2)
+      const blob = new Blob([payload], { type: 'application/json' })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `obrapro-backup-${new Date().toISOString().slice(0, 10)}.json`
+      a.click()
+      URL.revokeObjectURL(url)
+      toast('Backup descargado', 'success')
+    } catch {
+      toast('Error al exportar', 'error')
+    }
+  }, [empresa, presupuestos, plantillas, toast])
+
+  const importBackup = useCallback((e) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    const reader = new FileReader()
+    reader.onload = () => {
+      try {
+        const data = JSON.parse(String(reader.result || ''))
+        if (!data.version) throw new Error('invalid')
+        if (data.empresa) setEmpresa(data.empresa)
+        if (Array.isArray(data.presupuestos)) setPresupuestos(data.presupuestos)
+        if (Array.isArray(data.plantillas)) setPlantillas(data.plantillas)
+        toast(`Backup restaurado: ${(data.presupuestos || []).length} presupuesto(s) importado(s)`, 'success')
+      } catch {
+        toast('Archivo inv\u00e1lido. Aseg\u00farate de usar un backup de Obra Pro.', 'error')
+      }
+    }
+    reader.readAsText(file)
+    e.target.value = ''
+  }, [setEmpresa, setPresupuestos, setPlantillas, toast])
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
@@ -72,11 +115,9 @@ function AppInner() {
       })
       .then((data) => {
         if (data.ok) {
-          saveLicense(data)
-          setPlan('pro')
-          toast('¡PRO activado! Bienvenido a Obra Pro PRO 🎉', 'success')
+          activatePro(data)
         } else {
-          toast(`No pudimos verificar el pago: ${data.error}. Contactános por WhatsApp.`, 'error')
+          toast(`No pudimos verificar el pago: ${data.error}. Si el problema persiste, usá el botón "¿Ya pagaste?" en el menú de planes.`, 'error')
         }
       })
       .catch((err) => {
@@ -330,10 +371,34 @@ function AppInner() {
                     initial={empresa || {}}
                     onSave={(d) => {
                       setEmpresa(d)
-                      toast('Configuración actualizada', 'success')
+                      toast('Configuraci\u00f3n actualizada', 'success')
                     }}
                     onCancel={() => setAppScreen('nuevo')}
                   />
+                  <div className="mx-auto max-w-2xl px-4 pb-28 lg:pb-8">
+                    <div className="mt-6 rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] p-5">
+                      <h3 className="font-display text-lg font-bold text-[var(--color-text)]">Respaldo de datos</h3>
+                      <p className="mt-1 text-sm text-[var(--color-text-2)]">
+                        Tus presupuestos se guardan en este navegador. Export\u00e1 un backup para no perder nada si cambi\u00e1s de dispositivo o borr\u00e1s el navegador.
+                      </p>
+                      <div className="mt-4 flex flex-wrap gap-3">
+                        <button
+                          type="button"
+                          onClick={exportBackup}
+                          className="rounded-xl bg-[var(--color-primary)] px-4 py-2.5 text-sm font-semibold text-white transition hover:brightness-105"
+                        >
+                          Exportar backup (.json)
+                        </button>
+                        <label className="cursor-pointer rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-2)] px-4 py-2.5 text-sm font-semibold text-[var(--color-text)] transition hover:bg-[var(--color-border)]">
+                          Importar backup
+                          <input type="file" accept=".json" className="hidden" onChange={importBackup} />
+                        </label>
+                      </div>
+                      <p className="mt-3 text-xs text-[var(--color-text-2)]">
+                        El backup incluye empresa, presupuestos y plantillas. No incluye el plan PRO (recu\u00e9ralo desde el bot\u00f3n \u00abUpgrade\u00bb).
+                      </p>
+                    </div>
+                  </div>
                 </Suspense>
               )}
             </main>
@@ -346,11 +411,7 @@ function AppInner() {
       <UpgradeModal
         open={upgradeOpen}
         onClose={() => setUpgradeOpen(false)}
-        onActivateDemo={() => {
-          activateProDemo()
-          setUpgradeOpen(false)
-          toast('Plan PRO activado en este dispositivo', 'success')
-        }}
+        onActivatePro={activatePro}
       />
 
       <PreviewModal
