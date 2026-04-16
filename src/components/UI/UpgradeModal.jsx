@@ -2,8 +2,10 @@ import { motion } from 'framer-motion'
 import { useFocusTrap } from '../../hooks/useFocusTrap'
 import { PRICING_COPY } from '../../utils/pricingCopy'
 
-const MONTHLY_URL = import.meta.env.VITE_PRO_CHECKOUT_MONTHLY_URL || import.meta.env.VITE_PRO_CHECKOUT_URL
-const ANNUAL_URL = import.meta.env.VITE_PRO_CHECKOUT_ANNUAL_URL || import.meta.env.VITE_PRO_CHECKOUT_URL
+const MP_MONTHLY_FALLBACK = 'https://www.mercadopago.com.ar/subscriptions/checkout?preapproval_plan_id=694c8af4e235462d805a3626647f3c1c'
+const MP_ANNUAL_FALLBACK = 'https://www.mercadopago.com.ar/subscriptions/checkout?preapproval_plan_id=367ba17f12a5489a9bced3ff07824502'
+const MONTHLY_URL = import.meta.env.VITE_PRO_CHECKOUT_MONTHLY_URL || import.meta.env.VITE_PRO_CHECKOUT_URL || MP_MONTHLY_FALLBACK
+const ANNUAL_URL = import.meta.env.VITE_PRO_CHECKOUT_ANNUAL_URL || import.meta.env.VITE_PRO_CHECKOUT_URL || MP_ANNUAL_FALLBACK
 const MONTHLY_STRIPE = import.meta.env.VITE_PRO_CHECKOUT_MONTHLY_URL_STRIPE
 const ANNUAL_STRIPE = import.meta.env.VITE_PRO_CHECKOUT_ANNUAL_URL_STRIPE
 const hasCheckout = !!(MONTHLY_URL || ANNUAL_URL || MONTHLY_STRIPE || ANNUAL_STRIPE)
@@ -29,7 +31,7 @@ export function UpgradeModal({ open, onClose, onActivateDemo }) {
         initial={{ opacity: 0, scale: 0.97 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ type: 'spring', stiffness: 320, damping: 28 }}
-        className="w-full max-w-lg rounded-2xl border-2 border-[var(--color-accent)] bg-[var(--color-surface)] p-8 shadow-2xl"
+        className="w-full max-w-lg rounded-2xl border-2 border-[var(--color-accent)] bg-[var(--color-surface)] p-6 shadow-2xl overflow-y-auto max-h-[90dvh]"
       >
         <h2 id="upgrade-title" className="font-display text-2xl font-bold text-[var(--color-text)]">
           Pasá a PRO: presupuestos sin techo

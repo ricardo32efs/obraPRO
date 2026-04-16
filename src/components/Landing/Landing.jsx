@@ -3,6 +3,9 @@ import { motion, useInView } from 'framer-motion'
 import { LegalInfoModal } from '../UI/LegalInfoModal'
 import { PRICING_COPY } from '../../utils/pricingCopy'
 
+const MP_MONTHLY_URL = 'https://www.mercadopago.com.ar/subscriptions/checkout?preapproval_plan_id=694c8af4e235462d805a3626647f3c1c'
+const MP_ANNUAL_URL = 'https://www.mercadopago.com.ar/subscriptions/checkout?preapproval_plan_id=367ba17f12a5489a9bced3ff07824502'
+
 function Logo() {
   return (
     <svg width="36" height="36" viewBox="0 0 32 32" className="text-[var(--color-accent)]" aria-hidden>
@@ -282,25 +285,38 @@ export function Landing({
               Más elegido
             </span>
             <h3 className="font-display text-xl font-bold">PRO</h3>
-            <div className="mt-4 flex items-end gap-2">
-              <p className="font-mono text-3xl">{PRICING_COPY.monthlyLine}</p>
-            </div>
-            <p className="mt-1 text-sm opacity-80">
-              o {PRICING_COPY.annualLine} — {PRICING_COPY.annualSavings}
-            </p>
-            <ul className="mt-4 space-y-2 text-sm opacity-95">
+            <ul className="mt-4 space-y-1.5 text-sm opacity-95">
               <li>✓ Presupuestos ilimitados</li>
               <li>✓ PDF con tu logo y colores</li>
               <li>✓ Dashboard, plantillas, Excel y email</li>
               <li>✓ Sin permanencia. Cancelás cuando quieras.</li>
             </ul>
-            <button
-              type="button"
-              onClick={onCrearPresupuesto}
-              className="mt-6 mx-auto block w-[80%] rounded-xl bg-[var(--color-accent)] py-3 text-sm font-semibold text-white"
-            >
-              Entrar a la app y elegir PRO
-            </button>
+            <div className="mt-5 flex flex-col gap-2">
+              <a
+                href={MP_MONTHLY_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block w-full rounded-xl bg-[var(--color-accent)] py-3 text-center text-sm font-bold text-white transition hover:brightness-110"
+              >
+                Mensual · {PRICING_COPY.monthlyLine}
+              </a>
+              <a
+                href={MP_ANNUAL_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block w-full rounded-xl border-2 border-white/70 py-3 text-center text-sm font-bold text-white transition hover:bg-white/10"
+              >
+                Anual · {PRICING_COPY.annualLine} ⭐
+              </a>
+              <p className="text-center text-[11px] opacity-60 mt-0.5">{PRICING_COPY.annualSavings}</p>
+              <button
+                type="button"
+                onClick={onCrearPresupuesto}
+                className="mt-1 block w-full rounded-xl py-2 text-center text-xs font-medium text-white/60 transition hover:text-white"
+              >
+                Probar gratis primero →
+              </button>
+            </div>
           </div>
         </div>
         <p className="mt-6 text-center text-sm text-[var(--color-text-2)]">
