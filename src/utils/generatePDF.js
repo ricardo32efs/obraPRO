@@ -131,8 +131,8 @@ export function buildPresupuestoPdfDoc(data, opts = { isPro: false }) {
     r.nombre,
     r.unidad,
     String(r.cantidad),
-    formatCurrency(r.precioUnitario),
-    formatCurrency(r.cantidad * r.precioUnitario),
+    r.precioUnitario ? formatCurrency(r.precioUnitario) : 'A confirmar',
+    r.precioUnitario ? formatCurrency(r.cantidad * r.precioUnitario) : 'A confirmar',
   ])
 
   doc.setFont('times', 'bold')
@@ -164,8 +164,8 @@ export function buildPresupuestoPdfDoc(data, opts = { isPro: false }) {
     r.categoria,
     String(r.cantidad),
     r.unidad,
-    formatCurrency(r.precioUnitario),
-    formatCurrency(r.cantidad * r.precioUnitario),
+    r.precioUnitario ? formatCurrency(r.precioUnitario) : 'A confirmar',
+    r.precioUnitario ? formatCurrency(r.cantidad * r.precioUnitario) : 'A confirmar',
   ])
 
   doc.setFont('times', 'bold')
