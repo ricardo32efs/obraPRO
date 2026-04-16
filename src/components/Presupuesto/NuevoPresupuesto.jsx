@@ -559,7 +559,7 @@ export function NuevoPresupuesto({
             </div>
           )}
           <div>
-            <label className="text-sm font-medium">Descripción (máx. 2000)</label>
+            <label className="text-sm font-medium">Descripción <span className="text-xs font-normal text-[var(--color-text-2)]">(opcional, máx. 2000)</span></label>
             <textarea
               maxLength={2000}
               className="mt-1 min-h-[100px] w-full rounded-lg border border-[var(--color-border)] p-2 text-sm"
@@ -571,7 +571,7 @@ export function NuevoPresupuesto({
           <div className="rounded-xl border-2 border-[var(--color-accent)]/30 bg-[var(--color-surface)] p-4 space-y-4 shadow-sm">
             <p className="text-sm font-bold text-[var(--color-text)] border-b border-[var(--color-border)] pb-2">Fechas y validez</p>
             <div>
-              <label className="block text-sm font-medium text-[var(--color-text)]">Inicio estimado</label>
+              <label className="block text-sm font-medium text-[var(--color-text)]">Inicio estimado <span className="text-xs font-normal text-[var(--color-text-2)]">(opcional)</span></label>
               <input
                 type="date"
                 className="mt-1 w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-2)] px-3 py-2 text-sm font-medium"
@@ -580,7 +580,7 @@ export function NuevoPresupuesto({
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-[var(--color-text)]">Entrega estimada</label>
+              <label className="block text-sm font-medium text-[var(--color-text)]">Entrega estimada <span className="text-xs font-normal text-[var(--color-text-2)]">(opcional)</span></label>
               <input
                 type="date"
                 className="mt-1 w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-2)] px-3 py-2 text-sm font-medium"
@@ -1229,7 +1229,7 @@ export function NuevoPresupuesto({
 
           <section className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] p-4 shadow-sm">
             <div className="flex flex-wrap items-center justify-between gap-2">
-              <label className="text-sm font-medium">Condiciones del presupuesto</label>
+              <label className="text-sm font-medium">Condiciones del presupuesto <span className="text-xs font-normal text-[var(--color-text-2)]">(opcional)</span></label>
               <button
                 type="button"
                 onClick={() =>
@@ -1475,7 +1475,7 @@ function Field({ label, value, onChange, error, type = 'text', required }) {
     <div>
       <label className="text-sm font-medium text-[var(--color-text)]">
         {label}
-        {required ? ' *' : ''}
+        {required ? ' *' : <span className="ml-1 text-xs font-normal text-[var(--color-text-2)]"> (opcional)</span>}
       </label>
       <input
         type={type}

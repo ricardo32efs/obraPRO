@@ -236,7 +236,7 @@ function Field({ label, value, onChange, error, type = 'text', required, placeho
     <div>
       <label className="block text-sm font-medium text-[var(--color-text)]">
         {label}
-        {required ? ' *' : ''}
+        {required ? ' *' : <span className="ml-1 text-xs font-normal text-[var(--color-text-2)]">(opcional)</span>}
       </label>
       <input
         type={type}
