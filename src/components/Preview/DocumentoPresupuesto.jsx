@@ -114,8 +114,8 @@ export function DocumentoPresupuesto({ payload, empresa }) {
           r.nombre,
           r.unidad,
           r.cantidad,
-          formatCurrency(r.precioUnitario),
-          formatCurrency(r.cantidad * r.precioUnitario),
+          r.precioUnitario ? formatCurrency(r.precioUnitario) : 'A confirmar',
+          r.precioUnitario ? formatCurrency(r.cantidad * r.precioUnitario) : 'A confirmar',
         ])}
         foot={['Subtotal materiales', '', '', '', formatCurrency(subtotalMateriales)]}
       />
@@ -129,8 +129,8 @@ export function DocumentoPresupuesto({ payload, empresa }) {
           r.categoria,
           r.cantidad,
           r.unidad,
-          formatCurrency(r.precioUnitario),
-          formatCurrency(r.cantidad * r.precioUnitario),
+          r.precioUnitario ? formatCurrency(r.precioUnitario) : 'A confirmar',
+          r.precioUnitario ? formatCurrency(r.cantidad * r.precioUnitario) : 'A confirmar',
         ])}
         foot={['Subtotal mano de obra', '', '', '', '', formatCurrency(subtotalMano)]}
       />

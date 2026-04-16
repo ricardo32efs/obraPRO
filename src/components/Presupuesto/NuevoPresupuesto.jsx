@@ -559,14 +559,14 @@ export function NuevoPresupuesto({
             </div>
           )}
           <div>
-            <label className="text-sm font-medium">Descripción (máx. 500)</label>
+            <label className="text-sm font-medium">Descripción (máx. 2000)</label>
             <textarea
-              maxLength={500}
+              maxLength={2000}
               className="mt-1 min-h-[100px] w-full rounded-lg border border-[var(--color-border)] p-2 text-sm"
               value={form.descripcion}
               onChange={(e) => setForm((f) => ({ ...f, descripcion: e.target.value }))}
             />
-            <p className="text-xs text-[var(--color-text-2)]">{form.descripcion.length}/500</p>
+            <p className="text-xs text-[var(--color-text-2)]">{form.descripcion.length}/2000</p>
           </div>
           <div className="rounded-xl border-2 border-[var(--color-accent)]/30 bg-[var(--color-surface)] p-4 space-y-4 shadow-sm">
             <p className="text-sm font-bold text-[var(--color-text)] border-b border-[var(--color-border)] pb-2">Fechas y validez</p>
@@ -722,6 +722,7 @@ export function NuevoPresupuesto({
                         <td className="p-1">
                           <input
                             inputMode="decimal"
+                            placeholder="Opcional"
                             className="w-full rounded border border-[var(--color-border)] px-2 py-1.5 font-mono text-sm"
                             value={row.precioUnitario}
                             onChange={(e) =>
@@ -736,8 +737,8 @@ export function NuevoPresupuesto({
                             }
                           />
                         </td>
-                        <td className="p-1 font-mono text-right">
-                          {formatCurrency(row.cantidad * row.precioUnitario)}
+                        <td className="p-1 font-mono text-right text-[var(--color-text-2)]">
+                          {row.precioUnitario ? formatCurrency(row.cantidad * row.precioUnitario) : '—'}
                         </td>
                         <td className="p-1">
                           <button
@@ -816,8 +817,8 @@ export function NuevoPresupuesto({
                     />
                     <input
                       inputMode="decimal"
-                      placeholder="P. unitario"
-                      className="col-span-2 rounded border px-2 py-2 font-mono text-sm"
+                      placeholder="Precio (opcional)"
+                      className="col-span-2 rounded border border-[var(--color-border)] px-2 py-2 font-mono text-sm"
                       value={row.precioUnitario}
                       onChange={(e) =>
                         setForm((f) => {
@@ -829,7 +830,7 @@ export function NuevoPresupuesto({
                     />
                   </div>
                   <div className="mt-2 flex justify-between text-sm">
-                    <span className="font-mono">{formatCurrency(row.cantidad * row.precioUnitario)}</span>
+                    <span className="font-mono text-[var(--color-text-2)]">{row.precioUnitario ? formatCurrency(row.cantidad * row.precioUnitario) : '—'}</span>
                     <button
                       type="button"
                       className="text-[var(--color-danger)]"
@@ -869,7 +870,7 @@ export function NuevoPresupuesto({
             <p className="mb-3 text-xs text-[var(--color-text-2)]">
               Unidad de medida = cómo cobrás el trabajo (ej: hora, día, m² o por trabajo completo).
             </p>
-            <div className="overflow-x-auto">
+            <div className="hidden overflow-x-auto md:block">
               <table className="w-full min-w-[680px] border-collapse text-sm">
                 <thead>
                   <tr className="bg-[var(--color-surface-2)] text-left text-xs uppercase text-[var(--color-text-2)]">
@@ -958,6 +959,7 @@ export function NuevoPresupuesto({
                       <td className="p-1">
                         <input
                           inputMode="decimal"
+                          placeholder="Opcional"
                           className="w-full rounded border px-2 py-1.5 font-mono"
                           value={row.precioUnitario}
                           onChange={(e) =>
@@ -969,8 +971,8 @@ export function NuevoPresupuesto({
                           }
                         />
                       </td>
-                      <td className="p-1 font-mono text-right">
-                        {formatCurrency(row.cantidad * row.precioUnitario)}
+                      <td className="p-1 font-mono text-right text-[var(--color-text-2)]">
+                        {row.precioUnitario ? formatCurrency(row.cantidad * row.precioUnitario) : '—'}
                       </td>
                       <td className="p-1">
                         <button
@@ -991,6 +993,102 @@ export function NuevoPresupuesto({
                 </tbody>
               </table>
             </div>
+
+            {/* Mobile cards mano de obra */}
+            <div className="space-y-3 md:hidden">
+              {form.manoObra.map((row, idx) => (
+                <div key={row.id} className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-2)] p-3">
+                  <input
+                    className="w-full rounded border border-[var(--color-border)] bg-[var(--color-surface)] px-2 py-2 text-sm"
+                    list="tareas-mano-mobile"
+                    placeholder="Descripción del trabajo"
+                    value={row.descripcion}
+                    onChange={(e) =>
+                      setForm((f) => {
+                        const rows = [...f.manoObra]
+                        rows[idx] = { ...rows[idx], descripcion: e.target.value }
+                        return { ...f, manoObra: rows }
+                      })
+                    }
+                  />
+                  <datalist id="tareas-mano-mobile">
+                    {TAREAS_MANO_DEFAULT.map((t) => <option key={t} value={t} />)}
+                  </datalist>
+                  <div className="mt-2 grid grid-cols-2 gap-2">
+                    <select
+                      className="rounded border border-[var(--color-border)] px-2 py-2 text-sm"
+                      value={row.categoria}
+                      onChange={(e) =>
+                        setForm((f) => {
+                          const rows = [...f.manoObra]
+                          rows[idx] = { ...rows[idx], categoria: e.target.value }
+                          return { ...f, manoObra: rows }
+                        })
+                      }
+                    >
+                      {CATEGORIAS_MANO.map((c) => <option key={c}>{c}</option>)}
+                    </select>
+                    <input
+                      inputMode="decimal"
+                      placeholder="Cantidad"
+                      className="rounded border border-[var(--color-border)] px-2 py-2 font-mono text-sm"
+                      value={row.cantidad}
+                      onChange={(e) =>
+                        setForm((f) => {
+                          const rows = [...f.manoObra]
+                          rows[idx] = { ...rows[idx], cantidad: parseFloat(e.target.value) || 0 }
+                          return { ...f, manoObra: rows }
+                        })
+                      }
+                    />
+                    <select
+                      className="rounded border border-[var(--color-border)] px-2 py-2 text-sm"
+                      value={row.unidad}
+                      onChange={(e) =>
+                        setForm((f) => {
+                          const rows = [...f.manoObra]
+                          rows[idx] = { ...rows[idx], unidad: e.target.value }
+                          return { ...f, manoObra: rows }
+                        })
+                      }
+                    >
+                      {UNIDADES_MANO.map((u) => <option key={u}>{u}</option>)}
+                    </select>
+                    <input
+                      inputMode="decimal"
+                      placeholder="Precio (opcional)"
+                      className="rounded border border-[var(--color-border)] px-2 py-2 font-mono text-sm"
+                      value={row.precioUnitario}
+                      onChange={(e) =>
+                        setForm((f) => {
+                          const rows = [...f.manoObra]
+                          rows[idx] = { ...rows[idx], precioUnitario: parseCurrencyInput(e.target.value) }
+                          return { ...f, manoObra: rows }
+                        })
+                      }
+                    />
+                  </div>
+                  <div className="mt-2 flex items-center justify-between text-sm">
+                    <span className="font-mono text-[var(--color-text-2)]">
+                      {row.precioUnitario ? formatCurrency(row.cantidad * row.precioUnitario) : '—'}
+                    </span>
+                    <button
+                      type="button"
+                      className="text-[var(--color-danger)]"
+                      onClick={() =>
+                        setForm((f) => ({
+                          ...f,
+                          manoObra: f.manoObra.filter((_, i) => i !== idx),
+                        }))
+                      }
+                    >
+                      Eliminar
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+
             <p className="mt-3 text-right text-sm font-semibold">
               Subtotal mano de obra: <span className="font-mono">{formatCurrency(totals.subtotalMano)}</span>
             </p>
