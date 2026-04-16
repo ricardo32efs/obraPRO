@@ -148,32 +148,50 @@ export function ConfigEmpresa({ initial, embedded, onSave, onCancel, isPro = fal
           )}
         </div>
 
-        <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-2)]/60 p-4">
-          <p className="text-sm font-semibold text-[var(--color-text)]">PDF — personalización PRO</p>
-          <div className="mt-3 grid gap-3 md:grid-cols-2">
-            <div>
-              <label className="text-xs font-medium text-[var(--color-text-2)]">Color de acento</label>
-              <input
-                type="color"
-                value={form.pdfAccentColor}
-                onChange={(e) => setForm((f) => ({ ...f, pdfAccentColor: e.target.value }))}
-                className="mt-1 h-10 w-full cursor-pointer rounded border border-[var(--color-border)]"
+        <div className="relative rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-2)]/60 p-4">
+          <div className="flex items-center gap-2">
+            <p className="text-sm font-semibold text-[var(--color-text)]">PDF — personalización</p>
+            <span className="rounded-full bg-[var(--color-accent)] px-2 py-0.5 text-[10px] font-bold text-white">PRO</span>
+          </div>
+          <div className={`mt-3 space-y-3 ${!isPro ? 'pointer-events-none select-none opacity-40' : ''}`}>
+            <div className="grid gap-3 md:grid-cols-2">
+              <div>
+                <label className="text-xs font-medium text-[var(--color-text-2)]">Color de acento</label>
+                <input
+                  type="color"
+                  value={form.pdfAccentColor}
+                  onChange={(e) => setForm((f) => ({ ...f, pdfAccentColor: e.target.value }))}
+                  className="mt-1 h-10 w-full cursor-pointer rounded border border-[var(--color-border)]"
+                  disabled={!isPro}
+                />
+              </div>
+              <Field
+                label="Pie de página del PDF"
+                value={form.pdfFooter}
+                onChange={(v) => setForm((f) => ({ ...f, pdfFooter: v }))}
               />
             </div>
-            <Field
-              label="Pie de página del PDF"
-              value={form.pdfFooter}
-              onChange={(v) => setForm((f) => ({ ...f, pdfFooter: v }))}
+            <label className="block text-xs font-medium text-[var(--color-text-2)]">
+              Condiciones generales predeterminadas
+            </label>
+            <textarea
+              className="min-h-[88px] w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-2 text-sm"
+              value={form.condicionesDefault}
+              onChange={(e) => setForm((f) => ({ ...f, condicionesDefault: e.target.value }))}
+              disabled={!isPro}
             />
           </div>
-          <label className="mt-3 block text-xs font-medium text-[var(--color-text-2)]">
-            Condiciones generales predeterminadas
-          </label>
-          <textarea
-            className="mt-1 min-h-[88px] w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-2 text-sm"
-            value={form.condicionesDefault}
-            onChange={(e) => setForm((f) => ({ ...f, condicionesDefault: e.target.value }))}
-          />
+          {!isPro && (
+            <button
+              type="button"
+              onClick={onRequestUpgrade}
+              className="absolute inset-0 flex items-center justify-center rounded-xl bg-[var(--color-surface)]/60 backdrop-blur-[1px]"
+            >
+              <span className="rounded-xl border border-[var(--color-accent)] bg-[var(--color-surface)] px-4 py-2 text-sm font-semibold text-[var(--color-accent)] shadow">
+                🔒 Disponible en PRO — Activar
+              </span>
+            </button>
+          )}
         </div>
 
         <div className="flex flex-wrap gap-2">

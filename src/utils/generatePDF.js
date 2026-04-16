@@ -67,7 +67,12 @@ export function buildPresupuestoPdfDoc(data, opts = { isPro: false }) {
     doc.setTextColor(107, 94, 82)
     doc.text(`Emisión: ${formatDateDDMMYYYY(data.fechaEmision)}`, marginL, pageH - 10)
     doc.text(`Pág. ${pageNumber} / ${pageCount}`, pageW - marginR, pageH - 10, { align: 'right' })
-    if (!isPro) {
+    if (isPro && data.empresa?.pdfFooter) {
+      doc.setFont('helvetica', 'normal')
+      doc.setFontSize(8)
+      doc.setTextColor(100, 100, 100)
+      doc.text(String(data.empresa.pdfFooter), pageW / 2, pageH - 5, { align: 'center' })
+    } else if (!isPro) {
       doc.setFont('helvetica', 'italic')
       doc.setFontSize(9)
       doc.setTextColor(140, 140, 140)
