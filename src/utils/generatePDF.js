@@ -127,67 +127,71 @@ export function buildPresupuestoPdfDoc(data, opts = { isPro: false }) {
     doc.setFont('helvetica', 'normal')
   }
 
-  const tableBodyMat = (data.materiales || []).map((r) => [
-    r.nombre,
-    r.unidad,
-    String(r.cantidad),
-    r.precioUnitario ? formatCurrency(r.precioUnitario) : 'A confirmar',
-    r.precioUnitario ? formatCurrency(r.cantidad * r.precioUnitario) : 'A confirmar',
-  ])
+  const matsConNombre = (data.materiales || []).filter((r) => String(r.nombre || '').trim())
+  const manoConNombre = (data.manoObra || []).filter((r) => String(r.descripcion || '').trim())
+  const sinPreciosMat = matsConNombre.length > 0 && matsConNombre.every((r) => !Number(r.precioUnitario))
+  const sinPreciosMano = manoConNombre.length > 0 && manoConNombre.every((r) => !Number(r.precioUnitario))
+  const todoSinPrecio =
+    (matsConNombre.length === 0 || sinPreciosMat) &&
+    (manoConNombre.length === 0 || sinPreciosMano)
+
+  const tableBodyMat = (data.materiales || []).map((r) =>
+    sinPreciosMat
+      ? [r.nombre, r.unidad, String(r.cantidad)]
+      : [r.nombre, r.unidad, String(r.cantidad), formatCurrency(r.precioUnitario), formatCurrency(r.cantidad * r.precioUnitario)]
+  )
 
   doc.setFont('times', 'bold')
   doc.setFontSize(11)
   doc.setTextColor(dark.r, dark.g, dark.b)
-  doc.text('MATERIALES', pageW / 2, y, { align: 'center' })
+  doc.text(
+    sinPreciosMat ? 'LISTA DE MATERIALES (precios a cotizar)' : 'MATERIALES',
+    pageW / 2, y, { align: 'center' }
+  )
   y += 3
   autoTable(doc, {
     startY: y,
-    head: [['Material', 'Unidad', 'Cantidad', 'P. Unitario', 'Subtotal']],
+    head: [sinPreciosMat
+      ? ['Material', 'Unidad', 'Cantidad']
+      : ['Material', 'Unidad', 'Cantidad', 'P. Unitario', 'Subtotal']],
     body: tableBodyMat,
     theme: 'striped',
     headStyles: { fillColor: [dark.r, dark.g, dark.b], textColor: 255, halign: 'center', valign: 'middle' },
     styles: { fontSize: 8.4, cellPadding: 3, font: 'helvetica', halign: 'center', valign: 'middle' },
-    columnStyles: {
-      0: { cellWidth: 68, halign: 'center', valign: 'middle' },
-      1: { cellWidth: 22, halign: 'center', valign: 'middle' },
-      2: { cellWidth: 24, halign: 'center', valign: 'middle' },
-      3: { cellWidth: 30, halign: 'center', valign: 'middle' },
-      4: { cellWidth: 30, halign: 'center', valign: 'middle' },
-    },
+    columnStyles: sinPreciosMat
+      ? { 0: { cellWidth: 90, halign: 'center', valign: 'middle' }, 1: { cellWidth: 42, halign: 'center', valign: 'middle' }, 2: { cellWidth: 42, halign: 'center', valign: 'middle' } }
+      : { 0: { cellWidth: 68, halign: 'center', valign: 'middle' }, 1: { cellWidth: 22, halign: 'center', valign: 'middle' }, 2: { cellWidth: 24, halign: 'center', valign: 'middle' }, 3: { cellWidth: 30, halign: 'center', valign: 'middle' }, 4: { cellWidth: 30, halign: 'center', valign: 'middle' } },
     tableWidth: 174,
     margin: { left: (pageW - 174) / 2, right: (pageW - 174) / 2 },
   })
   y = doc.lastAutoTable.finalY + 6
 
-  const tableBodyMo = (data.manoObra || []).map((r) => [
-    r.descripcion,
-    r.categoria,
-    String(r.cantidad),
-    r.unidad,
-    r.precioUnitario ? formatCurrency(r.precioUnitario) : 'A confirmar',
-    r.precioUnitario ? formatCurrency(r.cantidad * r.precioUnitario) : 'A confirmar',
-  ])
+  const tableBodyMo = (data.manoObra || []).map((r) =>
+    sinPreciosMano
+      ? [r.descripcion, r.categoria, String(r.cantidad), r.unidad]
+      : [r.descripcion, r.categoria, String(r.cantidad), r.unidad, formatCurrency(r.precioUnitario), formatCurrency(r.cantidad * r.precioUnitario)]
+  )
 
   doc.setFont('times', 'bold')
   doc.setFontSize(11)
   doc.setTextColor(dark.r, dark.g, dark.b)
-  doc.text('MANO DE OBRA', pageW / 2, y, { align: 'center' })
+  doc.text(
+    sinPreciosMano ? 'LISTA DE MANO DE OBRA (precios a cotizar)' : 'MANO DE OBRA',
+    pageW / 2, y, { align: 'center' }
+  )
   y += 3
   autoTable(doc, {
     startY: y,
-    head: [['Descripción', 'Categoría', 'Cant.', 'Unidad', 'P. Unit.', 'Subtotal']],
+    head: [sinPreciosMano
+      ? ['Descripción', 'Categoría', 'Cant.', 'Unidad']
+      : ['Descripción', 'Categoría', 'Cant.', 'Unidad', 'P. Unit.', 'Subtotal']],
     body: tableBodyMo,
     theme: 'striped',
     headStyles: { fillColor: [brown.r, brown.g, brown.b], textColor: 255, halign: 'center', valign: 'middle' },
     styles: { fontSize: 8.4, cellPadding: 3, font: 'helvetica', halign: 'center', valign: 'middle' },
-    columnStyles: {
-      0: { cellWidth: 52, halign: 'center', valign: 'middle' },
-      1: { cellWidth: 28, halign: 'center', valign: 'middle' },
-      2: { cellWidth: 20, halign: 'center', valign: 'middle' },
-      3: { cellWidth: 20, halign: 'center', valign: 'middle' },
-      4: { cellWidth: 27, halign: 'center', valign: 'middle' },
-      5: { cellWidth: 27, halign: 'center', valign: 'middle' },
-    },
+    columnStyles: sinPreciosMano
+      ? { 0: { cellWidth: 62, halign: 'center', valign: 'middle' }, 1: { cellWidth: 42, halign: 'center', valign: 'middle' }, 2: { cellWidth: 30, halign: 'center', valign: 'middle' }, 3: { cellWidth: 40, halign: 'center', valign: 'middle' } }
+      : { 0: { cellWidth: 52, halign: 'center', valign: 'middle' }, 1: { cellWidth: 28, halign: 'center', valign: 'middle' }, 2: { cellWidth: 20, halign: 'center', valign: 'middle' }, 3: { cellWidth: 20, halign: 'center', valign: 'middle' }, 4: { cellWidth: 27, halign: 'center', valign: 'middle' }, 5: { cellWidth: 27, halign: 'center', valign: 'middle' } },
     tableWidth: 174,
     margin: { left: (pageW - 174) / 2, right: (pageW - 174) / 2 },
   })
@@ -208,51 +212,66 @@ export function buildPresupuestoPdfDoc(data, opts = { isPro: false }) {
     y = doc.lastAutoTable.finalY + 6
   }
 
-  const lines = [
-    ['Subtotal materiales', formatCurrency(data.subtotalMateriales)],
-    ['Subtotal mano de obra', formatCurrency(data.subtotalMano)],
-    ['Gastos adicionales', formatCurrency(data.subtotalGastos)],
-    ['Subtotal', formatCurrency(data.subtotal)],
-  ]
-  if (data.incluirIva) {
-    lines.push(['IVA 21%', formatCurrency(data.ivaMonto)])
-  }
-  lines.push(['TOTAL FINAL', formatCurrency(data.totalFinal)])
-  const differsFromTotal = (value) => value != null && Math.abs(Number(value) - Number(data.totalFinal || 0)) > 0.009
-  if (data.includeEscenariosPdf && differsFromTotal(data.totalConContingencia)) {
-    lines.push([`Total + contingencia (${data.contingenciaPct ?? 0}%)`, formatCurrency(data.totalConContingencia)])
-  }
-  if (data.includeEscenariosPdf && differsFromTotal(data.precioSugeridoMargen)) {
-    lines.push([`Sugerido con margen (${data.margenPct ?? 0}%)`, formatCurrency(data.precioSugeridoMargen)])
-  }
-  if (data.includeEscenariosPdf && differsFromTotal(data.precioSugeridoMargenContingencia)) {
-    lines.push(['Sugerido margen + contingencia', formatCurrency(data.precioSugeridoMargenContingencia)])
-  }
-
-  const rightX = pageW - marginR
-  doc.setFont('helvetica', 'normal')
-  doc.setFontSize(9)
   let ly = y
-  lines.forEach(([k, v]) => {
-    const isTotal = k === 'TOTAL FINAL'
-    doc.setFont('helvetica', isTotal ? 'bold' : 'normal')
-    doc.setFontSize(isTotal ? 12 : 9)
-    doc.setTextColor(isTotal ? accentRgb.r : dark.r, isTotal ? accentRgb.g : dark.g, isTotal ? accentRgb.b : dark.b)
-    doc.text(k, rightX - 60, ly, { align: 'left' })
-    doc.text(v, rightX, ly, { align: 'right' })
-    ly += isTotal ? 8 : 6
-  })
-  ly += 2
-  doc.setDrawColor(214, 208, 196)
-  doc.setLineWidth(0.2)
-  doc.line(rightX - 70, ly, rightX, ly)
-  ly += 6
-  doc.setFont('helvetica', 'bold')
-  doc.setFontSize(9)
-  doc.setTextColor(dark.r, dark.g, dark.b)
-  if (data.includeAnticipoPdf) {
-    doc.text(`Anticipo (${data.anticipoPct}%): ${formatCurrency(data.anticipoMonto)}`, rightX, ly, { align: 'right' })
-    ly += 10
+  if (!todoSinPrecio) {
+    const lines = [
+      ['Subtotal materiales', formatCurrency(data.subtotalMateriales)],
+      ['Subtotal mano de obra', formatCurrency(data.subtotalMano)],
+      ['Gastos adicionales', formatCurrency(data.subtotalGastos)],
+      ['Subtotal', formatCurrency(data.subtotal)],
+    ]
+    if (data.incluirIva) {
+      lines.push(['IVA 21%', formatCurrency(data.ivaMonto)])
+    }
+    lines.push(['TOTAL FINAL', formatCurrency(data.totalFinal)])
+    const differsFromTotal = (value) => value != null && Math.abs(Number(value) - Number(data.totalFinal || 0)) > 0.009
+    if (data.includeEscenariosPdf && differsFromTotal(data.totalConContingencia)) {
+      lines.push([`Total + contingencia (${data.contingenciaPct ?? 0}%)`, formatCurrency(data.totalConContingencia)])
+    }
+    if (data.includeEscenariosPdf && differsFromTotal(data.precioSugeridoMargen)) {
+      lines.push([`Sugerido con margen (${data.margenPct ?? 0}%)`, formatCurrency(data.precioSugeridoMargen)])
+    }
+    if (data.includeEscenariosPdf && differsFromTotal(data.precioSugeridoMargenContingencia)) {
+      lines.push(['Sugerido margen + contingencia', formatCurrency(data.precioSugeridoMargenContingencia)])
+    }
+    const rightX = pageW - marginR
+    doc.setFont('helvetica', 'normal')
+    doc.setFontSize(9)
+    lines.forEach(([k, v]) => {
+      const isTotal = k === 'TOTAL FINAL'
+      doc.setFont('helvetica', isTotal ? 'bold' : 'normal')
+      doc.setFontSize(isTotal ? 12 : 9)
+      doc.setTextColor(isTotal ? accentRgb.r : dark.r, isTotal ? accentRgb.g : dark.g, isTotal ? accentRgb.b : dark.b)
+      doc.text(k, rightX - 60, ly, { align: 'left' })
+      doc.text(v, rightX, ly, { align: 'right' })
+      ly += isTotal ? 8 : 6
+    })
+    ly += 2
+    doc.setDrawColor(214, 208, 196)
+    doc.setLineWidth(0.2)
+    doc.line(rightX - 70, ly, rightX, ly)
+    ly += 6
+    doc.setFont('helvetica', 'bold')
+    doc.setFontSize(9)
+    doc.setTextColor(dark.r, dark.g, dark.b)
+    if (data.includeAnticipoPdf) {
+      doc.text(`Anticipo (${data.anticipoPct}%): ${formatCurrency(data.anticipoMonto)}`, rightX, ly, { align: 'right' })
+      ly += 10
+    }
+  } else {
+    doc.setDrawColor(accentRgb.r, accentRgb.g, accentRgb.b)
+    doc.setLineWidth(0.4)
+    doc.line(marginL, ly, pageW - marginR, ly)
+    ly += 6
+    doc.setFont('helvetica', 'italic')
+    doc.setFontSize(9)
+    doc.setTextColor(100, 100, 100)
+    const noteLines = doc.splitTextToSize(
+      'Nota: Los precios serán confirmados una vez cotizados con los proveedores.',
+      pageW - marginL - marginR
+    )
+    doc.text(noteLines, marginL, ly)
+    ly += noteLines.length * 5 + 4
   }
 
   if (data.includeChecklistCierrePdf && data.checklistCierre?.length) {
