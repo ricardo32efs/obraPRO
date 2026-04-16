@@ -52,27 +52,23 @@ export function validatePresupuestoForm(state) {
   const mats = materiales || []
   const manos = manoObra || []
   const matOk = mats.some(
-    (r) => String(r.nombre || '').trim() && Number(r.cantidad) > 0 && Number(r.precioUnitario) > 0,
+    (r) => String(r.nombre || '').trim() && Number(r.cantidad) > 0,
   )
   const manoOk = manos.some(
-    (r) =>
-      String(r.descripcion || '').trim() && Number(r.cantidad) > 0 && Number(r.precioUnitario) > 0,
+    (r) => String(r.descripcion || '').trim() && Number(r.cantidad) > 0,
   )
   if (!matOk && !manoOk) {
-    errors.items = 'Agregá al menos un material o un ítem de mano de obra completo (nombre, cantidad y precio).'
+    errors.items = 'Agregá al menos un material o un ítem de mano de obra completo (nombre y cantidad).'
   }
 
   mats.forEach((r, i) => {
-    if (String(r.nombre || '').trim() && (Number(r.cantidad) <= 0 || Number(r.precioUnitario) <= 0)) {
-      errors[`material_${i}`] = 'Cantidad y precio deben ser mayores a 0.'
+    if (String(r.nombre || '').trim() && Number(r.cantidad) <= 0) {
+      errors[`material_${i}`] = 'La cantidad debe ser mayor a 0.'
     }
   })
   manos.forEach((r, i) => {
-    if (
-      String(r.descripcion || '').trim() &&
-      (Number(r.cantidad) <= 0 || Number(r.precioUnitario) <= 0)
-    ) {
-      errors[`mano_${i}`] = 'Cantidad y precio deben ser mayores a 0.'
+    if (String(r.descripcion || '').trim() && Number(r.cantidad) <= 0) {
+      errors[`mano_${i}`] = 'La cantidad debe ser mayor a 0.'
     }
   })
 
