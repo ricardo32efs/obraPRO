@@ -69,8 +69,8 @@ export function buildPresupuestoPdfDoc(data, opts = { isPro: false }) {
     doc.text(`Pág. ${pageNumber} / ${pageCount}`, pageW - marginR, pageH - 10, { align: 'right' })
     if (!isPro) {
       doc.setFont('helvetica', 'italic')
-      doc.setFontSize(7)
-      doc.setTextColor(180, 180, 180)
+      doc.setFontSize(9)
+      doc.setTextColor(140, 140, 140)
       doc.text('Generado con Obra Pro · obraproweb.com', pageW / 2, pageH - 5, { align: 'center' })
     }
   }
