@@ -66,7 +66,10 @@ function AppInner() {
     toast('Verificando tu pago…', 'success')
 
     fetch(`/api/verify-payment?${qs}`)
-      .then((r) => r.json())
+      .then((r) => {
+        if (!r.ok && r.status === 404) throw new Error('endpoint_not_found')
+        return r.json()
+      })
       .then((data) => {
         if (data.ok) {
           saveLicense(data)
@@ -76,8 +79,9 @@ function AppInner() {
           toast(`No pudimos verificar el pago: ${data.error}. Contactános por WhatsApp.`, 'error')
         }
       })
-      .catch(() => {
-        toast('Error de conexión al verificar el pago. Contactános por WhatsApp.', 'error')
+      .catch((err) => {
+        console.error('[verify-payment] client error:', err)
+        toast('Error al verificar el pago. Contactános por WhatsApp.', 'error')
       })
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
