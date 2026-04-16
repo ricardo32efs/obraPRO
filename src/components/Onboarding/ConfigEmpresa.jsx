@@ -22,7 +22,7 @@ const defaultEmpresa = () => ({
 /**
  * Onboarding / configuración de empresa — modal o pantalla completa
  */
-export function ConfigEmpresa({ initial, embedded, onSave, onCancel }) {
+export function ConfigEmpresa({ initial, embedded, onSave, onCancel, isPro = false, onRequestUpgrade }) {
   const [form, setForm] = useState(() => ({ ...defaultEmpresa(), ...initial }))
   const [errors, setErrors] = useState({})
 
@@ -114,17 +114,38 @@ export function ConfigEmpresa({ initial, embedded, onSave, onCancel }) {
         </div>
 
         <div className="rounded-xl border border-dashed border-[var(--color-border)] p-4">
-          <p className="text-sm font-medium text-[var(--color-text)]">Logo de la empresa</p>
-          <div className="mt-3 flex items-center gap-4">
-            <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-full bg-[var(--color-surface-2)] ring-2 ring-[var(--color-border)]">
-              {form.logoBase64 ? (
-                <img src={form.logoBase64} alt="Logotipo cargado" className="h-full w-full object-cover" />
-              ) : (
-                <span className="text-xs text-[var(--color-text-2)]">Sin logo</span>
-              )}
-            </div>
-            <input type="file" accept="image/*" onChange={onFile} className="text-sm" />
+          <div className="flex items-center gap-2">
+            <p className="text-sm font-medium text-[var(--color-text)]">Logo de la empresa</p>
+            {!isPro && (
+              <span className="rounded-full bg-[var(--color-accent)] px-2 py-0.5 text-[10px] font-bold text-white">PRO</span>
+            )}
           </div>
+          {isPro ? (
+            <div className="mt-3 flex items-center gap-4">
+              <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-full bg-[var(--color-surface-2)] ring-2 ring-[var(--color-border)]">
+                {form.logoBase64 ? (
+                  <img src={form.logoBase64} alt="Logotipo cargado" className="h-full w-full object-cover" />
+                ) : (
+                  <span className="text-xs text-[var(--color-text-2)]">Sin logo</span>
+                )}
+              </div>
+              <input type="file" accept="image/*" onChange={onFile} className="text-sm" />
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={onRequestUpgrade}
+              className="mt-3 flex w-full items-center gap-3 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-2)] px-4 py-3 text-left transition hover:bg-[var(--color-border)]"
+            >
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[var(--color-surface)] ring-2 ring-[var(--color-border)]">
+                <span className="text-lg">🔒</span>
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-[var(--color-text)]">Subir logo — solo PRO</p>
+                <p className="text-xs text-[var(--color-text-2)]">El logo aparece en el encabezado del PDF. Actualizá a PRO para activarlo.</p>
+              </div>
+            </button>
+          )}
         </div>
 
         <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-2)]/60 p-4">

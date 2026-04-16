@@ -369,6 +369,8 @@ function AppInner() {
                   <ConfigEmpresa
                     embedded
                     initial={empresa || {}}
+                    isPro={isPro}
+                    onRequestUpgrade={requestUpgrade}
                     onSave={(d) => {
                       setEmpresa(d)
                       toast('Configuraci\u00f3n actualizada', 'success')
