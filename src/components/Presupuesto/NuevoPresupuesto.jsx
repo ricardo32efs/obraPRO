@@ -851,7 +851,7 @@ export function NuevoPresupuesto({
 
             <p className="mt-3 text-right text-sm font-semibold">
               Subtotal materiales:{' '}
-              <span className="font-mono">{formatCurrency(totals.subtotalMateriales)}</span>
+              <span className="font-mono">{totals.subtotalMateriales ? formatCurrency(totals.subtotalMateriales) : '—'}</span>
             </p>
           </section>
 
@@ -1090,7 +1090,7 @@ export function NuevoPresupuesto({
             </div>
 
             <p className="mt-3 text-right text-sm font-semibold">
-              Subtotal mano de obra: <span className="font-mono">{formatCurrency(totals.subtotalMano)}</span>
+              Subtotal mano de obra: <span className="font-mono">{totals.subtotalMano ? formatCurrency(totals.subtotalMano) : '—'}</span>
             </p>
           </section>
 
@@ -1347,7 +1347,7 @@ export function NuevoPresupuesto({
       {/* Barra sticky mobile total breve */}
       <div className="fixed bottom-16 left-0 right-0 z-[60] flex items-center justify-between bg-[var(--color-primary)] px-4 py-2 text-white lg:hidden">
         <span className="text-xs opacity-90">Total</span>
-        <span className="font-mono text-lg font-bold">{formatCurrency(totals.totalFinal)}</span>
+        <span className="font-mono text-lg font-bold">{totals.totalFinal ? formatCurrency(totals.totalFinal) : 'Sin precio'}</span>
       </div>
 
       <PreviewModal

@@ -53,6 +53,14 @@ export function DocumentoPresupuesto({ payload, empresa }) {
   const tipo = tipoTrabajo === 'Otro' && tipoTrabajoOtro ? tipoTrabajoOtro : tipoTrabajo
   const differsFromTotal = (value) => value != null && Math.abs(Number(value) - Number(totalFinal || 0)) > 0.009
 
+  const matsConNombre = (materiales || []).filter((r) => String(r.nombre || '').trim())
+  const manoConNombre = (manoObra || []).filter((r) => String(r.descripcion || '').trim())
+  const sinPreciosMat = matsConNombre.length > 0 && matsConNombre.every((r) => !Number(r.precioUnitario))
+  const sinPreciosMano = manoConNombre.length > 0 && manoConNombre.every((r) => !Number(r.precioUnitario))
+  const todoSinPrecio =
+    (matsConNombre.length === 0 || sinPreciosMat) &&
+    (manoConNombre.length === 0 || sinPreciosMano)
+
   return (
     <div className="mx-auto min-h-[1100px] max-w-[210mm] bg-[var(--color-surface)] p-8 shadow-[0_10px_40px_rgba(0,0,0,0.15)] print:shadow-none">
       <header className="flex flex-col gap-4 border-b-4 border-[var(--color-accent)] pb-4 md:flex-row md:justify-between">
@@ -107,32 +115,27 @@ export function DocumentoPresupuesto({ payload, empresa }) {
       )}
 
       <TableSection
-        title="Materiales"
+        title={sinPreciosMat ? 'Lista de materiales (precios a cotizar)' : 'Materiales'}
         headClass="bg-[var(--color-primary)] text-white"
-        columns={['Material', 'Unidad', 'Cantidad', 'P. Unit.', 'Subtotal']}
-        rows={(materiales || []).map((r) => [
-          r.nombre,
-          r.unidad,
-          r.cantidad,
-          r.precioUnitario ? formatCurrency(r.precioUnitario) : 'A confirmar',
-          r.precioUnitario ? formatCurrency(r.cantidad * r.precioUnitario) : 'A confirmar',
-        ])}
-        foot={['Subtotal materiales', '', '', '', formatCurrency(subtotalMateriales)]}
+        columns={sinPreciosMat ? ['Material', 'Unidad', 'Cantidad'] : ['Material', 'Unidad', 'Cantidad', 'P. Unit.', 'Subtotal']}
+        rows={(materiales || []).filter((r) => String(r.nombre || '').trim()).map((r) =>
+          sinPreciosMat
+            ? [r.nombre, r.unidad, r.cantidad]
+            : [r.nombre, r.unidad, r.cantidad, formatCurrency(r.precioUnitario), formatCurrency(r.cantidad * r.precioUnitario)]
+        )}
+        foot={sinPreciosMat ? null : ['Subtotal materiales', '', '', '', formatCurrency(subtotalMateriales)]}
       />
 
       <TableSection
-        title="Mano de obra"
+        title={sinPreciosMano ? 'Lista de mano de obra (precios a cotizar)' : 'Mano de obra'}
         headClass="bg-[var(--color-accent-2)] text-white"
-        columns={['Descripción', 'Categoría', 'Cant.', 'Unidad', 'P. Unit.', 'Subtotal']}
-        rows={(manoObra || []).map((r) => [
-          r.descripcion,
-          r.categoria,
-          r.cantidad,
-          r.unidad,
-          r.precioUnitario ? formatCurrency(r.precioUnitario) : 'A confirmar',
-          r.precioUnitario ? formatCurrency(r.cantidad * r.precioUnitario) : 'A confirmar',
-        ])}
-        foot={['Subtotal mano de obra', '', '', '', '', formatCurrency(subtotalMano)]}
+        columns={sinPreciosMano ? ['Descripción', 'Categoría', 'Cant.', 'Unidad'] : ['Descripción', 'Categoría', 'Cant.', 'Unidad', 'P. Unit.', 'Subtotal']}
+        rows={(manoObra || []).filter((r) => String(r.descripcion || '').trim()).map((r) =>
+          sinPreciosMano
+            ? [r.descripcion, r.categoria, r.cantidad, r.unidad]
+            : [r.descripcion, r.categoria, r.cantidad, r.unidad, formatCurrency(r.precioUnitario), formatCurrency(r.cantidad * r.precioUnitario)]
+        )}
+        foot={sinPreciosMano ? null : ['Subtotal mano de obra', '', '', '', '', formatCurrency(subtotalMano)]}
       />
 
       {(gastosAdicionales || []).length > 0 && (
@@ -148,28 +151,34 @@ export function DocumentoPresupuesto({ payload, empresa }) {
         />
       )}
 
-      <section className="mt-6 flex justify-end">
-        <div className="w-full max-w-sm space-y-1 text-sm">
-          <TotalRow label="Subtotal materiales" value={formatCurrency(subtotalMateriales)} />
-          <TotalRow label="Subtotal mano de obra" value={formatCurrency(subtotalMano)} />
-          <TotalRow label="Gastos adicionales" value={formatCurrency(subtotalGastos)} />
-          <div className="border-t border-[var(--color-border)] pt-1">
-            <TotalRow label="Subtotal" value={formatCurrency(subtotal)} bold />
-          </div>
-          {incluirIva && <TotalRow label="IVA (21%)" value={formatCurrency(ivaMonto)} />}
-          <div className="border-t-2 border-[var(--color-text)] pt-2">
-            <div className="flex justify-between font-display text-lg font-bold text-[var(--color-accent)]">
-              <span>TOTAL FINAL</span>
-              <span className="font-mono">{formatCurrency(totalFinal)}</span>
+      {todoSinPrecio ? (
+        <p className="mt-6 border-l-4 border-[var(--color-accent)] pl-3 text-sm italic text-[var(--color-text-2)]">
+          Nota: Los precios serán confirmados una vez cotizados con los proveedores.
+        </p>
+      ) : (
+        <section className="mt-6 flex justify-end">
+          <div className="w-full max-w-sm space-y-1 text-sm">
+            <TotalRow label="Subtotal materiales" value={formatCurrency(subtotalMateriales)} />
+            <TotalRow label="Subtotal mano de obra" value={formatCurrency(subtotalMano)} />
+            <TotalRow label="Gastos adicionales" value={formatCurrency(subtotalGastos)} />
+            <div className="border-t border-[var(--color-border)] pt-1">
+              <TotalRow label="Subtotal" value={formatCurrency(subtotal)} bold />
             </div>
-          </div>
-          {includeAnticipoPdf && (
-            <div className="mt-3 rounded-lg border-2 border-[var(--color-accent)]/40 bg-[var(--color-surface-2)] p-2 text-center text-sm">
-              Anticipo requerido ({anticipoPct}%): <strong className="font-mono">{formatCurrency(anticipoMonto)}</strong>
+            {incluirIva && <TotalRow label="IVA (21%)" value={formatCurrency(ivaMonto)} />}
+            <div className="border-t-2 border-[var(--color-text)] pt-2">
+              <div className="flex justify-between font-display text-lg font-bold text-[var(--color-accent)]">
+                <span>TOTAL FINAL</span>
+                <span className="font-mono">{formatCurrency(totalFinal)}</span>
+              </div>
             </div>
-          )}
-        </div>
-      </section>
+            {includeAnticipoPdf && (
+              <div className="mt-3 rounded-lg border-2 border-[var(--color-accent)]/40 bg-[var(--color-surface-2)] p-2 text-center text-sm">
+                Anticipo requerido ({anticipoPct}%): <strong className="font-mono">{formatCurrency(anticipoMonto)}</strong>
+              </div>
+            )}
+          </div>
+        </section>
+      )}
 
       {includeEscenariosPdf && (
         <section className="mt-4 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-2)]/60 p-3">
