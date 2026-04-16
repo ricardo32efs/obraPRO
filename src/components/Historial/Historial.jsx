@@ -67,7 +67,9 @@ export function Historial({
   const [estadoFiltro, setEstadoFiltro] = useState('todos')
   const [periodo, setPeriodo] = useState('mes')
   const [orden, setOrden] = useState('reciente')
-  const [vista, setVista] = useState('lista')
+  const [vista, setVista] = useState(() =>
+    typeof window !== 'undefined' && window.innerWidth < 768 ? 'cards' : 'lista'
+  )
   const [deleteId, setDeleteId] = useState(null)
   const [confettiId, setConfettiId] = useState(null)
 
@@ -88,11 +90,17 @@ export function Historial({
 
   const shareWhatsApp = (r) => {
     const nombreEmpresa = r.empresa?.nombreEmpresa || empresa?.nombreEmpresa || ''
-    const msg = `Hola! Te comparto el presupuesto N° ${r.numero} para *${r.tipoTrabajo}*.
-
-*Total: ${formatCurrency(r.totalFinal)}*
-Cliente: ${r.clienteNombre}
-${nombreEmpresa ? `Empresa: ${nombreEmpresa}\n` : ''}Cualquier consulta, estamos a disposición.`
+    const totalStr = r.totalFinal
+      ? `*Total: ${formatCurrency(r.totalFinal)}*`
+      : '*Total: a confirmar (precios pendientes)*'
+    const msg = [
+      `Hola! Te comparto el presupuesto N\u00b0 ${r.numero} para *${r.tipoTrabajo}*${r.direccionObra ? ` en ${r.direccionObra}` : ''}.`,
+      '',
+      totalStr,
+      `Cliente: ${r.clienteNombre}`,
+      nombreEmpresa ? `Empresa: ${nombreEmpresa}` : '',
+      'Cualquier consulta, estamos a disposici\u00f3n.',
+    ].filter((l) => l !== undefined && !(l === '' && !nombreEmpresa)).join('\n')
     window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank')
   }
 
@@ -293,7 +301,9 @@ ${nombreEmpresa ? `Empresa: ${nombreEmpresa}\n` : ''}Cualquier consulta, estamos
                     <td className="p-3 font-mono text-xs">{r.numero}</td>
                     <td className="p-3">{r.clienteNombre}</td>
                     <td className="p-3">{r.tipoTrabajo}</td>
-                    <td className="p-3 text-right font-mono">{formatCurrency(r.totalFinal)}</td>
+                    <td className="p-3 text-right font-mono">
+                      {r.totalFinal ? formatCurrency(r.totalFinal) : <span className="italic text-xs text-[var(--color-text-2)]">Sin precio</span>}
+                    </td>
                     <td className="p-3">
                       <div className="relative inline-block">
                         <select
@@ -349,60 +359,47 @@ ${nombreEmpresa ? `Empresa: ${nombreEmpresa}\n` : ''}Cualquier consulta, estamos
         </div>
       ) : (
         <div className="mt-6 grid gap-4 sm:grid-cols-2">
-          {filtered.map((r) => (
-            <motion.div
-              key={r.id}
-              layout
-              className={`obrapro-card relative rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] p-4 ${blurOld(r) ? 'opacity-50' : ''}`}
-            >
-              <div className="font-mono text-xs text-[var(--color-accent)]">{r.numero}</div>
-              <div className="mt-1 font-display text-lg font-bold">{r.clienteNombre}</div>
-              <div className="text-sm text-[var(--color-text-2)]">{r.tipoTrabajo}</div>
-              <div className="mt-2 font-mono text-xl font-semibold">{formatCurrency(r.totalFinal)}</div>
-              <div className="mt-3 flex flex-wrap gap-2">
-                <button type="button" className="text-xs underline" onClick={() => onView(r)}>
-                  Ver
-                </button>
-                <button type="button" className="text-xs underline" onClick={() => onEdit(r)}>
-                  Editar
-                </button>
-                <button
-                  type="button"
-                  className="text-xs underline"
-                  onClick={() => (isPro ? onSendEmail?.(mergePayloadConEmpresa(r, empresa)) : onRequestUpgrade?.())}
-                >
-                  Enviar
-                </button>
-                <button
-                  type="button"
-                  className="text-xs underline"
-                  onClick={() => {
-                    try {
-                      generatePresupuestoPDF(mergePayloadConEmpresa(r, empresa), { isPro })
-                    } catch {
-                      /* */
-                    }
-                  }}
-                >
-                  PDF
-                </button>
-                <button
-                  type="button"
-                  className="text-xs underline"
-                  onClick={() => duplicarPresupuesto(r)}
-                >
-                  Duplicar
-                </button>
-                <button
-                  type="button"
-                  className="text-xs underline text-green-700"
-                  onClick={() => shareWhatsApp(r)}
-                >
-                  WhatsApp
-                </button>
-              </div>
-            </motion.div>
-          ))}
+          {filtered.map((r) => {
+            const est = r._effectiveEstado
+            return (
+              <motion.div
+                key={r.id}
+                layout
+                className={`relative rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] p-4 shadow-sm ${blurOld(r) ? 'opacity-50' : ''}`}
+              >
+                {confettiId === r.id && <Confetti />}
+                <div className="flex items-start justify-between gap-2">
+                  <span className="font-mono text-xs text-[var(--color-accent)]">{r.numero}</span>
+                  <select
+                    className={`rounded-full px-2 py-0.5 text-xs font-semibold ${estadoStyle(est)}`}
+                    value={est}
+                    onChange={(e) => updateEstado(r.id, e.target.value)}
+                  >
+                    {ESTADOS.map((e) => (
+                      <option key={e} value={e}>{e.charAt(0).toUpperCase() + e.slice(1)}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="mt-2 font-display text-lg font-bold leading-tight text-[var(--color-text)]">{r.clienteNombre}</div>
+                <div className="mt-0.5 text-sm text-[var(--color-text-2)]">{r.tipoTrabajo}{r.direccionObra ? ` · ${r.direccionObra}` : ''}</div>
+                <div className="mt-3 flex items-end justify-between">
+                  <span className="font-mono text-xl font-semibold text-[var(--color-text)]">
+                    {r.totalFinal ? formatCurrency(r.totalFinal) : <span className="text-sm font-normal italic text-[var(--color-text-2)]">Sin precio</span>}
+                  </span>
+                  <span className="text-xs text-[var(--color-text-2)]">{formatDate(r.fechaEmision || r.updatedAt)}</span>
+                </div>
+                <div className="mt-3 grid grid-cols-4 gap-1.5">
+                  <CardBtn label="Ver" onClick={() => onView(r)} />
+                  <CardBtn label="Editar" onClick={() => onEdit(r)} />
+                  <CardBtn label="PDF" onClick={() => { try { generatePresupuestoPDF(mergePayloadConEmpresa(r, empresa), { isPro }) } catch { /* */ } }} />
+                  <CardBtn label="WhatsApp" onClick={() => shareWhatsApp(r)} accent />
+                  <CardBtn label="Email" onClick={() => isPro ? onSendEmail?.(mergePayloadConEmpresa(r, empresa)) : onRequestUpgrade?.()} />
+                  <CardBtn label="Duplicar" onClick={() => duplicarPresupuesto(r)} />
+                  <CardBtn label="Eliminar" onClick={() => setDeleteId(r.id)} danger />
+                </div>
+              </motion.div>
+            )
+          })}
         </div>
       )}
 
@@ -428,6 +425,20 @@ function IconBtn({ label, onClick }) {
       onClick={onClick}
       className="rounded border border-[var(--color-border)] px-2 py-1 text-[10px] font-medium hover:bg-[var(--color-surface-2)]"
     >
+      {label}
+    </button>
+  )
+}
+
+function CardBtn({ label, onClick, accent, danger }) {
+  const base = 'rounded-lg px-2 py-1.5 text-xs font-semibold text-center transition-colors'
+  const color = accent
+    ? 'bg-emerald-100 text-emerald-800 hover:bg-emerald-200'
+    : danger
+    ? 'bg-red-50 text-red-700 hover:bg-red-100'
+    : 'border border-[var(--color-border)] bg-[var(--color-surface-2)] text-[var(--color-text)] hover:bg-[var(--color-border)]'
+  return (
+    <button type="button" onClick={onClick} className={`${base} ${color}`}>
       {label}
     </button>
   )
