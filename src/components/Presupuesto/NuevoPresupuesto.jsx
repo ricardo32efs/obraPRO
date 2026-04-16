@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   CATEGORIAS_MANO,
+  FREE_MONTHLY_BUDGET_LIMIT,
   GASTOS_SUGERIDOS,
   TAREAS_MANO_DEFAULT,
   TIPOS_TRABAJO,
@@ -442,7 +443,7 @@ export function NuevoPresupuesto({
         </div>
         {!isPro && (() => {
           const usados = countPresupuestosCreadosEsteMes(presupuestos)
-          const restantes = Math.max(0, 5 - usados)
+          const restantes = Math.max(0, FREE_MONTHLY_BUDGET_LIMIT - usados)
           const resetDate = new Date()
           resetDate.setMonth(resetDate.getMonth() + 1, 1)
           const resetStr = resetDate.toLocaleDateString('es-AR', { day: 'numeric', month: 'long' })

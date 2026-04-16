@@ -41,7 +41,7 @@ export function UpgradeModal({ open, onClose, onActivateDemo }) {
         </p>
         <ul className="mt-5 space-y-2 text-sm text-[var(--color-text)]">
           {[
-            'Presupuestos ilimitados (el plan gratis corta a 5 nuevos por mes)',
+            'Presupuestos ilimitados (el plan gratis solo permite 1 nuevo por mes)',
             'PDF con tu logo y colores',
             'Plantillas inteligentes por tipo de obra',
             'Historial completo con búsqueda y estados',

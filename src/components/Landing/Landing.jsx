@@ -268,7 +268,7 @@ export function Landing({
             <h3 className="font-display text-xl font-bold">Gratis</h3>
             <p className="mt-4 font-mono text-3xl">$0</p>
             <ul className="mt-4 space-y-2 text-sm text-[var(--color-text-2)]">
-              <li>Hasta 5 presupuestos nuevos por mes</li>
+              <li>1 presupuesto nuevo por mes</li>
               <li>PDF estándar</li>
               <li>Funciones esenciales para probar el flujo</li>
             </ul>
@@ -373,7 +373,7 @@ export function Landing({
           />
           <FaqItem
             q="¿Qué pasa si llego al límite del plan gratuito?"
-            a="En el plan gratuito podés crear hasta 5 presupuestos nuevos por mes calendario (según la fecha de creación guardada). Los que ya tenés podés seguir editándolos. Si necesitás más, podés activar PRO o esperar al mes siguiente."
+            a="En el plan gratuito podés crear 1 presupuesto nuevo por mes calendario (según la fecha de creación guardada). Los que ya tenés podés seguir editándolos. Si necesitás más, activá PRO para tener presupuestos ilimitados."
           />
           <FaqItem
             q="¿Están seguros mis datos?"

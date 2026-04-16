@@ -10,7 +10,7 @@ export const LS_KEYS = {
 }
 
 /** Límite mensual de presupuestos plan gratuito */
-export const FREE_MONTHLY_BUDGET_LIMIT = 5
+export const FREE_MONTHLY_BUDGET_LIMIT = 1
 
 /** Tipos de trabajo para select principal */
 export const TIPOS_TRABAJO = [
