@@ -138,13 +138,24 @@ function EmailSendModalInner({
           <h2 id="email-modal-title" className="font-display text-xl font-bold text-[var(--color-text)]">
             Enviar presupuesto por email
           </h2>
-          <p className="mt-1 text-xs text-[var(--color-text-2)]">
-            Requiere cuenta{' '}
-            <a href="https://www.emailjs.com/" className="font-semibold text-[var(--color-accent)] underline" target="_blank" rel="noreferrer">
-              EmailJS
-            </a>{' '}
-            y plantilla con los parámetros indicados en <code className="rounded bg-[var(--color-surface-2)] px-1">.env.example</code>.
-          </p>
+          {!isEmailJsConfigured() && (
+            <div className="mt-3 rounded-xl border border-amber-300 bg-amber-50 px-4 py-3">
+              <p className="text-sm font-semibold text-amber-800">⚙️ EmailJS no está configurado</p>
+              <p className="mt-1 text-xs text-amber-700">
+                Para activar el envío de emails necesitás configurar 3 variables en Vercel:
+              </p>
+              <ol className="mt-2 space-y-1 text-xs text-amber-700 list-decimal list-inside">
+                <li>Creá una cuenta gratis en <a href="https://www.emailjs.com" target="_blank" rel="noreferrer" className="font-semibold underline">emailjs.com</a></li>
+                <li>Agregá un servicio de email (Gmail, Outlook, etc.)</li>
+                <li>Creá una plantilla y copiá los 3 IDs</li>
+                <li>Pegá en Vercel → Settings → Environment Variables:
+                  <code className="ml-1 rounded bg-amber-100 px-1">VITE_EMAILJS_PUBLIC_KEY</code>,{' '}
+                  <code className="rounded bg-amber-100 px-1">VITE_EMAILJS_SERVICE_ID</code>,{' '}
+                  <code className="rounded bg-amber-100 px-1">VITE_EMAILJS_TEMPLATE_ID</code>
+                </li>
+              </ol>
+            </div>
+          )}
         </div>
 
         <div className="min-h-0 flex-1 overflow-y-auto px-5 py-4 space-y-3">

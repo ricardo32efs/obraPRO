@@ -1460,6 +1460,10 @@ export function NuevoPresupuesto({
         plantillas={plantillas}
         onClose={() => setPlantillasOpen(false)}
         onPick={applyTemplate}
+        onDelete={(id) => {
+          setPlantillas((prev) => prev.filter((p) => p.id !== id))
+          toast('Plantilla eliminada', 'success')
+        }}
       />
 
     </div>
