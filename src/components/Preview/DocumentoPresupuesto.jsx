@@ -10,7 +10,7 @@ function formatDate(iso) {
 /**
  * Vista tipo documento A4 para preview en pantalla
  */
-export function DocumentoPresupuesto({ payload, empresa }) {
+export function DocumentoPresupuesto({ payload, empresa, isPro = false }) {
   const {
     numero,
     fechaEmision,
@@ -65,7 +65,7 @@ export function DocumentoPresupuesto({ payload, empresa }) {
     <div className="mx-auto min-h-[1100px] max-w-[210mm] bg-[var(--color-surface)] p-8 shadow-[0_10px_40px_rgba(0,0,0,0.15)] print:shadow-none">
       <header className="flex flex-col gap-4 border-b-4 border-[var(--color-accent)] pb-4 md:flex-row md:justify-between">
         <div className="flex gap-3">
-          {empresa?.logoBase64 && (
+          {isPro && empresa?.logoBase64 && (
             <img src={empresa.logoBase64} alt="" className="h-14 w-14 rounded-full object-cover" />
           )}
           <div>
@@ -235,8 +235,11 @@ export function DocumentoPresupuesto({ payload, empresa }) {
       )}
 
       <footer className="mt-10 text-center text-xs text-[var(--color-text-2)]">
-        Presupuesto generado con Obra Pro — Este documento es válido por {validezDias ?? 15} días desde la fecha de
-        emisión.
+        {isPro ? (
+          <>Este documento es válido por {validezDias ?? 15} días desde la fecha de emisión.</>
+        ) : (
+          <span className="opacity-40 italic">Generado con Obra Pro · obraproweb.com</span>
+        )}
       </footer>
     </div>
   )

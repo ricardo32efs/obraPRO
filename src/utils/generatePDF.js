@@ -62,16 +62,21 @@ export function buildPresupuestoPdfDoc(data, opts = { isPro: false }) {
   let y = marginT
 
   const addFooter = (pageNumber, pageCount) => {
+    const pageH = doc.internal.pageSize.getHeight()
     doc.setFontSize(8)
     doc.setTextColor(107, 94, 82)
-    doc.text(`Emisión: ${formatDateDDMMYYYY(data.fechaEmision)}`, marginL, doc.internal.pageSize.getHeight() - 10)
-    doc.text(`Pág. ${pageNumber} / ${pageCount}`, pageW - marginR, doc.internal.pageSize.getHeight() - 10, {
-      align: 'right',
-    })
+    doc.text(`Emisión: ${formatDateDDMMYYYY(data.fechaEmision)}`, marginL, pageH - 10)
+    doc.text(`Pág. ${pageNumber} / ${pageCount}`, pageW - marginR, pageH - 10, { align: 'right' })
+    if (!isPro) {
+      doc.setFont('helvetica', 'italic')
+      doc.setFontSize(7)
+      doc.setTextColor(180, 180, 180)
+      doc.text('Generado con Obra Pro · obraproweb.com', pageW / 2, pageH - 5, { align: 'center' })
+    }
   }
 
-  // Logo circular (PRO + imagen)
-  if (data.empresa?.logoBase64) {
+  // Logo circular — solo PRO
+  if (isPro && data.empresa?.logoBase64) {
     try {
       const circularLogo = cropToCircle(data.empresa.logoBase64, 160)
       doc.addImage(circularLogo, 'PNG', marginL, y, 22, 22)
@@ -83,7 +88,7 @@ export function buildPresupuestoPdfDoc(data, opts = { isPro: false }) {
   doc.setFont('times', 'bold')
   doc.setFontSize(16)
   doc.setTextColor(dark.r, dark.g, dark.b)
-  doc.text(data.empresa?.nombreEmpresa || 'Obra Pro', data.empresa?.logoBase64 ? marginL + 26 : marginL, y + 8)
+  doc.text(data.empresa?.nombreEmpresa || 'Obra Pro', isPro && data.empresa?.logoBase64 ? marginL + 26 : marginL, y + 8)
 
   doc.setFont('helvetica', 'normal')
   doc.setFontSize(9)
@@ -96,7 +101,7 @@ export function buildPresupuestoPdfDoc(data, opts = { isPro: false }) {
     data.empresa?.direccion ? data.empresa.direccion : '',
   ].filter(Boolean)
   contactLines.forEach((line) => {
-    doc.text(line, data.empresa?.logoBase64 ? marginL + 26 : marginL, subY)
+    doc.text(line, isPro && data.empresa?.logoBase64 ? marginL + 26 : marginL, subY)
     subY += 4
   })
 
