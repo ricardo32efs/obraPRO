@@ -2,6 +2,29 @@ import jsPDF from 'jspdf'
 import autoTable from 'jspdf-autotable'
 import { formatCurrency } from './formatCurrency'
 
+/**
+ * Recorta una imagen base64 en forma circular usando Canvas.
+ * Para data URLs base64, drawImage es sincrónico en navegadores modernos.
+ */
+function cropToCircle(base64, sizePx = 160) {
+  try {
+    const canvas = document.createElement('canvas')
+    canvas.width = sizePx
+    canvas.height = sizePx
+    const ctx = canvas.getContext('2d')
+    const img = new Image()
+    img.src = base64
+    ctx.beginPath()
+    ctx.arc(sizePx / 2, sizePx / 2, sizePx / 2, 0, Math.PI * 2)
+    ctx.closePath()
+    ctx.clip()
+    ctx.drawImage(img, 0, 0, sizePx, sizePx)
+    return canvas.toDataURL('image/png')
+  } catch {
+    return base64
+  }
+}
+
 function hexToRgb(hex) {
   const h = String(hex || '').replace('#', '')
   if (h.length !== 6) return { r: 193, g: 68, b: 14 }
@@ -47,10 +70,11 @@ export function buildPresupuestoPdfDoc(data, opts = { isPro: false }) {
     })
   }
 
-  // Logo (PRO + imagen)
+  // Logo circular (PRO + imagen)
   if (data.empresa?.logoBase64) {
     try {
-      doc.addImage(data.empresa.logoBase64, marginL, y, 22, 22)
+      const circularLogo = cropToCircle(data.empresa.logoBase64, 160)
+      doc.addImage(circularLogo, 'PNG', marginL, y, 22, 22)
     } catch {
       /* ignore */
     }
