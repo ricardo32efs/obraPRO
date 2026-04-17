@@ -79,56 +79,85 @@ export async function exportPresupuestoExcel(payload, fileBase = 'presupuesto') 
 
   // ── HOJA RESUMEN ──────────────────────────────────────────────
   const wsR = wb.addWorksheet('Resumen', { views: [{ showGridLines: false }] })
-  wsR.columns = [{ width: 28 }, { width: 42 }]
+  wsR.columns = [{ width: 36 }, { width: 52 }]
 
-  const addResumenRow = (label, value, bold = false, bgHex = null) => {
+  const thinBorder = {
+    top:    { style: 'thin', color: { argb: 'FFDDDDDD' } },
+    bottom: { style: 'thin', color: { argb: 'FFDDDDDD' } },
+    left:   { style: 'thin', color: { argb: 'FFDDDDDD' } },
+    right:  { style: 'thin', color: { argb: 'FFDDDDDD' } },
+  }
+
+  const addResumenRow = (label, value) => {
     const row = wsR.addRow([label, value])
-    if (bold) row.font = { bold: true, size: 11 }
-    if (bgHex) row.eachCell(c => { c.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF' + bgHex } } })
-    row.getCell(1).font = { bold: true, size: 10, color: { argb: 'FF' + GRAY } }
-    row.getCell(2).font = { bold, size: bold ? 12 : 10 }
-    row.getCell(2).alignment = { horizontal: 'left' }
-    row.height = 18
+    row.getCell(1).font  = { bold: true, size: 10, color: { argb: 'FF' + GRAY } }
+    row.getCell(1).fill  = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF7F7F7' } }
+    row.getCell(1).border = thinBorder
+    row.getCell(2).font  = { size: 10 }
+    row.getCell(2).border = thinBorder
+    row.getCell(2).alignment = { horizontal: 'left', vertical: 'middle', wrapText: true }
+    row.height = 20
     return row
   }
 
-  const titleRow = wsR.addRow(['PRESUPUESTO DE OBRA', numero])
-  titleRow.height = 30
-  titleRow.getCell(1).font = { bold: true, size: 16, color: { argb: 'FF' + ACCENT } }
-  titleRow.getCell(2).font = { bold: true, size: 14, color: { argb: 'FF' + BROWN } }
+  // Título principal — merge A1:B1
+  const titleRow = wsR.addRow(['PRESUPUESTO DE OBRA  ·  ' + (numero || ''), ''])
+  wsR.mergeCells(`A1:B1`)
+  titleRow.height = 36
+  titleRow.getCell(1).font      = { bold: true, size: 18, color: { argb: 'FF' + ACCENT } }
+  titleRow.getCell(1).alignment = { horizontal: 'left', vertical: 'middle' }
+  titleRow.getCell(1).fill      = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF0F0F0' } }
+
   wsR.addRow([])
 
-  addResumenRow('Empresa', empresa?.nombreEmpresa || '')
+  // Sección empresa
+  const secEmp = wsR.addRow(['EMPRESA', ''])
+  wsR.mergeCells(`A${secEmp.number}:B${secEmp.number}`)
+  styleHeader(secEmp, GRAY)
+
+  addResumenRow('Nombre', empresa?.nombreEmpresa || '—')
   if (empresa?.cuit) addResumenRow('CUIT', empresa.cuit)
   wsR.addRow([])
+
+  // Sección cliente / obra
+  const secCli = wsR.addRow(['CLIENTE Y OBRA', ''])
+  wsR.mergeCells(`A${secCli.number}:B${secCli.number}`)
+  styleHeader(secCli, BROWN)
+
   addResumenRow('Cliente', clienteNombre)
   if (clienteTelefono) addResumenRow('Teléfono', clienteTelefono)
-  if (clienteEmail) addResumenRow('Email', clienteEmail)
+  if (clienteEmail)    addResumenRow('Email', clienteEmail)
   addResumenRow('Dirección de obra', direccionObra)
   addResumenRow('Tipo de trabajo', tipo)
   addResumenRow('Fecha inicio', fechaInicio)
   addResumenRow('Fecha entrega', fechaEntrega)
   addResumenRow('Fecha emisión', fechaEmision)
-  if (validezDias) addResumenRow('Validez (días)', validezDias)
-  if (descripcion) addResumenRow('Descripción', descripcion)
+  if (validezDias)  addResumenRow('Validez (días)', String(validezDias))
+  if (descripcion)  addResumenRow('Descripción', descripcion)
   wsR.addRow([])
 
+  // Sección totales
   const totTitleRow = wsR.addRow(['TOTALES', ''])
-  styleHeader(totTitleRow, ACCENT)
   wsR.mergeCells(`A${totTitleRow.number}:B${totTitleRow.number}`)
+  styleHeader(totTitleRow, ACCENT)
 
   const addTotalRow = (label, value, isTotal = false) => {
     const row = wsR.addRow([label, value])
     row.getCell(2).numFmt = currency
+    row.getCell(1).border = thinBorder
+    row.getCell(2).border = thinBorder
+    row.getCell(2).alignment = { horizontal: 'right', vertical: 'middle' }
     if (isTotal) {
-      row.eachCell(c => {
-        c.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF' + TOTAL_BG } }
-        c.font = { bold: true, size: 12 }
-      })
-      row.height = 22
+      row.getCell(1).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFF3E0' } }
+      row.getCell(2).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFF3E0' } }
+      row.getCell(1).font = { bold: true, size: 13 }
+      row.getCell(2).font = { bold: true, size: 13 }
+      row.height = 26
+    } else {
+      row.getCell(1).font = { size: 10, color: { argb: 'FF' + GRAY } }
+      row.getCell(2).font = { size: 10 }
+      row.height = 20
     }
-    row.getCell(1).font = { bold: isTotal, size: isTotal ? 12 : 10, color: { argb: 'FF' + GRAY } }
-    row.height = row.height || 18
   }
 
   addTotalRow('Subtotal materiales', subtotalMateriales || 0)
@@ -139,7 +168,7 @@ export async function exportPresupuestoExcel(payload, fileBase = 'presupuesto') 
   addTotalRow('TOTAL FINAL', totalFinal || 0, true)
   addTotalRow(`Anticipo (${anticipoPct}%)`, anticipoMonto || 0)
   wsR.addRow([])
-  if (condiciones) addResumenRow('Condiciones', condiciones)
+  if (condiciones) addResumenRow('Condiciones de pago', condiciones)
 
   // ── HOJA MATERIALES ───────────────────────────────────────────
   const wsM = wb.addWorksheet('Materiales', { views: [{ showGridLines: false, state: 'frozen', ySplit: 1 }] })
