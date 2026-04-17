@@ -33,6 +33,8 @@ import { ConfirmDialog } from '../UI/ConfirmDialog'
 import { EmailSendModal } from '../UI/EmailSendModal'
 import { ModalPlantillas } from '../Plantillas/ModalPlantillas'
 import { useToast } from '../UI/ToastNotification'
+import { useIAGemini } from '../../hooks/useIAGemini'
+import { AsistenteIAResultado } from './AsistenteIA'
 
 const newId = () => crypto.randomUUID()
 
@@ -120,6 +122,10 @@ export function NuevoPresupuesto({
   const [confirmDiscard, setConfirmDiscard] = useState(false)
   const [plantillasOpen, setPlantillasOpen] = useState(false)
   const [dragMatIdx, setDragMatIdx] = useState(null)
+  const [iaOpen, setIaOpen] = useState(false)
+  const [iaDescripcion, setIaDescripcion] = useState('')
+  const [iaResult, setIaResult] = useState(null)
+  const { sugerir, loading: iaLoading, error: iaError, setError: setIaError } = useIAGemini()
 
   /** ID estable para borradores nuevos (evita un Nº distinto en cada guardado) */
   const sessionIdRef = useRef(null)
@@ -204,6 +210,44 @@ export function NuevoPresupuesto({
       validezDias: form.validezDias,
     }
   }, [checklistCierre, empresa, form, numero, presupuestoId, totals])
+
+  const applyIAResult = (data) => {
+    if (!data) return
+    setForm((f) => ({
+      ...f,
+      tipoTrabajo: data.tipo_trabajo || f.tipoTrabajo,
+      materiales: data.materiales?.length
+        ? data.materiales.map((m) => ({
+            id: newId(),
+            nombre: m.nombre,
+            unidad: m.unidad,
+            cantidad: m.cantidad,
+            precioUnitario: m.precio_unitario_estimado,
+          }))
+        : f.materiales,
+      manoObra: data.mano_de_obra?.length
+        ? data.mano_de_obra.map((m) => ({
+            id: newId(),
+            descripcion: m.descripcion,
+            categoria: m.categoria,
+            unidad: m.unidad,
+            cantidad: m.cantidad,
+            precioUnitario: m.precio_unitario_estimado,
+          }))
+        : f.manoObra,
+      gastosAdicionales: data.gastos_adicionales?.length
+        ? data.gastos_adicionales.map((g) => ({
+            id: newId(),
+            concepto: g.concepto,
+            monto: g.monto_estimado,
+            esPorcentaje: false,
+          }))
+        : f.gastosAdicionales,
+    }))
+    setIaResult(null)
+    setIaOpen(false)
+    toast('¡Listo! Revisá y ajustá los valores generados por la IA.', 'success')
+  }
 
   const validateAll = () => {
     const v = validatePresupuestoForm(form)
@@ -406,6 +450,22 @@ export function NuevoPresupuesto({
           <button
             type="button"
             onClick={() => {
+              if (!isPro) { onRequestUpgrade?.(); return }
+              setIaResult(null)
+              setIaError(null)
+              setIaOpen((v) => !v)
+            }}
+            className={`rounded-lg px-3 py-2 text-xs font-semibold transition ${
+              isPro
+                ? 'bg-[var(--color-accent)] text-white hover:brightness-105'
+                : 'border border-[var(--color-border)] text-[var(--color-text-2)]'
+            }`}
+          >
+            {isPro ? '✨ Asistente IA' : '✨ Asistente IA 🔒'}
+          </button>
+          <button
+            type="button"
+            onClick={() => {
               if (!isPro) onRequestUpgrade?.()
               else setPlantillasOpen(true)
             }}
@@ -471,6 +531,79 @@ export function NuevoPresupuesto({
           )
         })()}
       </div>
+
+      {/* ── Asistente IA ── */}
+      <AnimatePresence>
+        {iaOpen && (
+          <motion.div
+            key="ia-panel"
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            className="overflow-hidden px-4"
+          >
+            <div className="mt-4 rounded-2xl border-2 border-[var(--color-accent)]/40 bg-[var(--color-surface)] p-4 shadow-sm">
+              <div className="flex items-center justify-between gap-2">
+                <div>
+                  <h3 className="font-display text-base font-bold text-[var(--color-text)]">✨ Asistente IA</h3>
+                  <p className="text-xs text-[var(--color-text-2)]">Describí la obra y la IA genera materiales, mano de obra y gastos automáticamente.</p>
+                </div>
+                <button type="button" onClick={() => setIaOpen(false)} className="text-xs text-[var(--color-text-2)] underline">Cerrar</button>
+              </div>
+              <textarea
+                className="mt-3 min-h-[80px] w-full rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-2)] p-3 text-sm"
+                placeholder="Ej: Quiero renovar un baño de 4m² en CABA, cambio de cerámica, grifería y pintura..."
+                value={iaDescripcion}
+                onChange={(e) => setIaDescripcion(e.target.value)}
+              />
+              {iaError && (
+                <p className="mt-2 rounded-lg bg-red-50 px-3 py-2 text-xs text-red-700">{iaError}</p>
+              )}
+              <div className="mt-3 flex gap-2">
+                <button
+                  type="button"
+                  disabled={iaLoading || iaDescripcion.trim().length < 10}
+                  onClick={async () => {
+                    try {
+                      const data = await sugerir({
+                        descripcionObra: iaDescripcion,
+                        tipoTrabajo: form.tipoTrabajo,
+                        ciudad: empresa?.ciudad || '',
+                      })
+                      setIaResult(data)
+                    } catch {
+                      /* error ya seteado por el hook */
+                    }
+                  }}
+                  className="rounded-xl bg-[var(--color-accent)] px-4 py-2 text-sm font-semibold text-white transition hover:brightness-105 disabled:opacity-50"
+                >
+                  {iaLoading ? 'Generando…' : 'Generar presupuesto'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => { setIaDescripcion(''); setIaResult(null); setIaError(null) }}
+                  className="rounded-xl border border-[var(--color-border)] px-4 py-2 text-sm font-semibold"
+                >
+                  Limpiar
+                </button>
+              </div>
+
+              {iaResult && (
+                <div className="mt-4">
+                  <AsistenteIAResultado data={iaResult} onDismiss={() => setIaResult(null)} />
+                  <button
+                    type="button"
+                    onClick={() => applyIAResult(iaResult)}
+                    className="mt-3 w-full rounded-xl bg-[var(--color-accent)] py-2.5 text-sm font-semibold text-white transition hover:brightness-105"
+                  >
+                    ✅ Aplicar al formulario
+                  </button>
+                </div>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <div className="grid gap-6 px-4 lg:grid-cols-[minmax(0,26%)_minmax(0,1.4fr)_minmax(280px,24%)]">
         {/* Panel izquierdo: cliente */}
