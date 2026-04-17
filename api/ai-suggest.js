@@ -81,7 +81,7 @@ export default async function handler(req, res) {
     const prompt = buildPrompt({ descripcionObra: descStr, tipoTrabajo, ciudad })
 
     const geminiRes = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_KEY}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${GEMINI_KEY}`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -95,8 +95,9 @@ export default async function handler(req, res) {
 
     if (!geminiRes.ok) {
       const errData = await geminiRes.json().catch(() => ({}))
-      console.error('[ai-suggest] Gemini error:', errData)
-      return res.status(502).json({ error: 'Error al consultar la IA. Intentá nuevamente.' })
+      console.error('[ai-suggest] Gemini error:', JSON.stringify(errData))
+      const geminiMsg = errData?.error?.message || errData?.error?.status || `HTTP ${geminiRes.status}`
+      return res.status(502).json({ error: `Error de la IA: ${geminiMsg}` })
     }
 
     const geminiData = await geminiRes.json()
