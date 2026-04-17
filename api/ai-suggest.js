@@ -83,10 +83,10 @@ export default async function handler(req, res) {
     const fullPrompt = `${SYSTEM_PROMPT}\n\n---\n\n${prompt}`
 
     const geminiRes = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${GEMINI_KEY}`,
+      'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent',
       {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'X-goog-api-key': GEMINI_KEY },
         body: JSON.stringify({
           contents: [{ role: 'user', parts: [{ text: fullPrompt }] }],
           generationConfig: { temperature: 0.3, maxOutputTokens: 4096 },

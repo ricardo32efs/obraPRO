@@ -11,10 +11,10 @@ export default async function handler(req, res) {
   // Probar la key directamente contra Gemini
   try {
     const r = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${key}`,
+      'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent',
       {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'X-goog-api-key': key },
         body: JSON.stringify({
           contents: [{ role: 'user', parts: [{ text: 'Di solo: ok' }] }],
           generationConfig: { maxOutputTokens: 5 },
