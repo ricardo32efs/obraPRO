@@ -89,13 +89,14 @@ export function buildPresupuestoPdfDoc(data, opts = { isPro: false }) {
     }
   }
 
-  // Logo circular — solo PRO
+  // Logo — solo PRO
   if (isPro && data.empresa?.logoBase64) {
     try {
-      const circularLogo = cropToCircle(data.empresa.logoBase64, 160)
-      doc.addImage(circularLogo, 'PNG', marginL, y, 22, 22)
+      doc.addImage(data.empresa.logoBase64, 'JPEG', marginL, y, 22, 22)
     } catch {
-      /* ignore */
+      try {
+        doc.addImage(data.empresa.logoBase64, 'PNG', marginL, y, 22, 22)
+      } catch { /* ignore */ }
     }
   }
 
