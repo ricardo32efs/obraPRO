@@ -90,9 +90,5 @@ export async function sendPresupuestoEmail({
     to: toEmail,
   }
 
-  if (attachPdfBase64 && attachmentParam) {
-    templateParams[attachmentParam] = attachPdfBase64
-  }
-
   return emailjs.send(serviceId, templateId, templateParams, publicKey)
 }

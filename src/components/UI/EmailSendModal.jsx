@@ -218,10 +218,9 @@ function EmailSendModalInner({
               className="mt-1 w-full rounded-lg border border-[var(--color-border)] px-3 py-2 text-sm"
             />
           </div>
-          <label className="flex items-center gap-2 text-sm">
-            <input type="checkbox" checked={attachPdf} onChange={(e) => setAttachPdf(e.target.checked)} />
-            Adjuntar PDF del presupuesto (Base64 a variable en plantilla EmailJS)
-          </label>
+          <div className="rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-xs text-blue-700">
+            💡 El email se envía sin adjunto (límite de EmailJS). El cliente recibe el detalle completo en el mensaje. Para enviar el PDF, descargalo y adjuntalo manualmente desde tu casilla.
+          </div>
 
           {errMsg && <p className="text-sm text-[var(--color-danger)]">Error: {errMsg}</p>}
         </div>
