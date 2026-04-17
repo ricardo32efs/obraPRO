@@ -8,13 +8,7 @@ export default async function handler(req, res) {
     return res.status(200).json({ configured: false, message: 'GEMINI_API_KEY no está configurada en Vercel.' })
   }
 
-  // Verificar formato básico (las keys de AI Studio empiezan con "AIza")
-  const formatOk = key.startsWith('AIza') && key.length > 20
-  if (!formatOk) {
-    return res.status(200).json({ configured: true, formatOk: false, message: 'La clave no parece tener el formato correcto (debe empezar con AIza...).' })
-  }
-
-  // Hacer una llamada mínima a Gemini para verificar que la key funciona
+  // Probar la key directamente contra Gemini
   try {
     const r = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${key}`,
