@@ -27,10 +27,8 @@ import { AutocompleteMaterial } from './AutocompleteMaterial'
 import { PanelTotales } from './PanelTotales'
 import { PreviewModal } from '../Preview/PreviewModal'
 import { generatePresupuestoPDF } from '../../utils/generatePDF'
-import { exportPresupuestoExcel } from '../../utils/exportExcel'
 import { loadNumeroCounter, formatNumeroObra, saveNumeroCounter } from '../../hooks/useNumeroCorrelativo'
 import { ConfirmDialog } from '../UI/ConfirmDialog'
-import { EmailSendModal } from '../UI/EmailSendModal'
 import { ModalPlantillas } from '../Plantillas/ModalPlantillas'
 import { useToast } from '../UI/ToastNotification'
 import { useIAGemini } from '../../hooks/useIAGemini'
@@ -117,8 +115,6 @@ export function NuevoPresupuesto({
 
   const [fieldErrors, setFieldErrors] = useState({})
   const [previewOpen, setPreviewOpen] = useState(false)
-  const [emailSendOpen, setEmailSendOpen] = useState(false)
-  const [emailModalInstance, setEmailModalInstance] = useState(0)
   const [confirmDiscard, setConfirmDiscard] = useState(false)
   const [plantillasOpen, setPlantillasOpen] = useState(false)
   const [dragMatIdx, setDragMatIdx] = useState(null)
@@ -1495,29 +1491,6 @@ export function NuevoPresupuesto({
           if (!validateAll()) return
           handlePdf()
         }}
-        onExportExcel={async () => {
-          if (!isPro) onRequestUpgrade?.()
-          else if (validateAll()) {
-            try {
-              await exportPresupuestoExcel(
-                buildPayload(),
-                `Presupuesto-${form.clienteNombre}-${numero}`.replace(/\s/g, '_'),
-              )
-              toast('Excel exportado', 'success')
-            } catch {
-              toast('Error al exportar Excel', 'error')
-            }
-          }
-        }}
-        onEmail={() => {
-          if (!isPro) onRequestUpgrade?.()
-          else {
-            if (!validateAll()) return
-            setEmailModalInstance((n) => n + 1)
-            setPreviewOpen(false)
-            setEmailSendOpen(true)
-          }
-        }}
         onSave={() => {
           const exists = presupuestos.some((p) => p.id === presupuestoId)
           if (!exists && !checkFreeLimit()) return
@@ -1526,26 +1499,6 @@ export function NuevoPresupuesto({
           setPreviewOpen(false)
         }}
         onContinueEdit={() => setPreviewOpen(false)}
-      />
-
-      <EmailSendModal
-        open={emailSendOpen}
-        onClose={() => setEmailSendOpen(false)}
-        instanceKey={emailModalInstance}
-        empresa={empresa}
-        payload={buildPayload()}
-        isPro={isPro}
-        onRequestUpgrade={onRequestUpgrade}
-        onSent={() => {
-          persistPresupuesto(
-            { estado: 'enviado', enviadoAt: new Date().toISOString() },
-            {
-              toastMsg: 'Email enviado. Presupuesto marcado como enviado.',
-              skipClearInitial: true,
-            },
-          )
-          setEmailSendOpen(false)
-        }}
       />
 
       <ConfirmDialog

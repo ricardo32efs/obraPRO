@@ -8,9 +8,7 @@ import { UpgradeModal } from './components/UI/UpgradeModal'
 import { BottomNav } from './components/UI/BottomNav'
 import { Sidebar } from './components/UI/Sidebar'
 import { PreviewModal } from './components/Preview/PreviewModal'
-import { EmailSendModal } from './components/UI/EmailSendModal'
 import { generatePresupuestoPDF } from './utils/generatePDF'
-import { exportPresupuestoExcel } from './utils/exportExcel'
 import { mergePayloadConEmpresa } from './utils/presupuestoHelpers'
 import { RouteFallback } from './components/UI/RouteFallback'
 import { saveLicense } from './utils/licenseUtils'
@@ -42,8 +40,6 @@ function AppInner() {
   const [editDraft, setEditDraft] = useState(null)
   const [viewRecord, setViewRecord] = useState(null)
   const [exampleOpen, setExampleOpen] = useState(false)
-  const [emailModalPayload, setEmailModalPayload] = useState(null)
-  const [emailModalInstance, setEmailModalInstance] = useState(0)
 
   const { push: toast } = useToast()
 
@@ -141,21 +137,6 @@ function AppInner() {
   )
 
   const requestUpgrade = useCallback(() => setUpgradeOpen(true), [])
-
-  const openEmailComposer = useCallback(
-    (rawPayload) => {
-      if (!isPro) {
-        requestUpgrade()
-        return
-      }
-      setEmailModalInstance((n) => n + 1)
-      setEmailModalPayload({
-        ...rawPayload,
-        empresa: rawPayload?.empresa || empresa,
-      })
-    },
-    [isPro, empresa, requestUpgrade],
-  )
 
   const enterApp = useCallback(
     (screen = 'nuevo') => {
@@ -357,7 +338,7 @@ function AppInner() {
                       setEditDraft(r)
                       setAppScreen('nuevo')
                     }}
-                    onSendEmail={(r) => openEmailComposer(r)}
+                    onSendEmail={() => {}}
                   />
                 </Suspense>
               )}
@@ -437,22 +418,6 @@ function AppInner() {
             toast('Error al generar PDF', 'error')
           }
         }}
-        onExportExcel={async () => {
-          if (!isPro) requestUpgrade()
-          else {
-            try {
-              const merged = mergePayloadConEmpresa(viewRecord || examplePayloadComputed, empresa)
-              const baseName = viewRecord
-                ? `Presupuesto-${String(viewRecord.numero || 'obra').replace(/\s/g, '_')}`
-                : 'Ejemplo-ObraPro'
-              await exportPresupuestoExcel(merged, baseName)
-              toast('Excel exportado', 'success')
-            } catch {
-              toast('Error al exportar', 'error')
-            }
-          }
-        }}
-        onEmail={() => openEmailComposer(mergePayloadConEmpresa(viewRecord || examplePayloadComputed, empresa))}
         onSave={() => {
           setExampleOpen(false)
           setViewRecord(null)
@@ -463,28 +428,6 @@ function AppInner() {
         }}
       />
 
-      <EmailSendModal
-        open={!!emailModalPayload}
-        onClose={() => setEmailModalPayload(null)}
-        instanceKey={emailModalInstance}
-        empresa={empresa}
-        payload={emailModalPayload}
-        isPro={isPro}
-        onRequestUpgrade={requestUpgrade}
-        onSent={() => {
-          const id = emailModalPayload?.id
-          if (id) {
-            const ts = new Date().toISOString()
-            setPresupuestos((prev) =>
-              prev.map((p) =>
-                p.id === id ? { ...p, estado: 'enviado', enviadoAt: ts, updatedAt: ts } : p,
-              ),
-            )
-          }
-          toast('Email enviado', 'success')
-          setEmailModalPayload(null)
-        }}
-      />
     </>
   )
 }

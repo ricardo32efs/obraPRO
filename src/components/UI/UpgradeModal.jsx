@@ -75,7 +75,7 @@ export function UpgradeModal({ open, onClose, onActivatePro }) {
             'Plantillas reutilizables por tipo de obra',
             'Historial completo con búsqueda y estados',
             'Dashboard de métricas',
-            'Excel y envío por email directo al cliente',
+            'Descarga ilimitada de PDFs con tu marca',
           ].map((t) => (
             <li key={t} className="flex gap-2">
               <span className="text-[var(--color-accent)]">•</span>
