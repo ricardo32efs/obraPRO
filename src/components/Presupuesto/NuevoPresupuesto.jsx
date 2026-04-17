@@ -1495,11 +1495,11 @@ export function NuevoPresupuesto({
           if (!validateAll()) return
           handlePdf()
         }}
-        onExportExcel={() => {
+        onExportExcel={async () => {
           if (!isPro) onRequestUpgrade?.()
           else if (validateAll()) {
             try {
-              exportPresupuestoExcel(
+              await exportPresupuestoExcel(
                 buildPayload(),
                 `Presupuesto-${form.clienteNombre}-${numero}`.replace(/\s/g, '_'),
               )

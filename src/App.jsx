@@ -437,7 +437,7 @@ function AppInner() {
             toast('Error al generar PDF', 'error')
           }
         }}
-        onExportExcel={() => {
+        onExportExcel={async () => {
           if (!isPro) requestUpgrade()
           else {
             try {
@@ -445,7 +445,7 @@ function AppInner() {
               const baseName = viewRecord
                 ? `Presupuesto-${String(viewRecord.numero || 'obra').replace(/\s/g, '_')}`
                 : 'Ejemplo-ObraPro'
-              exportPresupuestoExcel(merged, baseName)
+              await exportPresupuestoExcel(merged, baseName)
               toast('Excel exportado', 'success')
             } catch {
               toast('Error al exportar', 'error')
