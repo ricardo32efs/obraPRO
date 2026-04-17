@@ -273,6 +273,8 @@ function AppInner() {
             <Suspense fallback={<RouteFallback />}>
               <ConfigEmpresa
                 initial={empresa || {}}
+                isPro={isPro}
+                onRequestUpgrade={requestUpgrade}
                 onSave={onEmpresaSave}
                 onCancel={onboardingDone ? () => setRoute('app') : undefined}
                 embedded={false}
