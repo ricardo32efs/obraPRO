@@ -59,7 +59,16 @@ export function buildPresupuestoPdfDoc(data, opts = { isPro: false }) {
 
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' })
   const pageW = doc.internal.pageSize.getWidth()
+  const pageH = doc.internal.pageSize.getHeight()
+  const pageBottom = pageH - 18
   let y = marginT
+
+  const checkSpace = (needed) => {
+    if (y + needed > pageBottom) {
+      doc.addPage()
+      y = marginT
+    }
+  }
 
   const addFooter = (pageNumber, pageCount) => {
     const pageH = doc.internal.pageSize.getHeight()
@@ -175,6 +184,7 @@ export function buildPresupuestoPdfDoc(data, opts = { isPro: false }) {
       : [r.nombre, r.unidad, String(r.cantidad), formatCurrency(r.precioUnitario), formatCurrency(r.cantidad * r.precioUnitario)]
   )
 
+  checkSpace(20)
   doc.setFont('times', 'bold')
   doc.setFontSize(11)
   doc.setTextColor(dark.r, dark.g, dark.b)
@@ -191,6 +201,7 @@ export function buildPresupuestoPdfDoc(data, opts = { isPro: false }) {
     body: tableBodyMat,
     theme: 'striped',
     headStyles: { fillColor: [dark.r, dark.g, dark.b], textColor: 255, halign: 'center', valign: 'middle' },
+    showHead: 'everyPage',
     styles: { fontSize: 8.4, cellPadding: 3, font: 'helvetica', halign: 'center', valign: 'middle' },
     columnStyles: sinPreciosMat
       ? { 0: { cellWidth: 90, halign: 'center', valign: 'middle' }, 1: { cellWidth: 42, halign: 'center', valign: 'middle' }, 2: { cellWidth: 42, halign: 'center', valign: 'middle' } }
@@ -206,6 +217,7 @@ export function buildPresupuestoPdfDoc(data, opts = { isPro: false }) {
       : [r.descripcion, r.categoria, String(r.cantidad), r.unidad, formatCurrency(r.precioUnitario), formatCurrency(r.cantidad * r.precioUnitario)]
   )
 
+  checkSpace(20)
   doc.setFont('times', 'bold')
   doc.setFontSize(11)
   doc.setTextColor(dark.r, dark.g, dark.b)
@@ -222,6 +234,7 @@ export function buildPresupuestoPdfDoc(data, opts = { isPro: false }) {
     body: tableBodyMo,
     theme: 'striped',
     headStyles: { fillColor: [brown.r, brown.g, brown.b], textColor: 255, halign: 'center', valign: 'middle' },
+    showHead: 'everyPage',
     styles: { fontSize: 8.4, cellPadding: 3, font: 'helvetica', halign: 'center', valign: 'middle' },
     columnStyles: sinPreciosMano
       ? { 0: { cellWidth: 62, halign: 'center', valign: 'middle' }, 1: { cellWidth: 42, halign: 'center', valign: 'middle' }, 2: { cellWidth: 30, halign: 'center', valign: 'middle' }, 3: { cellWidth: 40, halign: 'center', valign: 'middle' } }
@@ -232,6 +245,7 @@ export function buildPresupuestoPdfDoc(data, opts = { isPro: false }) {
   y = doc.lastAutoTable.finalY + 6
 
   if (data.gastosAdicionales?.length) {
+    checkSpace(20)
     const gBody = data.gastosAdicionales.map((r) => [r.concepto, formatCurrency(r.montoCalculado ?? r.monto ?? 0)])
     autoTable(doc, {
       startY: y,
@@ -246,6 +260,7 @@ export function buildPresupuestoPdfDoc(data, opts = { isPro: false }) {
     y = doc.lastAutoTable.finalY + 6
   }
 
+  checkSpace(60)
   let ly = y
   if (!todoSinPrecio) {
     const lines = [

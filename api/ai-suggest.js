@@ -13,7 +13,17 @@ REGLAS CRÍTICAS:
 4. Incluís TODOS los materiales, incluso los que se olvidan (adhesivos, pastinas, selladores, clavos, etc.).
 5. Si la descripción es ambigua, asumís dimensiones razonables y lo aclarás en observaciones.
 
-Unidades para materiales: m², m³, m lineal, unidad, kg, bolsa, litro, hora, día, semana, lote, global.
+Unidades para materiales — usá la más específica posible:
+- Pinturas, adhesivos, selladores: litro o kg (NO "unidad")
+- Cerámicas, pisos, revestimientos: m²
+- Caños, perfiles, molduras: m lineal
+- Bolsas de cemento, yeso, cal: bolsa
+- Ladrillos, bloques: unidad (único caso válido)
+- Rollos, lonas, membranas: m²
+- Lijas, brochas, rodillos, pinceles: unidad (herramientas descartables)
+- Arena, piedra, hormigón: m³ o kg
+- Lote de pequeños accesorios: lote
+
 Unidades para mano de obra: hora, día, semana, m², m lineal, global, por trabajo.
 Categorías de mano: Oficial, Medio oficial, Ayudante, Especialista, Subcontratista, Dirección técnica.`
 
