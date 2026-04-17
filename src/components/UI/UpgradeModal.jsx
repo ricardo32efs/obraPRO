@@ -70,11 +70,12 @@ export function UpgradeModal({ open, onClose, onActivatePro }) {
         <ul className="mt-5 space-y-2 text-sm text-[var(--color-text)]">
           {[
             'Presupuestos ilimitados (el plan gratis solo permite 1 nuevo por mes)',
-            'PDF con tu logo y colores',
-            'Plantillas inteligentes por tipo de obra',
+            '✨ Asistente IA: describí la obra y se genera el presupuesto solo',
+            'PDF con tu logo y colores personalizados',
+            'Plantillas reutilizables por tipo de obra',
             'Historial completo con búsqueda y estados',
             'Dashboard de métricas',
-            'Plantillas, Excel y envío por email',
+            'Excel y envío por email directo al cliente',
           ].map((t) => (
             <li key={t} className="flex gap-2">
               <span className="text-[var(--color-accent)]">•</span>

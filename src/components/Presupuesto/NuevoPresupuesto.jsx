@@ -461,7 +461,7 @@ export function NuevoPresupuesto({
                 : 'border border-[var(--color-border)] text-[var(--color-text-2)]'
             }`}
           >
-            {isPro ? '✨ Asistente IA' : '✨ Asistente IA 🔒'}
+            {isPro ? '✨ Asistente IA' : '✨ IA (PRO)'}
           </button>
           <button
             type="button"
@@ -554,8 +554,10 @@ export function NuevoPresupuesto({
                 className="mt-3 min-h-[80px] w-full rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-2)] p-3 text-sm"
                 placeholder="Ej: Quiero renovar un baño de 4m² en CABA, cambio de cerámica, grifería y pintura..."
                 value={iaDescripcion}
+                maxLength={1000}
                 onChange={(e) => setIaDescripcion(e.target.value)}
               />
+              <p className="mt-1 text-right text-[11px] text-[var(--color-text-2)]">{iaDescripcion.length}/1000</p>
               {iaError && (
                 <p className="mt-2 rounded-lg bg-red-50 px-3 py-2 text-xs text-red-700">{iaError}</p>
               )}

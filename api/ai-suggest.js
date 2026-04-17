@@ -69,15 +69,19 @@ export default async function handler(req, res) {
   }
 
   const { descripcionObra, tipoTrabajo, ciudad } = req.body || {}
-  if (!descripcionObra || String(descripcionObra).trim().length < 10) {
+  const descStr = String(descripcionObra || '').trim()
+  if (descStr.length < 10) {
     return res.status(400).json({ error: 'Descripción demasiado corta. Describí mejor la obra.' })
+  }
+  if (descStr.length > 1000) {
+    return res.status(400).json({ error: 'Descripción demasiado larga (máx. 1000 caracteres).' })
   }
 
   try {
-    const prompt = buildPrompt({ descripcionObra, tipoTrabajo, ciudad })
+    const prompt = buildPrompt({ descripcionObra: descStr, tipoTrabajo, ciudad })
 
     const geminiRes = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_KEY}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_KEY}`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
