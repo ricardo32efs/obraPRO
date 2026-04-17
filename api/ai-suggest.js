@@ -80,15 +80,16 @@ export default async function handler(req, res) {
   try {
     const prompt = buildPrompt({ descripcionObra: descStr, tipoTrabajo, ciudad })
 
+    const fullPrompt = `${SYSTEM_PROMPT}\n\n---\n\n${prompt}`
+
     const geminiRes = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_KEY}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${GEMINI_KEY}`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          system_instruction: { parts: [{ text: SYSTEM_PROMPT }] },
-          contents: [{ role: 'user', parts: [{ text: prompt }] }],
-          generationConfig: { temperature: 0.3, maxOutputTokens: 8192 },
+          contents: [{ role: 'user', parts: [{ text: fullPrompt }] }],
+          generationConfig: { temperature: 0.3, maxOutputTokens: 4096 },
         }),
       }
     )
