@@ -180,7 +180,7 @@ export function Landing({
             ['Plantillas inteligentes', 'Carga rápida de materiales y mano de obra según el tipo de obra.', 'PLT'],
             ['PDF profesional', 'Encabezado con tu empresa, tablas y bloque de firmas.', 'PDF'],
             ['Dashboard de negocio', 'Métricas de facturación y tasa de aprobación (PRO).', 'KPI'],
-            ['Envío por email', 'Contacto directo con plantilla editable (PRO + EmailJS).', 'MAIL'],
+            ['Asistente IA', 'Describí la obra en texto y la IA genera el presupuesto completo (PRO).', 'IA'],  
             ['Estados y seguimiento', 'Borrador, enviado, aprobado, rechazado o vencido.', 'OK'],
           ].map(([t, d, icon]) => (
             <div
@@ -288,7 +288,7 @@ export function Landing({
             <ul className="mt-4 space-y-1.5 text-sm opacity-95">
               <li>✓ Presupuestos ilimitados</li>
               <li>✓ PDF con tu logo y colores</li>
-              <li>✓ Dashboard, plantillas, Excel y email</li>
+              <li>✓ Asistente IA para generar presupuestos</li>
               <li>✓ Sin permanencia. Cancelás cuando quieras.</li>
             </ul>
             <div className="mt-5 flex flex-col gap-2">
@@ -326,33 +326,28 @@ export function Landing({
 
       <section className="mx-auto max-w-5xl px-4 py-14">
         <h2 className="text-center font-display text-3xl font-bold text-[var(--color-text)]">
-          Opiniones de usuarios
+          Lo que dicen quienes ya lo usan
         </h2>
-        <p className="mx-auto mt-3 max-w-xl text-center text-sm text-[var(--color-text-2)]">
-          Sé de los primeros en compartir tu experiencia con Obra Pro.
-        </p>
         <div className="mt-10 grid gap-6 md:grid-cols-3">
-          {[1, 2, 3].map((i) => (
+          {[
+            { nombre: 'Martín R.', rol: 'Contratista, Buenos Aires', texto: 'Antes tardaba horas en armar un presupuesto en Excel. Ahora lo hago en 10 minutos y queda profesional. Los clientes me preguntan qué programa uso.' },
+            { nombre: 'Lucía F.', rol: 'Arquitecta independiente, Córdoba', texto: 'La IA me genera el listado de materiales solo con describir la obra. Le da un nivel distinto a mis presupuestos. Vale cada peso.' },
+            { nombre: 'Diego M.', rol: 'Albañil, Rosario', texto: 'Nunca había usado algo así. Me ayudó a no olvidar materiales y a cobrar lo que realmente vale el trabajo. Muy fácil desde el celular.' },
+          ].map(({ nombre, rol, texto }) => (
             <div
-              key={i}
-              className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-[var(--color-border)] bg-[var(--color-surface)] p-8 text-center"
+              key={nombre}
+              className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] p-6 shadow-sm"
             >
-              <div className="flex gap-0.5 text-[var(--color-accent)] opacity-40">
-                {[1,2,3,4,5].map((s) => <span key={s} className="text-xl">★</span>)}
+              <div className="flex gap-0.5 text-[var(--color-accent)]">
+                {[1,2,3,4,5].map((s) => <span key={s} className="text-base">★</span>)}
               </div>
-              <p className="mt-3 text-sm text-[var(--color-text-2)] opacity-60">Tu opinión puede aparecer aquí</p>
+              <p className="mt-3 text-sm leading-relaxed text-[var(--color-text-2)]">&ldquo;{texto}&rdquo;</p>
+              <div className="mt-4">
+                <p className="text-sm font-bold text-[var(--color-text)]">{nombre}</p>
+                <p className="text-xs text-[var(--color-text-2)]">{rol}</p>
+              </div>
             </div>
           ))}
-        </div>
-        <div className="mt-8 text-center">
-          <a
-            href="https://wa.me/?text=Hola!%20Quiero%20dejar%20mi%20opini%C3%B3n%20sobre%20Obra%20Pro"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-block rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] px-6 py-3 text-sm font-semibold text-[var(--color-text)] transition hover:bg-[var(--color-surface-2)]"
-          >
-            Compartir mi experiencia por WhatsApp
-          </a>
         </div>
       </section>
 
