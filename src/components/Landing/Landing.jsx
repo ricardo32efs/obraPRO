@@ -324,31 +324,21 @@ export function Landing({
         </p>
       </section>
 
-      <section className="mx-auto max-w-5xl px-4 py-14">
-        <h2 className="text-center font-display text-3xl font-bold text-[var(--color-text)]">
-          Lo que dicen quienes ya lo usan
+      <section className="mx-auto max-w-3xl px-4 py-14 text-center">
+        <h2 className="font-display text-3xl font-bold text-[var(--color-text)]">
+          Somos nuevos — y lo decimos con orgullo
         </h2>
-        <div className="mt-10 grid gap-6 md:grid-cols-3">
-          {[
-            { nombre: 'Martín R.', rol: 'Contratista, Buenos Aires', texto: 'Antes tardaba horas en armar un presupuesto en Excel. Ahora lo hago en 10 minutos y queda profesional. Los clientes me preguntan qué programa uso.' },
-            { nombre: 'Lucía F.', rol: 'Arquitecta independiente, Córdoba', texto: 'La IA me genera el listado de materiales solo con describir la obra. Le da un nivel distinto a mis presupuestos. Vale cada peso.' },
-            { nombre: 'Diego M.', rol: 'Albañil, Rosario', texto: 'Nunca había usado algo así. Me ayudó a no olvidar materiales y a cobrar lo que realmente vale el trabajo. Muy fácil desde el celular.' },
-          ].map(({ nombre, rol, texto }) => (
-            <div
-              key={nombre}
-              className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] p-6 shadow-sm"
-            >
-              <div className="flex gap-0.5 text-[var(--color-accent)]">
-                {[1,2,3,4,5].map((s) => <span key={s} className="text-base">★</span>)}
-              </div>
-              <p className="mt-3 text-sm leading-relaxed text-[var(--color-text-2)]">&ldquo;{texto}&rdquo;</p>
-              <div className="mt-4">
-                <p className="text-sm font-bold text-[var(--color-text)]">{nombre}</p>
-                <p className="text-xs text-[var(--color-text-2)]">{rol}</p>
-              </div>
-            </div>
-          ))}
-        </div>
+        <p className="mx-auto mt-4 max-w-xl text-sm leading-relaxed text-[var(--color-text-2)]">
+          Obra Pro acaba de lanzarse. Todavía no tenemos cientos de reseñas, pero sí una herramienta real, funcional y pensada para el trabajo diario en obra. Probala gratis y contanos qué te parece.
+        </p>
+        <a
+          href="https://wa.me/+5491150000000?text=Hola%2C%20prob%C3%A9%20Obra%20Pro%20y%20quiero%20contarte%20mi%20experiencia"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-8 inline-block rounded-xl bg-[var(--color-accent)] px-6 py-3 text-sm font-semibold text-white shadow-md transition hover:brightness-110"
+        >
+          Compartir mi experiencia →
+        </a>
       </section>
 
       <section className="mx-auto max-w-3xl px-4 py-12">
