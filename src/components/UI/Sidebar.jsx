@@ -1,5 +1,5 @@
 /** Sidebar fija — desktop */
-export function Sidebar({ screen, onNavigate, onHome }) {
+export function Sidebar({ screen, onNavigate, onHome, onFeedback }) {
   const link = (id, label) => (
     <button
       type="button"
@@ -30,7 +30,16 @@ export function Sidebar({ screen, onNavigate, onHome }) {
         {link('dashboard', 'Dashboard')}
         {link('config', 'Configuración')}
       </nav>
-      <div className="mt-auto pt-6 text-xs text-[var(--color-text-2)]">© 2026 Obra Pro</div>
+      <div className="mt-auto space-y-2 pt-6">
+        <button
+          type="button"
+          onClick={onFeedback}
+          className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-xs font-medium text-[var(--color-text-2)] transition hover:bg-[var(--color-surface-2)]"
+        >
+          <span>💬</span> Enviar feedback
+        </button>
+        <div className="text-xs text-[var(--color-text-2)]">© 2026 Obra Pro</div>
+      </div>
     </aside>
   )
 }

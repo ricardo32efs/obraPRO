@@ -85,6 +85,7 @@ export function Landing({
   onCrearPresupuesto,
   onVerEjemploPdf,
   hasEmpresaConfigured,
+  onFeedback,
 }) {
   const [legalSection, setLegalSection] = useState(null)
 
@@ -403,6 +404,12 @@ export function Landing({
             </span>
             <button type="button" className="underline" onClick={() => setLegalSection('terminos')}>
               Términos
+            </button>
+            <span className="text-[var(--color-border)]" aria-hidden>
+              |
+            </span>
+            <button type="button" className="underline" onClick={onFeedback}>
+              💬 Feedback
             </button>
           </nav>
           <p className="text-xs">© 2026 Obra Pro.</p>

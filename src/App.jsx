@@ -8,6 +8,7 @@ import { UpgradeModal } from './components/UI/UpgradeModal'
 import { BottomNav } from './components/UI/BottomNav'
 import { Sidebar } from './components/UI/Sidebar'
 import { PreviewModal } from './components/Preview/PreviewModal'
+import { ModalFeedback } from './components/Feedback/ModalFeedback'
 import { generatePresupuestoPDF } from './utils/generatePDF'
 import { mergePayloadConEmpresa } from './utils/presupuestoHelpers'
 import { RouteFallback } from './components/UI/RouteFallback'
@@ -37,6 +38,7 @@ function AppInner() {
   const [route, setRoute] = useState('landing') // landing | onboarding | app
   const [appScreen, setAppScreen] = useState('nuevo')
   const [upgradeOpen, setUpgradeOpen] = useState(false)
+  const [feedbackOpen, setFeedbackOpen] = useState(false)
   const [editDraft, setEditDraft] = useState(null)
   const [viewRecord, setViewRecord] = useState(null)
   const [exampleOpen, setExampleOpen] = useState(false)
@@ -238,6 +240,7 @@ function AppInner() {
                 hasEmpresaConfigured={hasEmpresa}
                 onCrearPresupuesto={() => enterApp('nuevo')}
                 onVerEjemploPdf={() => setExampleOpen(true)}
+                onFeedback={() => setFeedbackOpen(true)}
               />
             </Suspense>
           </motion.div>
@@ -307,6 +310,7 @@ function AppInner() {
               screen={appScreen}
               onNavigate={setAppScreen}
               onHome={() => setRoute('landing')}
+              onFeedback={() => setFeedbackOpen(true)}
             />
 
             <main id="main-content" tabIndex={-1} className="min-h-svh outline-none">
@@ -426,6 +430,11 @@ function AppInner() {
           setExampleOpen(false)
           setViewRecord(null)
         }}
+      />
+
+      <ModalFeedback
+        open={feedbackOpen}
+        onClose={() => setFeedbackOpen(false)}
       />
 
     </>
