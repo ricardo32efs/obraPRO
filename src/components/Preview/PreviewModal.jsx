@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { useFocusTrap } from '../../hooks/useFocusTrap'
 import { DocumentoPresupuesto } from './DocumentoPresupuesto'
+import { generateListaMaterialesPDF } from '../../utils/generatePDF'
 
 /**
  * Modal casi pantalla completa con preview del documento
@@ -51,6 +52,14 @@ export function PreviewModal({
             className="rounded-lg bg-[var(--color-accent)] px-3 py-2 text-xs font-semibold text-white sm:text-sm"
           >
             Descargar PDF
+          </button>
+          <button
+            type="button"
+            onClick={() => { try { generateListaMaterialesPDF(payload) } catch { /* */ } }}
+            className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-xs font-semibold sm:text-sm"
+            title="PDF con materiales y cantidades sin precios — para ir a la ferretería o pedir cotización"
+          >
+            Lista de materiales
           </button>
           <button
             type="button"

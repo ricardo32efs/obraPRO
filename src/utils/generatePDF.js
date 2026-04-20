@@ -394,3 +394,119 @@ export function generatePresupuestoPDF(data, opts = { isPro: false }) {
   doc.save(`Presupuesto-${safeName}-${data.numero?.replace(/\s/g, '') || 'obra'}.pdf`)
 }
 
+/**
+ * PDF de lista de materiales sin precios — para llevar a la ferretería o pedir cotización
+ */
+export function generateListaMaterialesPDF(data) {
+  const marginL = 15
+  const marginR = 15
+  const marginT = 20
+  const dark = { r: 26, g: 26, b: 26 }
+  const accent = { r: 193, g: 68, b: 14 }
+
+  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' })
+  const pageW = doc.internal.pageSize.getWidth()
+  let y = marginT
+
+  doc.setFont('times', 'bold')
+  doc.setFontSize(16)
+  doc.setTextColor(dark.r, dark.g, dark.b)
+  doc.text(data.empresa?.nombreEmpresa || 'Obra Pro', marginL, y + 6)
+
+  doc.setFont('times', 'bold')
+  doc.setFontSize(14)
+  doc.setTextColor(accent.r, accent.g, accent.b)
+  doc.text('LISTA DE MATERIALES', pageW - marginR, y + 6, { align: 'right' })
+
+  doc.setFont('helvetica', 'normal')
+  doc.setFontSize(9)
+  doc.setTextColor(90, 90, 90)
+  if (data.clienteNombre) doc.text(`Cliente: ${data.clienteNombre}`, marginL, y + 13)
+  if (data.direccionObra) doc.text(`Obra: ${data.direccionObra}`, marginL, y + 18)
+  const tipo = data.tipoTrabajo === 'Otro' && data.tipoTrabajoOtro ? data.tipoTrabajoOtro : data.tipoTrabajo
+  if (tipo) doc.text(`Tipo: ${tipo}`, marginL, y + 23)
+  doc.text(`Fecha: ${formatDateDDMMYYYY(data.fechaEmision || new Date().toISOString().slice(0, 10))}`, pageW - marginR, y + 13, { align: 'right' })
+
+  y += 30
+  doc.setDrawColor(accent.r, accent.g, accent.b)
+  doc.setLineWidth(0.4)
+  doc.line(marginL, y, pageW - marginR, y)
+  y += 5
+
+  const mats = (data.materiales || []).filter((r) => String(r.nombre || '').trim())
+  if (mats.length > 0) {
+    doc.setFont('times', 'bold')
+    doc.setFontSize(11)
+    doc.setTextColor(dark.r, dark.g, dark.b)
+    doc.text('MATERIALES', pageW / 2, y, { align: 'center' })
+    y += 3
+    autoTable(doc, {
+      startY: y,
+      head: [['#', 'Material', 'Categoría', 'Cantidad', 'Unidad', '✓']],
+      body: mats.map((r, i) => [
+        String(i + 1),
+        r.nombre,
+        r.categoria || '',
+        String(r.cantidad || ''),
+        r.unidad || '',
+        '',
+      ]),
+      theme: 'striped',
+      headStyles: { fillColor: [dark.r, dark.g, dark.b], textColor: 255, halign: 'center' },
+      showHead: 'everyPage',
+      styles: { fontSize: 9, cellPadding: 3, halign: 'center', valign: 'middle' },
+      columnStyles: {
+        0: { cellWidth: 10 },
+        1: { cellWidth: 72, halign: 'left' },
+        2: { cellWidth: 38 },
+        3: { cellWidth: 20 },
+        4: { cellWidth: 20 },
+        5: { cellWidth: 14 },
+      },
+      tableWidth: 174,
+      margin: { left: (pageW - 174) / 2, right: (pageW - 174) / 2 },
+    })
+    y = doc.lastAutoTable.finalY + 8
+  }
+
+  const mano = (data.manoObra || []).filter((r) => String(r.descripcion || '').trim())
+  if (mano.length > 0) {
+    doc.setFont('times', 'bold')
+    doc.setFontSize(11)
+    doc.setTextColor(dark.r, dark.g, dark.b)
+    doc.text('MANO DE OBRA', pageW / 2, y, { align: 'center' })
+    y += 3
+    autoTable(doc, {
+      startY: y,
+      head: [['Tarea', 'Categoría', 'Cantidad', 'Unidad']],
+      body: mano.map((r) => [r.descripcion, r.categoria || '', String(r.cantidad || ''), r.unidad || '']),
+      theme: 'striped',
+      headStyles: { fillColor: [139, 69, 19], textColor: 255, halign: 'center' },
+      showHead: 'everyPage',
+      styles: { fontSize: 9, cellPadding: 3, halign: 'center', valign: 'middle' },
+      columnStyles: {
+        0: { cellWidth: 80, halign: 'left' },
+        1: { cellWidth: 50 },
+        2: { cellWidth: 22 },
+        3: { cellWidth: 22 },
+      },
+      tableWidth: 174,
+      margin: { left: (pageW - 174) / 2, right: (pageW - 174) / 2 },
+    })
+  }
+
+  const pageCount = doc.internal.getNumberOfPages()
+  for (let i = 1; i <= pageCount; i++) {
+    doc.setPage(i)
+    const pageH = doc.internal.pageSize.getHeight()
+    doc.setFont('helvetica', 'italic')
+    doc.setFontSize(8)
+    doc.setTextColor(160, 160, 160)
+    doc.text('Lista de materiales generada con Obra Pro · obraproweb.com', pageW / 2, pageH - 8, { align: 'center' })
+    doc.text(`Pág. ${i} / ${pageCount}`, pageW - marginR, pageH - 8, { align: 'right' })
+  }
+
+  const safeName = String(data.clienteNombre || 'lista').replace(/[^\w\d\- ]/g, '').slice(0, 40)
+  doc.save(`Lista-Materiales-${safeName}.pdf`)
+}
+
