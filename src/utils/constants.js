@@ -22,9 +22,14 @@ export const TIPOS_TRABAJO = [
   'Demolición',
   'Instalación sanitaria',
   'Instalación eléctrica',
+  'Instalación de gas',
   'Techos y cubiertas',
   'Impermeabilización',
   'Pisos y revestimientos',
+  'Herrería y rejas',
+  'Carpintería y muebles',
+  'Paisajismo y jardines',
+  'Aire acondicionado',
   'Otro',
 ]
 
@@ -93,10 +98,16 @@ export const TAREAS_MANO_DEFAULT = [
   'Encofrado y hormigonado',
   'Instalación sanitaria',
   'Instalación eléctrica',
+  'Instalación de gas',
   'Demolición',
   'Excavación',
   'Impermeabilización',
   'Colocación de aberturas',
+  'Soldadura y herrería',
+  'Carpintería de madera',
+  'Colocación de chapas y techado',
+  'Jardinería y paisajismo',
+  'Instalación de aire acondicionado',
   'Limpieza de obra final',
   'Dirección técnica',
 ]
@@ -105,8 +116,10 @@ export const GASTOS_SUGERIDOS = [
   'Flete de materiales',
   'Alquiler de andamio',
   'Alquiler de mezcladora',
+  'Alquiler de hidrolavadora',
   'Trámites municipales',
   'Gastos de traslado',
+  'Combustible y viáticos',
   'Imprevistos (% del total)',
 ]
 
