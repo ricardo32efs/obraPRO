@@ -14,8 +14,6 @@ export function PreviewModal({
   isPro,
   readOnly = false,
   onDownloadPdf,
-  onExportExcel,
-  onEmail,
   onSave,
   onContinueEdit,
 }) {
@@ -54,24 +52,6 @@ export function PreviewModal({
           >
             Descargar PDF
           </button>
-          {isPro && (
-            <>
-              <button
-                type="button"
-                onClick={onEmail}
-                className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-xs font-semibold sm:text-sm"
-              >
-                Enviar por email
-              </button>
-              <button
-                type="button"
-                onClick={onExportExcel}
-                className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-xs font-semibold sm:text-sm"
-              >
-                Exportar a Excel
-              </button>
-            </>
-          )}
           <button
             type="button"
             onClick={readOnly ? onClose : onContinueEdit}
