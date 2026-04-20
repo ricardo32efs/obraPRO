@@ -3,10 +3,11 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useFocusTrap } from '../../hooks/useFocusTrap'
 
 /**
- * Modal de feedback profesional usando Formspree (gratis, anonimo para el creador)
- * El usuario configura su endpoint de Formspree en las props
+ * Modal de feedback profesional usando Netlify Function + EmailJS
+ * El feedback se envía al endpoint /api/feedback que usa EmailJS desde el servidor
+ * (mantiene las API keys ocultas)
  */
-export function ModalFeedback({ open, onClose, formspreeEndpoint }) {
+export function ModalFeedback({ open, onClose }) {
   const ref = useFocusTrap(open)
   const [form, setForm] = useState({ nombre: '', email: '', tipo: 'sugerencia', mensaje: '' })
   const [status, setStatus] = useState('idle') // idle | submitting | success | error
@@ -19,38 +20,24 @@ export function ModalFeedback({ open, onClose, formspreeEndpoint }) {
     setStatus('submitting')
 
     try {
-      // Si hay endpoint de Formspree, usarlo
-      if (formspreeEndpoint) {
-        const res = await fetch(formspreeEndpoint, {
-          method: 'POST',
-          headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            nombre: form.nombre,
-            email: form.email,
-            tipo: form.tipo,
-            mensaje: form.mensaje,
-            fecha: new Date().toISOString(),
-            url: window.location.href,
-          }),
-        })
-        if (res.ok) {
-          setStatus('success')
-          setForm({ nombre: '', email: '', tipo: 'sugerencia', mensaje: '' })
-        } else {
-          setStatus('error')
-        }
-      } else {
-        // Fallback: guardar en localStorage para review manual (modo desarrollo)
-        const feedbacks = JSON.parse(localStorage.getItem('obrapro_feedback_v1') || '[]')
-        feedbacks.unshift({
-          id: crypto.randomUUID(),
-          ...form,
+      // Enviar a la Netlify Function que usa EmailJS desde el servidor
+      const res = await fetch('/api/feedback', {
+        method: 'POST',
+        headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          nombre: form.nombre,
+          email: form.email,
+          tipo: form.tipo,
+          mensaje: form.mensaje,
           fecha: new Date().toISOString(),
           url: window.location.href,
-        })
-        localStorage.setItem('obrapro_feedback_v1', JSON.stringify(feedbacks.slice(0, 100)))
+        }),
+      })
+      if (res.ok) {
         setStatus('success')
         setForm({ nombre: '', email: '', tipo: 'sugerencia', mensaje: '' })
+      } else {
+        setStatus('error')
       }
     } catch {
       setStatus('error')
