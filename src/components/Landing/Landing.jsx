@@ -324,7 +324,7 @@ export function Landing({
         </p>
       </section>
 
-      <section className="mx-auto max-w-3xl px-4 py-14 text-center">
+      <section className="mx-auto max-w-3xl px-4 py-14 text-center rounded-2xl bg-[var(--color-surface)]/80">
         <h2 className="font-display text-3xl font-bold text-[var(--color-text)]">
           Somos nuevos — y lo decimos con orgullo
         </h2>
