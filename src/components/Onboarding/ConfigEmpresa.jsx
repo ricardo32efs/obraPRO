@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { PROVINCIAS_AR } from '../../utils/constants'
+import { PROVINCIAS_AR, TIPOS_TRABAJO } from '../../utils/constants'
 import { validateEmpresaConfig } from '../../utils/validateForm'
 
 const defaultEmpresa = () => ({
@@ -12,6 +12,7 @@ const defaultEmpresa = () => ({
   direccion: '',
   ciudad: '',
   provincia: PROVINCIAS_AR[0],
+  rubro: TIPOS_TRABAJO[0],
   logoBase64: '',
   pdfAccentColor: '#C1440E',
   pdfFooter: '',
@@ -110,6 +111,21 @@ export function ConfigEmpresa({ initial, embedded, onSave, onCancel, isPro = fal
                 </option>
               ))}
             </select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-[var(--color-text)]">Rubro principal *</label>
+            <select
+              className="mt-1 w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-sm"
+              value={form.rubro}
+              onChange={(e) => setForm((f) => ({ ...f, rubro: e.target.value }))}
+            >
+              {TIPOS_TRABAJO.map((t) => (
+                <option key={t} value={t}>{t}</option>
+              ))}
+            </select>
+            <p className="mt-1 text-xs text-[var(--color-text-2)]">
+              Este rubro se usará para sugerir materiales relevantes y plantillas personalizadas.
+            </p>
           </div>
         </div>
 

@@ -33,6 +33,8 @@ import { ModalPlantillas } from '../Plantillas/ModalPlantillas'
 import { useToast } from '../UI/ToastNotification'
 import { useIAGemini } from '../../hooks/useIAGemini'
 import { AsistenteIAResultado } from './AsistenteIA'
+import { ModalClientes } from '../Clientes/ModalClientes'
+import { upsertClienteFromForm } from '../../utils/clientesStorage'
 
 const newId = () => crypto.randomUUID()
 
@@ -117,7 +119,7 @@ export function NuevoPresupuesto({
   const [previewOpen, setPreviewOpen] = useState(false)
   const [confirmDiscard, setConfirmDiscard] = useState(false)
   const [plantillasOpen, setPlantillasOpen] = useState(false)
-  const [dragMatIdx, setDragMatIdx] = useState(null)
+  const [clientesOpen, setClientesOpen] = useState(false)
   const [iaOpen, setIaOpen] = useState(false)
   const [iaDescripcion, setIaDescripcion] = useState('')
   const [iaResult, setIaResult] = useState(null)
@@ -298,6 +300,8 @@ export function NuevoPresupuesto({
     }
     if (!meta.skipClearInitial) onClearInitial?.()
     if (!meta.silentToast) toast(toastMsg, 'success')
+    // Guardar cliente en base
+    upsertClienteFromForm({ clienteNombre: form.clienteNombre, clienteTelefono: form.clienteTelefono, clienteEmail: form.clienteEmail })
     return record
   }
 
@@ -451,13 +455,24 @@ export function NuevoPresupuesto({
               setIaError(null)
               setIaOpen((v) => !v)
             }}
-            className={`rounded-lg px-3 py-2 text-xs font-semibold transition ${
+            className={`group relative overflow-hidden rounded-lg px-3 py-2 text-xs font-semibold transition ${
               isPro
-                ? 'bg-[var(--color-accent)] text-white hover:brightness-105'
-                : 'border border-[var(--color-border)] text-[var(--color-text-2)]'
+                ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow hover:brightness-105'
+                : 'border border-dashed border-amber-300 bg-gradient-to-r from-amber-50 to-orange-50 text-amber-700 hover:border-amber-400 hover:from-amber-100 hover:to-orange-100'
             }`}
           >
-            {isPro ? '✨ Asistente IA' : '✨ IA (PRO)'}
+            {isPro ? '✨ Asistente IA' : (
+              <span className="inline-flex items-center gap-1.5">
+                <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <rect x="3" y="11" width="18" height="11" rx="2" />
+                  <circle cx="12" cy="7" r="4" />
+                </svg>
+                IA PRO
+                <svg className="h-3 w-3 opacity-60" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 2L9.1 8.6 2 9.2 7.5 14 5.8 21 12 17.8 18.2 21 16.5 14 22 9.2 14.9 8.6z"/>
+                </svg>
+              </span>
+            )}
           </button>
           <button
             type="button"
@@ -609,7 +624,17 @@ export function NuevoPresupuesto({
           layout
           className="space-y-4 rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] p-4 shadow-sm"
         >
-          <h2 className="font-display text-lg font-bold text-[var(--color-text)]">Cliente y obra</h2>
+          <div className="flex items-center justify-between">
+            <h2 className="font-display text-lg font-bold text-[var(--color-text)]">Cliente y obra</h2>
+            <button
+              type="button"
+              onClick={() => setClientesOpen(true)}
+              className="rounded-lg border border-[var(--color-border)] px-2.5 py-1.5 text-xs font-semibold hover:bg-[var(--color-surface-2)]"
+              title="Seleccionar cliente guardado"
+            >
+              👤 Mis clientes
+            </button>
+          </div>
           <Field
             label="Nombre del cliente"
             value={form.clienteNombre}
@@ -1551,6 +1576,15 @@ export function NuevoPresupuesto({
         onDelete={(id) => {
           setPlantillas((prev) => prev.filter((p) => p.id !== id))
           toast('Plantilla eliminada', 'success')
+        }}
+      />
+
+      <ModalClientes
+        open={clientesOpen}
+        onClose={() => setClientesOpen(false)}
+        onPick={(c) => {
+          setForm((f) => ({ ...f, clienteNombre: c.nombre, clienteTelefono: c.telefono || '', clienteEmail: c.email || '' }))
+          toast(`Cliente cargado: ${c.nombre}`, 'success')
         }}
       />
 
