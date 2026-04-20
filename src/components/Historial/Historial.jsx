@@ -335,12 +335,6 @@ export function Historial({
                             }
                           }}
                         />
-                        <IconBtn
-                          label="Enviar"
-                          onClick={() =>
-                            isPro ? onSendEmail?.(mergePayloadConEmpresa(r, empresa)) : onRequestUpgrade?.()
-                          }
-                        />
                         <IconBtn label="Duplicar" onClick={() => duplicarPresupuesto(r)} />
                         <IconBtn label="WhatsApp" onClick={() => shareWhatsApp(r)} />
                         <IconBtn label="Eliminar" onClick={() => setDeleteId(r.id)} />
@@ -393,7 +387,6 @@ export function Historial({
                   <CardBtn label="Editar" onClick={() => onEdit(r)} />
                   <CardBtn label="PDF" onClick={() => { try { generatePresupuestoPDF(mergePayloadConEmpresa(r, empresa), { isPro }) } catch { /* */ } }} />
                   <CardBtn label="WhatsApp" onClick={() => shareWhatsApp(r)} accent />
-                  <CardBtn label="Email" onClick={() => isPro ? onSendEmail?.(mergePayloadConEmpresa(r, empresa)) : onRequestUpgrade?.()} />
                   <CardBtn label="Duplicar" onClick={() => duplicarPresupuesto(r)} />
                   <CardBtn label="Eliminar" onClick={() => setDeleteId(r.id)} danger />
                 </div>
