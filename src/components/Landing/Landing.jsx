@@ -332,14 +332,12 @@ export function Landing({
         <p className="mx-auto mt-4 max-w-xl text-sm leading-relaxed text-[var(--color-text-2)]">
           Obra Pro acaba de lanzarse. Todavía no tenemos cientos de reseñas, pero sí una herramienta real, funcional y pensada para el trabajo diario en obra. Probala gratis y contanos qué te parece.
         </p>
-        <a
-          href="https://wa.me/5491127320772?text=Hola%2C%20prob%C3%A9%20Obra%20Pro%20y%20quiero%20contarte%20mi%20experiencia"
-          target="_blank"
-          rel="noopener noreferrer"
+        <button
+          onClick={onFeedback}
           className="mt-8 inline-block rounded-xl bg-[var(--color-accent)] px-6 py-3 text-sm font-semibold text-white shadow-md transition hover:brightness-110"
         >
           Compartir mi experiencia →
-        </a>
+        </button>
       </section>
 
       <section className="mx-auto max-w-3xl px-4 py-12">
