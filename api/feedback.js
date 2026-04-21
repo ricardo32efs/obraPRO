@@ -1,29 +1,14 @@
 /**
- * Vercel Serverless Function: Recibe feedback y lo envía por EmailJS
+ * Vercel Serverless Function: Recibe feedback y lo envía por EmailJS API REST
  * POST /api/feedback
  * Body: { nombre, email, tipo, mensaje, fecha, url }
+ * Usa fetch directo a EmailJS API (sin SDK de Node.js)
  */
-
-// Import con manejo de error
-let emailjs
-try {
-  emailjs = await import('@emailjs/nodejs').then(m => m.default || m)
-} catch (importErr) {
-  console.error('Failed to import @emailjs/nodejs:', importErr.message)
-}
 
 export default async function handler(req, res) {
   // Solo POST
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' })
-  }
-
-  // Verificar que emailjs se cargó
-  if (!emailjs || !emailjs.send) {
-    return res.status(500).json({ 
-      error: 'EmailJS module not loaded', 
-      detail: 'Check if @emailjs/nodejs is in package.json dependencies'
-    })
   }
 
   try {
@@ -39,7 +24,7 @@ export default async function handler(req, res) {
     const privateKey = process.env.EMAILJS_PRIVATE_KEY
     const toEmail = process.env.EMAIL_TO
 
-    // Debug: log qué variables faltan (sin revelar valores)
+    // Debug: log qué variables faltan
     const missing = []
     if (!serviceId) missing.push('EMAILJS_SERVICE_ID')
     if (!templateId) missing.push('EMAILJS_TEMPLATE_ID')
@@ -55,24 +40,43 @@ export default async function handler(req, res) {
       })
     }
 
-    const templateParams = {
-      to_email: toEmail,
-      from_name: nombre || 'Usuario anónimo',
-      from_email: email || 'no-reply@obraproweb.com',
-      tipo: tipo || 'feedback',
-      mensaje: mensaje,
-      url: url || 'No disponible',
-      fecha: new Date().toLocaleString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires' }),
-    }
-
-    await emailjs.send(serviceId, templateId, templateParams, {
-      publicKey,
-      privateKey,
+    // Llamar a EmailJS API REST directamente
+    const emailjsRes = await fetch('https://api.emailjs.com/api/v1.0/email/send', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify({
+        service_id: serviceId,
+        template_id: templateId,
+        user_id: publicKey,
+        accessToken: privateKey,
+        template_params: {
+          to_email: toEmail,
+          from_name: nombre || 'Usuario anónimo',
+          from_email: email || 'no-reply@obraproweb.com',
+          tipo: tipo || 'feedback',
+          mensaje: mensaje,
+          url: url || 'No disponible',
+          fecha: new Date().toLocaleString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires' }),
+        }
+      })
     })
+
+    if (!emailjsRes.ok) {
+      const errorText = await emailjsRes.text().catch(() => 'Unknown error')
+      console.error('EmailJS error:', emailjsRes.status, errorText)
+      return res.status(500).json({ 
+        error: 'Error enviando a EmailJS', 
+        status: emailjsRes.status,
+        detail: errorText.substring(0, 200)
+      })
+    }
 
     return res.status(200).json({ ok: true })
   } catch (err) {
-    console.error('Feedback error:', err.message, err.stack)
+    console.error('Feedback error:', err.message)
     return res.status(500).json({ 
       error: 'Error enviando feedback',
       detail: err.message 
