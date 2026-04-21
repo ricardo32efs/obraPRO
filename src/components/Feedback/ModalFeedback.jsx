@@ -11,6 +11,7 @@ export function ModalFeedback({ open, onClose }) {
   const ref = useFocusTrap(open)
   const [form, setForm] = useState({ nombre: '', email: '', tipo: 'sugerencia', mensaje: '' })
   const [status, setStatus] = useState('idle') // idle | submitting | success | error
+  const [errorMsg, setErrorMsg] = useState('')
 
   if (!open) return null
 
@@ -18,9 +19,10 @@ export function ModalFeedback({ open, onClose }) {
     e.preventDefault()
     if (!form.mensaje.trim()) return
     setStatus('submitting')
+    setErrorMsg('')
 
     try {
-      // Enviar a la Netlify Function que usa EmailJS desde el servidor
+      // Enviar a la Vercel Function que usa EmailJS desde el servidor
       const res = await fetch('/api/feedback', {
         method: 'POST',
         headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
@@ -37,9 +39,12 @@ export function ModalFeedback({ open, onClose }) {
         setStatus('success')
         setForm({ nombre: '', email: '', tipo: 'sugerencia', mensaje: '' })
       } else {
+        const data = await res.json().catch(() => ({}))
+        setErrorMsg(data.error || `Error ${res.status}: ${res.statusText}`)
         setStatus('error')
       }
-    } catch {
+    } catch (err) {
+      setErrorMsg(err.message || 'Error de conexión')
       setStatus('error')
     }
   }
@@ -176,7 +181,8 @@ export function ModalFeedback({ open, onClose }) {
 
               {status === 'error' && (
                 <div className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
-                  Error al enviar. Intentá de nuevo en un momento.
+                  <p className="font-semibold">Error al enviar</p>
+                  <p className="text-xs">{errorMsg || 'Intentá de nuevo en un momento'}</p>
                 </div>
               )}
 
