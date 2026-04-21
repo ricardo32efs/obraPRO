@@ -1,11 +1,17 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useFocusTrap } from '../../hooks/useFocusTrap'
+import emailjs from '@emailjs/browser'
+
+// CONFIGURACIÓN - Completar con tus datos de EmailJS
+const EMAILJS_SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID || ''
+const EMAILJS_TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID || ''
+const EMAILJS_PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY || ''
+const EMAIL_TO = import.meta.env.VITE_EMAIL_TO || ''
 
 /**
- * Modal de feedback profesional usando Netlify Function + EmailJS
- * El feedback se envía al endpoint /api/feedback que usa EmailJS desde el servidor
- * (mantiene las API keys ocultas)
+ * Modal de feedback profesional usando EmailJS directamente
+ * Envía feedback a tu Gmail de Obra Pro
  */
 export function ModalFeedback({ open, onClose }) {
   const ref = useFocusTrap(open)
@@ -21,30 +27,36 @@ export function ModalFeedback({ open, onClose }) {
     setStatus('submitting')
     setErrorMsg('')
 
+    // Validar configuración
+    if (!EMAILJS_SERVICE_ID || !EMAILJS_TEMPLATE_ID || !EMAILJS_PUBLIC_KEY) {
+      setErrorMsg('Error de configuración. Contactar soporte.')
+      setStatus('error')
+      return
+    }
+
     try {
-      // Enviar a la Vercel Function que usa EmailJS desde el servidor
-      const res = await fetch('/api/feedback', {
-        method: 'POST',
-        headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          nombre: form.nombre,
-          email: form.email,
-          tipo: form.tipo,
-          mensaje: form.mensaje,
-          fecha: new Date().toISOString(),
-          url: window.location.href,
-        }),
-      })
-      if (res.ok) {
-        setStatus('success')
-        setForm({ nombre: '', email: '', tipo: 'sugerencia', mensaje: '' })
-      } else {
-        const data = await res.json().catch(() => ({}))
-        setErrorMsg(data.error || `Error ${res.status}: ${res.statusText}`)
-        setStatus('error')
+      const templateParams = {
+        to_email: EMAIL_TO,
+        from_name: form.nombre || 'Usuario anónimo',
+        from_email: form.email || 'no-reply@obraproweb.com',
+        tipo: form.tipo,
+        mensaje: form.mensaje,
+        url: window.location.href,
+        fecha: new Date().toLocaleString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires' }),
       }
+
+      await emailjs.send(
+        EMAILJS_SERVICE_ID,
+        EMAILJS_TEMPLATE_ID,
+        templateParams,
+        EMAILJS_PUBLIC_KEY
+      )
+
+      setStatus('success')
+      setForm({ nombre: '', email: '', tipo: 'sugerencia', mensaje: '' })
     } catch (err) {
-      setErrorMsg(err.message || 'Error de conexión')
+      console.error('EmailJS error:', err)
+      setErrorMsg('Error al enviar. Intentá de nuevo.')
       setStatus('error')
     }
   }
