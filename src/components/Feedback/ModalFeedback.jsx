@@ -41,7 +41,7 @@ export function ModalFeedback({ open, onClose }) {
         from_email: form.email || 'no-reply@obraproweb.com',
         tipo: form.tipo,
         mensaje: form.mensaje,
-        url: window.location.href,
+        url: 'https://obraproweb.com',
         fecha: new Date().toLocaleString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires' }),
       }
 
