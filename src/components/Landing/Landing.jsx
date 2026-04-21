@@ -86,6 +86,7 @@ export function Landing({
   onVerEjemploPdf,
   hasEmpresaConfigured,
   onFeedback,
+  onTerms,
 }) {
   const [legalSection, setLegalSection] = useState(null)
 
@@ -400,7 +401,7 @@ export function Landing({
             <span className="text-[var(--color-border)]" aria-hidden>
               |
             </span>
-            <button type="button" className="underline" onClick={() => setLegalSection('terminos')}>
+            <button type="button" className="underline" onClick={onTerms}>
               Términos
             </button>
             <span className="text-[var(--color-border)]" aria-hidden>

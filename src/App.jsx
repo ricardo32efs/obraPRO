@@ -23,6 +23,7 @@ const NuevoPresupuesto = lazy(() =>
 )
 const Historial = lazy(() => import('./components/Historial/Historial').then((m) => ({ default: m.Historial })))
 const Dashboard = lazy(() => import('./components/Dashboard/Dashboard').then((m) => ({ default: m.Dashboard })))
+const Terms = lazy(() => import('./components/Legal/Terms').then((m) => ({ default: m.Terms })))
 
 /**
  * Router principal: landing → onboarding → app (nuevo / historial / dashboard / config)
@@ -241,6 +242,7 @@ function AppInner() {
                 onCrearPresupuesto={() => enterApp('nuevo')}
                 onVerEjemploPdf={() => setExampleOpen(true)}
                 onFeedback={() => setFeedbackOpen(true)}
+                onTerms={() => setRoute('terms')}
               />
             </Suspense>
           </motion.div>
@@ -393,6 +395,20 @@ function AppInner() {
             </main>
 
             <BottomNav screen={appScreen} onNavigate={setAppScreen} />
+          </motion.div>
+        )}
+
+        {route === 'terms' && (
+          <motion.div
+            key="terms"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            <Suspense fallback={<RouteFallback />}>
+              <Terms />
+            </Suspense>
           </motion.div>
         )}
       </AnimatePresence>
