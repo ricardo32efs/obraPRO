@@ -120,7 +120,7 @@ function AppInner() {
       })
       .catch((err) => {
         console.error('[verify-payment] client error:', err)
-        toast('Error al verificar el pago. Contactános por WhatsApp.', 'error')
+        toast('Error al verificar el pago. Contacto: obrapro2026@gmail.com', 'error')
       })
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
