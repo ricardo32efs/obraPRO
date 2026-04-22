@@ -9,20 +9,18 @@ const MP_ANNUAL_URL = 'https://www.mercadopago.com.ar/subscriptions/checkout?pre
 function Logo() {
   return (
     <svg width="40" height="40" viewBox="0 0 40 40" className="text-[var(--color-accent)]" aria-hidden>
-      {/* Círculo exterior (del nuevo logo) */}
-      <circle cx="20" cy="20" r="18" fill="none" stroke="currentColor" strokeWidth="2" opacity="0.9" />
+      {/* Círculo exterior */}
+      <circle cx="20" cy="20" r="18" fill="none" stroke="currentColor" strokeWidth="2.5" />
       
-      {/* Líneas verticales estilo gráfico (del nuevo logo) */}
-      <rect x="12" y="10" width="3" height="20" rx="0.5" fill="currentColor" opacity="0.6" />
-      <rect x="18" y="6" width="4" height="28" rx="0.5" fill="currentColor" />
-      <rect x="25" y="14" width="3" height="12" rx="0.5" fill="currentColor" opacity="0.7" />
+      {/* Tres líneas verticales estilo gráfico de barras */}
+      {/* Línea izquierda - mediana */}
+      <rect x="11" y="12" width="4" height="16" rx="1" fill="currentColor" opacity="0.7" />
       
-      {/* Cubo 3D pequeño integrado (del logo actual) */}
-      <path
-        fill="currentColor"
-        opacity="0.9"
-        d="M20 15l-4 2.5v5l4 2.5 4-2.5v-5L20 15zm0 1.2l2.5 1.5L20 19.2l-2.5-1.5L20 16.2z"
-      />
+      {/* Línea central - alta (la más prominente) */}
+      <rect x="18" y="6" width="4" height="28" rx="1" fill="currentColor" />
+      
+      {/* Línea derecha - baja */}
+      <rect x="26" y="16" width="4" height="12" rx="1" fill="currentColor" opacity="0.8" />
     </svg>
   )
 }
