@@ -8,10 +8,20 @@ const MP_ANNUAL_URL = 'https://www.mercadopago.com.ar/subscriptions/checkout?pre
 
 function Logo() {
   return (
-    <svg width="36" height="36" viewBox="0 0 32 32" className="text-[var(--color-accent)]" aria-hidden>
+    <svg width="40" height="40" viewBox="0 0 40 40" className="text-[var(--color-accent)]" aria-hidden>
+      {/* Círculo exterior (del nuevo logo) */}
+      <circle cx="20" cy="20" r="18" fill="none" stroke="currentColor" strokeWidth="2" opacity="0.9" />
+      
+      {/* Líneas verticales estilo gráfico (del nuevo logo) */}
+      <rect x="12" y="10" width="3" height="20" rx="0.5" fill="currentColor" opacity="0.6" />
+      <rect x="18" y="6" width="4" height="28" rx="0.5" fill="currentColor" />
+      <rect x="25" y="14" width="3" height="12" rx="0.5" fill="currentColor" opacity="0.7" />
+      
+      {/* Cubo 3D pequeño integrado (del logo actual) */}
       <path
         fill="currentColor"
-        d="M16 2L4 9v14l12 7 12-7V9L16 2zm0 3.2L22.5 9 16 12.8 9.5 9 16 5.2zM7 11.5l8 4.8v9.4l-8-4.7v-9.5zm10 14.2v-9.4l8-4.8v9.5l-8 4.7z"
+        opacity="0.9"
+        d="M20 15l-4 2.5v5l4 2.5 4-2.5v-5L20 15zm0 1.2l2.5 1.5L20 19.2l-2.5-1.5L20 16.2z"
       />
     </svg>
   )
