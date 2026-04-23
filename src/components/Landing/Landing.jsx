@@ -8,19 +8,11 @@ const MP_ANNUAL_URL = 'https://www.mercadopago.com.ar/subscriptions/checkout?pre
 
 function Logo() {
   return (
-    <svg width="40" height="40" viewBox="0 0 40 40" className="text-[var(--color-accent)]" aria-hidden>
-      {/* Círculo exterior */}
-      <circle cx="20" cy="20" r="18" fill="none" stroke="currentColor" strokeWidth="2.5" />
-      
-      {/* Tres líneas verticales estilo gráfico de barras */}
-      {/* Línea izquierda - mediana */}
-      <rect x="11" y="12" width="4" height="16" rx="1" fill="currentColor" opacity="0.7" />
-      
-      {/* Línea central - alta (la más prominente) */}
-      <rect x="18" y="6" width="4" height="28" rx="1" fill="currentColor" />
-      
-      {/* Línea derecha - baja */}
-      <rect x="26" y="16" width="4" height="12" rx="1" fill="currentColor" opacity="0.8" />
+    <svg width="36" height="36" viewBox="0 0 32 32" className="text-[var(--color-accent)]" aria-hidden>
+      <path
+        fill="currentColor"
+        d="M16 2L4 9v14l12 7 12-7V9L16 2zm0 3.2L22.5 9 16 12.8 9.5 9 16 5.2zM7 11.5l8 4.8v9.4l-8-4.7v-9.5zm10 14.2v-9.4l8-4.8v9.5l-8 4.7z"
+      />
     </svg>
   )
 }

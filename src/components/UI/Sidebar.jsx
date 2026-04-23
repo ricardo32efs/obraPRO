@@ -46,14 +46,11 @@ export function Sidebar({ screen, onNavigate, onHome, onFeedback }) {
 
 function LogoMark() {
   return (
-    <svg width="32" height="32" viewBox="0 0 40 40" aria-hidden className="shrink-0 text-[var(--color-accent)]">
-      {/* Círculo exterior */}
-      <circle cx="20" cy="20" r="18" fill="none" stroke="currentColor" strokeWidth="2.5" />
-      
-      {/* Tres líneas verticales estilo gráfico de barras */}
-      <rect x="11" y="12" width="4" height="16" rx="1" fill="currentColor" opacity="0.7" />
-      <rect x="18" y="6" width="4" height="28" rx="1" fill="currentColor" />
-      <rect x="26" y="16" width="4" height="12" rx="1" fill="currentColor" opacity="0.8" />
+    <svg width="28" height="28" viewBox="0 0 32 32" aria-hidden className="shrink-0 text-[var(--color-accent)]">
+      <path
+        fill="currentColor"
+        d="M16 2L4 9v14l12 7 12-7V9L16 2zm0 3.2L22.5 9 16 12.8 9.5 9 16 5.2zM7 11.5l8 4.8v9.4l-8-4.7v-9.5zm10 14.2v-9.4l8-4.8v9.5l-8 4.7z"
+      />
     </svg>
   )
 }
