@@ -4,6 +4,8 @@
  * Body: { descripcionObra, tipoTrabajo, ciudad }
  */
 
+import { checkRateLimit, getClientIP } from './lib/rateLimit.js'
+
 const SYSTEM_PROMPT = `Eres un experto en todas las especialidades de la construcción y los oficios en Argentina: albañilería, electricidad, plomería, gas, pintura, herrería, carpintería, paisajismo, techados y aire acondicionado. Cuando te describen un trabajo, generás un presupuesto detallado con materiales, mano de obra y gastos adicionales con cantidades y precios realistas en pesos argentinos.
 
 REGLAS CRÍTICAS:
@@ -76,10 +78,23 @@ function extractJson(text) {
 }
 
 export default async function handler(req, res) {
+  // Rate limiting
+  const clientIP = getClientIP(req)
+  const rateLimit = checkRateLimit('ai-suggest', clientIP)
+  
+  if (!rateLimit.allowed) {
+    return res.status(429).json({ 
+      error: 'Demasiadas solicitudes. Intentá de nuevo en unos minutos.',
+      retryAfter: rateLimit.retryAfter 
+    })
+  }
+
   const origin = process.env.VITE_SITE_URL || 'https://obraproweb.com'
   res.setHeader('Access-Control-Allow-Origin', origin)
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS')
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
+  res.setHeader('X-RateLimit-Limit', '10')
+  res.setHeader('X-RateLimit-Remaining', String(rateLimit.remaining))
 
   if (req.method === 'OPTIONS') return res.status(200).end()
   if (req.method !== 'POST') return res.status(405).json({ error: 'Método no permitido' })
@@ -97,6 +112,12 @@ export default async function handler(req, res) {
   if (descStr.length > 1000) {
     return res.status(400).json({ error: 'Descripción demasiado larga (máx. 1000 caracteres).' })
   }
+  
+  // Sanitización básica contra XSS
+  const sanitizedDesc = descStr
+    .replace(/[<>]/g, '')
+    .replace(/javascript:/gi, '')
+    .replace(/on\w+=/gi, '')
 
   try {
     const prompt = buildPrompt({ descripcionObra: descStr, tipoTrabajo, ciudad })

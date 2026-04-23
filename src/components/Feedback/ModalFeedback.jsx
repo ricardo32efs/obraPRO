@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useFocusTrap } from '../../hooks/useFocusTrap'
 import emailjs from '@emailjs/browser'
+import { sanitizeInput, isValidEmail, limitLength } from '../../utils/security'
 
 // CONFIGURACIÓN - Completar con tus datos de EmailJS
 const EMAILJS_SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID || ''
@@ -34,13 +35,27 @@ export function ModalFeedback({ open, onClose }) {
       return
     }
 
+    // Validar email si se proporcionó
+    if (form.email && !isValidEmail(form.email)) {
+      setErrorMsg('Por favor ingresá un email válido.')
+      setStatus('error')
+      return
+    }
+
+    // Validar longitud del mensaje
+    if (form.mensaje.length > 2000) {
+      setErrorMsg('El mensaje es demasiado largo (máximo 2000 caracteres).')
+      setStatus('error')
+      return
+    }
+
     try {
       const templateParams = {
         to_email: EMAIL_TO,
-        from_name: form.nombre || 'Usuario anónimo',
-        from_email: form.email || 'no-reply@obraproweb.com',
-        tipo: form.tipo,
-        mensaje: form.mensaje,
+        from_name: limitLength(sanitizeInput(form.nombre), 100) || 'Usuario anónimo',
+        from_email: limitLength(sanitizeInput(form.email), 100) || 'no-reply@obraproweb.com',
+        tipo: limitLength(sanitizeInput(form.tipo), 50),
+        mensaje: limitLength(sanitizeInput(form.mensaje), 2000),
         url: 'https://obraproweb.com',
         fecha: new Date().toLocaleString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires' }),
       }
