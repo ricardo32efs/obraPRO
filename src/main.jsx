@@ -5,10 +5,8 @@ import './index.css'
 import App from './App.jsx'
 import { ErrorBoundary } from './components/UI/ErrorBoundary.jsx'
 import { bootstrapPublicMeta } from './utils/bootstrapPublicMeta.js'
-import { initAnalytics } from './utils/analytics.js'
 
 bootstrapPublicMeta()
-initAnalytics()
 
 registerSW({ immediate: true })
 
