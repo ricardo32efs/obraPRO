@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <!-- Fondo con gradiente sutil -->
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1a1a2e"/>
+      <stop offset="100%" stop-color="#16213e"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#000" flood-opacity="0.4"/>
+    </filter>
+  </defs>
+  
+  <!-- Fondo -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  
+  <!-- Logo cubo 3D centrado -->
+  <g transform="translate(520, 200) scale(4)" filter="url(#shadow)">
+    <path fill="#C1440E" d="M16 2L4 9v14l12 7 12-7V9L16 2zm0 3.2L22.5 9 16 12.8 9.5 9 16 5.2zM7 11.5l8 4.8v9.4l-8-4.7v-9.5zm10 14.2v-9.4l8-4.8v9.5l-8 4.7z"/>
+  </g>
+  
+  <!-- Texto "Obra Pro" -->
+  <text x="600" y="420" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="72" font-weight="700" fill="#ffffff">Obra Pro</text>
+  
+  <!-- Subtítulo -->
+  <text x="600" y="480" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="32" font-weight="400" fill="#a0a0a0">Presupuestos profesionales en PDF</text>
+  
+  <!-- Badge Argentina -->
+  <g transform="translate(530, 520)">
+    <rect x="0" y="0" width="140" height="36" rx="18" fill="#C1440E" opacity="0.9"/>
+    <text x="70" y="24" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="16" font-weight="600" fill="#ffffff">🇦🇷 Argentina</text>
+  </g>
+</svg>
