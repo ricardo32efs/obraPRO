@@ -12,24 +12,93 @@ export const LS_KEYS = {
 /** Límite mensual de presupuestos plan gratuito */
 export const FREE_MONTHLY_BUDGET_LIMIT = 1
 
-/** Tipos de trabajo para select principal */
+/** Tipos de trabajo para select principal - TODOS los oficios de construcción */
 export const TIPOS_TRABAJO = [
+  // Albañilería y estructuras
   'Construcción nueva',
   'Refacción integral',
   'Ampliación',
+  'Demolición',
+  'Mampostería',
+  'Estructuras de hormigón',
+  'Placas de yeso (drywall)',
+  
+  // Instalaciones
+  'Instalación eléctrica completa',
+  'Instalación sanitaria (agua)',
+  'Instalación de desagües',
+  'Instalación de gas natural',
+  'Instalación de gas envasado',
+  'Calefacción central',
+  'Radiadores y calderas',
+  'Piso radiante',
+  'Aire acondicionado split',
+  'Aire acondicionado central',
+  'Ventilación y extractores',
+  
+  // Pintura y terminaciones
   'Pintura interior',
   'Pintura exterior',
-  'Demolición',
-  'Instalación sanitaria',
-  'Instalación eléctrica',
-  'Instalación de gas',
-  'Techos y cubiertas',
-  'Impermeabilización',
-  'Pisos y revestimientos',
+  'Pintura industrial',
+  'Empapelado y revestimientos',
+  'Microcemento',
+  'Estucos y yeso',
+  
+  // Pisos y revestimientos
+  'Pisos cerámicos',
+  'Pisos de porcelanato',
+  'Pisos de madera',
+  'Pisos de vinilo/PVC',
+  'Pisos de cemento alisado',
+  'Pisos epóxicos',
+  'Revestimientos en piedra',
+  'Revestimientos 3D',
+  'Mosaicos y venecitas',
+  
+  // Techos y cubiertas
+  'Techos de chapa',
+  'Techos de tejas',
+  'Techos de losa',
+  'Cielorrasos desmontables',
+  'Cielorrasos de yeso',
+  'Impermeabilización de techos',
+  'Impermeabilización de terrazas',
+  'Canaletas y bajadas',
+  
+  // Aberturas y cerramientos
   'Herrería y rejas',
-  'Carpintería y muebles',
+  'Herrería artística',
+  'Puertas y portones',
+  'Ventanas de aluminio',
+  'Ventanas de PVC',
+  'Carpintería de madera',
+  'Muebles a medida',
+  'Cocinas y placares',
+  'Deck y pergolas de madera',
+  
+  // Exteriores y jardín
   'Paisajismo y jardines',
-  'Aire acondicionado',
+  'Riego automatizado',
+  'Césped natural y sintético',
+  'Cercos perimetrales',
+  'Portones automáticos',
+  'Iluminación de jardín',
+  'Piscinas y piletas',
+  
+  // Especialidades
+  'Vidrios y espejos',
+  'Mamparas y boxes',
+  'Barandas y escaleras',
+  'Aislamiento térmico',
+  'Aislamiento acústico',
+  'Zinguería y soldadura',
+  'Soldadura general',
+  
+  // Servicios complementarios
+  'Limpieza post-obra',
+  'Fumigación y control de plagas',
+  'Mudanzas y fletes',
+  
   'Otro',
 ]
 
